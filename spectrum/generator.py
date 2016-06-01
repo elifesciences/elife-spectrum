@@ -3,7 +3,7 @@ from jinja2 import Template
 from os import path
 from zipfile import ZipFile
 
-def article_zip():
+def article_zip(template_id=15893):
     template = "elife-15893.template.xml.jinja"
     id = datetime.now().strftime("%Y%m%d%H%M%S")
     current_directory = path.dirname(__file__)
