@@ -21,8 +21,8 @@ class BucketFileCheck:
         bucket = self._s3.Bucket(self._bucket_name)
         bucket.load()
         for file in bucket.objects.all():
-            print(file.key)
             if re.match(criteria, file.key):
+                print("Found %s in bucket %s", (file.key, self._bucket_name))
                 return True
         return False
         
