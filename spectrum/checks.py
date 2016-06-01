@@ -1,4 +1,4 @@
-from aws import s3
+from aws import s3, settings
 import re
 import time
 import polling
@@ -26,5 +26,4 @@ class BucketFileCheck:
                 return True
         return False
         
-
-eif = BucketFileCheck(s3, 'end2end-' + 'elife-publishing-eif', '{id}.1/.*/elife-{id}-v1.json')
+eif = BucketFileCheck(s3, settings.bucket_eif, '{id}.1/.*/elife-{id}-v1.json')

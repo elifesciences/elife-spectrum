@@ -13,6 +13,8 @@
 class end2end():
     aws_access_key_id = ""
     aws_secret_access_key = ""
+    bucket_input = 'end2end-elife-production-final'
+    bucket_eif = 'end2end-elife-publishing-eif'
 
 def get_settings(ENV = "end2end"):
     """
