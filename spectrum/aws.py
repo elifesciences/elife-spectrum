@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 settings = settingsLib.get_settings('end2end')
 s3 = boto3.resource('s3', aws_access_key_id = settings.aws_access_key_id, aws_secret_access_key = settings.aws_secret_access_key)
 swf = boto3.client('swf', aws_access_key_id = settings.aws_access_key_id, aws_secret_access_key = settings.aws_secret_access_key)
+sqs = boto3.client('sqs', aws_access_key_id = settings.aws_access_key_id, aws_secret_access_key = settings.aws_secret_access_key)
 
 def clean():
     for workflow in swf.list_open_workflow_executions(
