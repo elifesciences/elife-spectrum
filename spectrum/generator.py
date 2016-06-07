@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from jinja2 import Template
 from os import path, mkdir, getpid, remove
@@ -29,6 +30,15 @@ def clean():
         else:
             remove(entry)
             print("Deleted file %s" % entry)
+
+def all_stored_articles():
+    articles = []
+    for template_directory in glob('spectrum/templates/elife-*-*-*'):
+        match = re.match(r".*/elife-(.+)-.+-.+", template_directory)
+        assert match is not None
+        assert len(match.groups()) == 1
+        articles.append(match.groups()[0])
+    return articles
 
 def _choose_template(template_id):
     templates_pattern = './spectrum/templates/elife-%s-*-*' % template_id
