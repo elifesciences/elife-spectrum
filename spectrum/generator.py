@@ -6,7 +6,7 @@ from zipfile import ZipFile
 from glob import glob
 from shutil import copy, rmtree
 
-def article_zip(template_id="15893"):
+def article_zip(template_id):
     template = _choose_template(template_id)
     id = "%s%05d" % (datetime.now().strftime("%Y%m%d%H%M%S"), getpid())
     generated_article_directory = '/tmp/' + path.basename(template).replace(template_id, id)
