@@ -22,7 +22,7 @@ def article_zip(template_id="15893"):
     return ArticleZip(id, zip_filename)
 
 def _choose_template(template_id):
-    templates_pattern = './spectrum/elife-%s-*-*' % template_id
+    templates_pattern = './spectrum/templates/elife-%s-*-*' % template_id
     templates_found = glob(templates_pattern)
     assert len(templates_found) == 1, "Found multiple candidate templates: %s" % templates_found
     return templates_found[0]
