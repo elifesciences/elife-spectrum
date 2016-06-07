@@ -1,13 +1,13 @@
 from datetime import datetime
 from jinja2 import Template
-from os import path, mkdir
+from os import path, mkdir, getpid
 from zipfile import ZipFile
 from glob import glob
 from shutil import copy
 
 def article_zip(template_id="15893"):
     template = _choose_template(template_id)
-    id = datetime.now().strftime("%Y%m%d%H%M%S")
+    id = "%s%05d" % (datetime.now().strftime("%Y%m%d%H%M%S"), getpid())
     generated_article_directory = '/tmp/' + path.basename(template).replace(template_id, id)
     mkdir(generated_article_directory)
     generated_files = []

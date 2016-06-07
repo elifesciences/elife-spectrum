@@ -6,4 +6,4 @@ cd $DIR
 
 source venv/bin/activate
 rm -f build/junit.xml
-py.test -v --junitxml build/junit.xml -s spectrum
+py.test -v --junitxml build/junit.xml -n 2 -s spectrum
