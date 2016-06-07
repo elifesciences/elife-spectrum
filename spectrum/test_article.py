@@ -9,4 +9,6 @@ def test_uploaded_article_gets_transformed_into_eif(template_id):
     input.production_bucket.upload(article.filename())
     checks.eif.of(id=article.id())
     checks.website.unpublished(id=article.id())
+    for each in article.figure_names():
+        checks.images.of(id=article.id(), figure_name=each)
 

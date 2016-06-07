@@ -54,3 +54,4 @@ class WebsiteArticleCheck:
 
 eif = BucketFileCheck(s3, settings.bucket_eif, '{id}.1/.*/elife-{id}-v1.json')
 website = WebsiteArticleCheck(host=settings.website_host, user=settings.website_user, password=settings.website_password)
+images = BucketFileCheck(s3, 'end2end-elife-publishing-cdn', '{id}/elife-{id}-{figure_name}-v1.jpg')

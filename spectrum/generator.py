@@ -16,11 +16,15 @@ def article_zip(template_id):
         generated_file = _generate(file, id, generated_article_directory, template_id)
         generated_files.append(generated_file)
     zip_filename = '/tmp/' + path.basename(template).replace(template_id, id) + '.zip'
+    figure_names = []
     with ZipFile(zip_filename, 'w') as zip_file:
         for generated_file in generated_files:
             zip_file.write(generated_file, path.basename(generated_file))
-    print("Generated %s" % zip_filename)
-    return ArticleZip(id, zip_filename)
+            match = re.match(r".*/elife-.+-(.+)\.tif", generated_file)
+            if match:
+                figure_names.append(match.groups()[0])
+    print("Generated %s with figures %s" % (zip_filename, figure_names))
+    return ArticleZip(id, zip_filename, figure_names)
 
 def clean():
     for entry in glob('/tmp/elife*'):
@@ -64,9 +68,10 @@ def _generate(filename, id, generated_article_directory, template_id):
     return target
 
 class ArticleZip:
-    def __init__(self, id, filename):
+    def __init__(self, id, filename, figure_names = []):
         self._id = id
         self._filename = filename
+        self._figure_names = figure_names
 
     def id(self):
         return self._id
@@ -76,3 +81,6 @@ class ArticleZip:
 
     def filename(self):
         return self._filename
+
+    def figure_names(self):
+        return self._figure_names
