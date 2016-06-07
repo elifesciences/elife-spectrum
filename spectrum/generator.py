@@ -1,9 +1,9 @@
 from datetime import datetime
 from jinja2 import Template
-from os import path, mkdir, getpid
+from os import path, mkdir, getpid, remove
 from zipfile import ZipFile
 from glob import glob
-from shutil import copy
+from shutil import copy, rmtree
 
 def article_zip(template_id="15893"):
     template = _choose_template(template_id)
@@ -20,6 +20,15 @@ def article_zip(template_id="15893"):
             zip_file.write(generated_file, path.basename(generated_file))
     print("Generated %s" % zip_filename)
     return ArticleZip(id, zip_filename)
+
+def clean():
+    for entry in glob('/tmp/elife*'):
+        if path.isdir(entry):
+            rmtree(entry)
+            print("Deleted directory %s" % entry)
+        else:
+            remove(entry)
+            print("Deleted file %s" % entry)
 
 def _choose_template(template_id):
     templates_pattern = './spectrum/templates/elife-%s-*-*' % template_id
