@@ -12,9 +12,11 @@ def article_zip(template_id):
     template = _choose_template(template_id)
     id = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
     generated_article_directory = '/tmp/' + path.basename(template).replace(template_id, id)
-    match_version = re.match(r"elife-.+-.+-r(.+)", path.basename(template))
-    assert match_version is not None
-    version = match_version.groups()[0]
+    match_version = re.match(r"elife-.+-.+-v(.+)-\d+", path.basename(template))
+    if match_version:
+        version = match_version.groups()[0]
+    else:
+        version = 1
     os.mkdir(generated_article_directory)
     generated_files = []
     for file in glob.glob(template + "/*"):
@@ -25,7 +27,7 @@ def article_zip(template_id):
     with zipfile.ZipFile(zip_filename, 'w') as zip_file:
         for generated_file in generated_files:
             zip_file.write(generated_file, path.basename(generated_file))
-            match = re.match(r".*/elife-.+-(.+)\.tif", generated_file)
+            match = re.match(r".*/elife-\d+-(.+)-v[\d+]?\.tif", generated_file)
             if match:
                 figure_names.append(match.groups()[0])
     print "Generated %s with figures %s" % (zip_filename, figure_names)
@@ -43,8 +45,8 @@ def clean():
 
 def all_stored_articles():
     articles = []
-    for template_directory in glob.glob('spectrum/templates/elife-*-*-*'):
-        match = re.match(r".*/elife-(.+)-.+-.+", template_directory)
+    for template_directory in glob.glob('spectrum/templates/elife-*'):
+        match = re.match(r".*/elife-(\d+)-.+", template_directory)
         assert match is not None
         assert len(match.groups()) == 1
         articles.append(match.groups()[0])
