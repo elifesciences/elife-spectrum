@@ -12,6 +12,9 @@ def article_zip(template_id):
     template = _choose_template(template_id)
     id = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
     generated_article_directory = '/tmp/' + path.basename(template).replace(template_id, id)
+    match_version = re.match(r"elife-.+-.+-r(.+)", path.basename(template))
+    assert match_version is not None
+    version = match_version.groups()[0]
     os.mkdir(generated_article_directory)
     generated_files = []
     for file in glob.glob(template + "/*"):
@@ -27,7 +30,7 @@ def article_zip(template_id):
                 figure_names.append(match.groups()[0])
     print "Generated %s with figures %s" % (zip_filename, figure_names)
     has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
-    return ArticleZip(id, zip_filename, figure_names, has_pdf)
+    return ArticleZip(id, zip_filename, version, figure_names, has_pdf)
 
 def clean():
     for entry in glob.glob('/tmp/elife*'):
@@ -71,9 +74,10 @@ def _generate(filename, id, generated_article_directory, template_id):
     return target
 
 class ArticleZip:
-    def __init__(self, id, filename, figure_names=None, has_pdf=False):
+    def __init__(self, id, filename, version, figure_names=None, has_pdf=False):
         self._id = id
         self._filename = filename
+        self._version = version
         self._figure_names = figure_names if figure_names else []
         self._has_pdf = has_pdf
 
@@ -82,6 +86,9 @@ class ArticleZip:
 
     def doi(self):
         return '10.7554/eLife.' + self._id
+
+    def version(self):
+        return self._version
 
     def filename(self):
         return self._filename
