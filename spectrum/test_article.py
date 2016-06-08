@@ -11,4 +11,6 @@ def test_article_flows_in_the_pipeline(template_id):
     checks.WEBSITE.unpublished(id=article.id())
     for each in article.figure_names():
         checks.IMAGES.of(id=article.id(), figure_name=each)
+    if article.has_pdf():
+        checks.PDF.of(id=article.id())
 

@@ -4,6 +4,9 @@ import polling
 import requests
 from spectrum import aws
 
+class TimeoutException(RuntimeError):
+    pass
+
 class BucketFileCheck:
     def __init__(self, s3, bucket_name, key):
         self._s3 = s3
@@ -12,11 +15,17 @@ class BucketFileCheck:
 
     def of(self, **kwargs):
         criteria = self._key.format(**kwargs)
-        polling.poll(
-            lambda: self._is_present(criteria),
-            timeout=60,
-            step=5
-        )
+        try:
+            polling.poll(
+                lambda: self._is_present(criteria),
+                timeout=60,
+                step=5
+            )
+        except polling.TimeoutException:
+            raise TimeoutException(
+                "Cannot find object matching criteria %s in %s" \
+                        % (criteria, self._bucket_name)
+            )
 
     def _is_present(self, criteria):
         bucket = self._s3.Bucket(self._bucket_name)
@@ -61,3 +70,4 @@ WEBSITE = WebsiteArticleCheck(
     password=aws.SETTINGS.website_password
 )
 IMAGES = BucketFileCheck(aws.S3, aws.SETTINGS.bucket_cdn, '{id}/elife-{id}-{figure_name}-v1.jpg')
+PDF = BucketFileCheck(aws.S3, aws.SETTINGS.bucket_cdn, '{id}/elife-{id}-v1.pdf')

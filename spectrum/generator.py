@@ -26,7 +26,8 @@ def article_zip(template_id):
             if match:
                 figure_names.append(match.groups()[0])
     print "Generated %s with figures %s" % (zip_filename, figure_names)
-    return ArticleZip(id, zip_filename, figure_names)
+    has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
+    return ArticleZip(id, zip_filename, figure_names, has_pdf)
 
 def clean():
     for entry in glob.glob('/tmp/elife*'):
@@ -70,10 +71,11 @@ def _generate(filename, id, generated_article_directory, template_id):
     return target
 
 class ArticleZip:
-    def __init__(self, id, filename, figure_names=None):
+    def __init__(self, id, filename, figure_names=None, has_pdf=False):
         self._id = id
         self._filename = filename
         self._figure_names = figure_names if figure_names else []
+        self._has_pdf = has_pdf
 
     def id(self):
         return self._id
@@ -86,3 +88,6 @@ class ArticleZip:
 
     def figure_names(self):
         return self._figure_names
+
+    def has_pdf(self):
+        return self._has_pdf
