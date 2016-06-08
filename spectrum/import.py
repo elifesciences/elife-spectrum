@@ -7,7 +7,7 @@ import zipfile
 
 def from_zip(filename):
     zip = zipfile.ZipFile(filename, "r")
-    (article_full_name, zip_extension) = os.path.splitext(os.path.basename(filename))
+    (article_full_name, _) = os.path.splitext(os.path.basename(filename))
     target_directory = os.path.realpath('./spectrum/templates/%s' % article_full_name)
     if not os.path.exists(target_directory):
         os.mkdir(target_directory)
@@ -21,7 +21,8 @@ def from_zip(filename):
         subprocess.call(['xmllint', '--format', xml_of_article_file], stdout=template)
     os.remove(xml_of_article_file)
     match = re.match(r"elife-([0-9]+)-.*-.*", article_full_name)
-    assert match is not None, "Could not match an id inside the article full name %s" % article_full_name
+    assert match is not None, \
+            "Could not match an id inside the article full name %s" % article_full_name
     assert len(match.groups()) == 1
     article_id = match.groups()[0]
     search_and_replace(xml_of_article_template_file, article_id, "{{ article['id'] }}")
@@ -29,7 +30,7 @@ def from_zip(filename):
 
 def search_and_replace(filename, search, replace):
     contents = ''
-    with open(filename, 'r') as file: 
+    with open(filename, 'r') as file:
         contents = file.read()
 
     contents = contents.replace(search, replace)
@@ -40,6 +41,6 @@ def search_and_replace(filename, search, replace):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: %s ZIP_FILENAME\n" % sys.argv[0])
+        print "Usage: %s ZIP_FILENAME\n" % sys.argv[0]
         exit(1)
     from_zip(sys.argv[1])

@@ -1,11 +1,12 @@
 import datetime
 import glob
-import jinja2
 import os
+from os import path
 import re
 import shutil
 import zipfile
-from os import path
+
+import jinja2
 
 def article_zip(template_id):
     template = _choose_template(template_id)
@@ -24,17 +25,17 @@ def article_zip(template_id):
             match = re.match(r".*/elife-.+-(.+)\.tif", generated_file)
             if match:
                 figure_names.append(match.groups()[0])
-    print("Generated %s with figures %s" % (zip_filename, figure_names))
+    print "Generated %s with figures %s" % (zip_filename, figure_names)
     return ArticleZip(id, zip_filename, figure_names)
 
 def clean():
     for entry in glob.glob('/tmp/elife*'):
         if path.isdir(entry):
             shutil.rmtree(entry)
-            print("Deleted directory %s" % entry)
+            print "Deleted directory %s" % entry
         else:
             os.remove(entry)
-            print("Deleted file %s" % entry)
+            print "Deleted file %s" % entry
 
 def all_stored_articles():
     articles = []
@@ -60,7 +61,7 @@ def _generate(filename, id, generated_article_directory, template_id):
         with open(filename, 'r') as template_file:
             data = template_file.read().decode('UTF-8')
         template = jinja2.Template(data)
-        content = template.render(article = { 'id': id })
+        content = template.render(article={'id': id})
         target = target.replace('.jinja', '')
         with open(target, 'w') as target_file:
             target_file.write(content.encode('utf-8'))
@@ -69,10 +70,10 @@ def _generate(filename, id, generated_article_directory, template_id):
     return target
 
 class ArticleZip:
-    def __init__(self, id, filename, figure_names = []):
+    def __init__(self, id, filename, figure_names=None):
         self._id = id
         self._filename = filename
-        self._figure_names = figure_names
+        self._figure_names = figure_names if figure_names else []
 
     def id(self):
         return self._id

@@ -4,11 +4,11 @@ from spectrum import input
 from spectrum import checks
 
 @pytest.mark.parametrize("template_id", generator.all_stored_articles())
-def test_uploaded_article_gets_transformed_into_eif(template_id):
+def test_article_flows_in_the_pipeline(template_id):
     article = generator.article_zip(template_id)
-    input.production_bucket.upload(article.filename())
-    checks.eif.of(id=article.id())
-    checks.website.unpublished(id=article.id())
+    input.PRODUCTION_BUCKET.upload(article.filename())
+    checks.EIF.of(id=article.id())
+    checks.WEBSITE.unpublished(id=article.id())
     for each in article.figure_names():
-        checks.images.of(id=article.id(), figure_name=each)
+        checks.IMAGES.of(id=article.id(), figure_name=each)
 
