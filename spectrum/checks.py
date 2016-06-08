@@ -5,7 +5,7 @@ import polling
 import requests
 from spectrum import aws
 
-GLOBAL_TIMEOUT=120
+GLOBAL_TIMEOUT=300
 
 class TimeoutException(RuntimeError):
     @staticmethod
