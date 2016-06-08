@@ -10,7 +10,7 @@ import jinja2
 
 def article_zip(template_id):
     template = _choose_template(template_id)
-    id = "%s%05d" % (datetime.datetime.now().strftime("%Y%m%d%H%M%S"), os.getpid())
+    id = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
     generated_article_directory = '/tmp/' + path.basename(template).replace(template_id, id)
     os.mkdir(generated_article_directory)
     generated_files = []

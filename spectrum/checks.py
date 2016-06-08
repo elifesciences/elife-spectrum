@@ -1,4 +1,5 @@
 import re
+import datetime
 
 import polling
 import requests
@@ -18,13 +19,14 @@ class BucketFileCheck:
         try:
             polling.poll(
                 lambda: self._is_present(criteria),
-                timeout=60,
+                timeout=120,
                 step=5
             )
         except polling.TimeoutException:
+            timestamp = datetime.datetime.today().isoformat()
             raise TimeoutException(
-                "Cannot find object matching criteria %s in %s" \
-                        % (criteria, self._bucket_name)
+                "Cannot find object matching criteria %s in %s. Giving up at %s" \
+                        % (criteria, self._bucket_name, timestamp)
             )
 
     def _is_present(self, criteria):
