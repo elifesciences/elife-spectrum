@@ -4,5 +4,4 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-source venv/bin/activate
-python -c "from spectrum import aws, generator; aws.clean(); generator.clean()"
+venv/bin/python -c "from spectrum import aws, generator; aws.clean(); generator.clean()"

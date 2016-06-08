@@ -7,6 +7,5 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-source venv/bin/activate
 rm -f build/junit.xml
-py.test -v --junitxml build/junit.xml -n 2 -s spectrum $*
+venv/bin/py.test -v --junitxml build/junit.xml -n 2 -s spectrum $*
