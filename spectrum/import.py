@@ -1,19 +1,19 @@
-import sys
+import glob
 import os
 import re
 import subprocess
-from glob import glob
-from zipfile import ZipFile
+import sys
+import zipfile
 
 def from_zip(filename):
-    zip = ZipFile(filename, "r")
+    zip = zipfile.ZipFile(filename, "r")
     (article_full_name, zip_extension) = os.path.splitext(os.path.basename(filename))
     target_directory = os.path.realpath('./spectrum/templates/%s' % article_full_name)
     if not os.path.exists(target_directory):
         os.mkdir(target_directory)
     for each in zip.namelist():
         zip.extract(each, target_directory)
-    xml_files = glob('%s/*.xml' % target_directory)
+    xml_files = glob.glob('%s/*.xml' % target_directory)
     assert len(xml_files) == 1, 'Too many XML files were found in the article package'
     xml_of_article_file = xml_files[0]
     xml_of_article_template_file = xml_of_article_file + '.jinja'

@@ -1,7 +1,7 @@
 import boto3
-import settings as settingsLib
 import re
-from datetime import datetime, timedelta
+import settings as settingsLib
+import datetime
 
 settings = settingsLib.get_settings('end2end')
 s3 = boto3.resource('s3', aws_access_key_id = settings.aws_access_key_id, aws_secret_access_key = settings.aws_secret_access_key)
@@ -12,8 +12,8 @@ def clean():
     for workflow in swf.list_open_workflow_executions(
         domain = 'Publish.end2end',
         startTimeFilter={
-            'oldestDate': datetime.now() - timedelta(days=1),
-            'latestDate': datetime.now()
+            'oldestDate': datetime.datetime.now() - datetime.timedelta(days=1),
+            'latestDate': datetime.datetime.now()
         }
     )['executionInfos']:
         swf.terminate_workflow_execution(

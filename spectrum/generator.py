@@ -1,23 +1,24 @@
+import datetime
+import glob
+import jinja2
+import os
 import re
-from datetime import datetime
-from jinja2 import Template
-from os import path, mkdir, getpid, remove
-from zipfile import ZipFile
-from glob import glob
-from shutil import copy, rmtree
+import shutil
+import zipfile
+from os import path
 
 def article_zip(template_id):
     template = _choose_template(template_id)
-    id = "%s%05d" % (datetime.now().strftime("%Y%m%d%H%M%S"), getpid())
+    id = "%s%05d" % (datetime.datetime.now().strftime("%Y%m%d%H%M%S"), os.getpid())
     generated_article_directory = '/tmp/' + path.basename(template).replace(template_id, id)
-    mkdir(generated_article_directory)
+    os.mkdir(generated_article_directory)
     generated_files = []
-    for file in glob(template + "/*"):
+    for file in glob.glob(template + "/*"):
         generated_file = _generate(file, id, generated_article_directory, template_id)
         generated_files.append(generated_file)
     zip_filename = '/tmp/' + path.basename(template).replace(template_id, id) + '.zip'
     figure_names = []
-    with ZipFile(zip_filename, 'w') as zip_file:
+    with zipfile.ZipFile(zip_filename, 'w') as zip_file:
         for generated_file in generated_files:
             zip_file.write(generated_file, path.basename(generated_file))
             match = re.match(r".*/elife-.+-(.+)\.tif", generated_file)
@@ -27,17 +28,17 @@ def article_zip(template_id):
     return ArticleZip(id, zip_filename, figure_names)
 
 def clean():
-    for entry in glob('/tmp/elife*'):
+    for entry in glob.glob('/tmp/elife*'):
         if path.isdir(entry):
-            rmtree(entry)
+            shutil.rmtree(entry)
             print("Deleted directory %s" % entry)
         else:
-            remove(entry)
+            os.remove(entry)
             print("Deleted file %s" % entry)
 
 def all_stored_articles():
     articles = []
-    for template_directory in glob('spectrum/templates/elife-*-*-*'):
+    for template_directory in glob.glob('spectrum/templates/elife-*-*-*'):
         match = re.match(r".*/elife-(.+)-.+-.+", template_directory)
         assert match is not None
         assert len(match.groups()) == 1
@@ -46,7 +47,7 @@ def all_stored_articles():
 
 def _choose_template(template_id):
     templates_pattern = './spectrum/templates/elife-%s-*-*' % template_id
-    templates_found = glob(templates_pattern)
+    templates_found = glob.glob(templates_pattern)
     assert len(templates_found) == 1, "Found multiple candidate templates: %s" % templates_found
     return templates_found[0]
 
@@ -58,13 +59,13 @@ def _generate(filename, id, generated_article_directory, template_id):
     if extension == '.jinja':
         with open(filename, 'r') as template_file:
             data = template_file.read().decode('UTF-8')
-        template = Template(data)
+        template = jinja2.Template(data)
         content = template.render(article = { 'id': id })
         target = target.replace('.jinja', '')
         with open(target, 'w') as target_file:
             target_file.write(content.encode('utf-8'))
     else:
-        copy(filename, target)
+        shutil.copy(filename, target)
     return target
 
 class ArticleZip:

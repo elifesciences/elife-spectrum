@@ -1,8 +1,8 @@
-from aws import s3, settings
-import re
-import time
+import aws
 import polling
+import re
 import requests
+import time
 
 class BucketFileCheck:
     def __init__(self, s3, bucket_name, key):
@@ -52,6 +52,6 @@ class WebsiteArticleCheck:
             return r.json()
         return False
 
-eif = BucketFileCheck(s3, settings.bucket_eif, '{id}.1/.*/elife-{id}-v1.json')
-website = WebsiteArticleCheck(host=settings.website_host, user=settings.website_user, password=settings.website_password)
-images = BucketFileCheck(s3, settings.bucket_cdn, '{id}/elife-{id}-{figure_name}-v1.jpg')
+eif = BucketFileCheck(aws.s3, aws.settings.bucket_eif, '{id}.1/.*/elife-{id}-v1.json')
+website = WebsiteArticleCheck(host=aws.settings.website_host, user=aws.settings.website_user, password=aws.settings.website_password)
+images = BucketFileCheck(aws.s3, aws.settings.bucket_cdn, '{id}/elife-{id}-{figure_name}-v1.jpg')
