@@ -1,5 +1,6 @@
 import boto3
 import settings as settingsLib
+import re
 from datetime import datetime, timedelta
 
 settings = settingsLib.get_settings('end2end')
@@ -23,7 +24,9 @@ def clean():
         )
         print("Terminated workflow: workflowId=%s runId=%s" % (workflow['execution']['workflowId'], workflow['execution']['runId']))
 
-    for bucket_name in [settings.bucket_input, settings.bucket_eif]:
+    buckets_to_clean = [b['Name'] for b in s3.meta.client.list_buckets()['Buckets'] if re.match(r".*end2end.*", b['Name'])]
+    print("Cleaning up %d buckets: %s" % (len(buckets_to_clean), buckets_to_clean))
+    for bucket_name in buckets_to_clean:
         bucket = s3.Bucket(bucket_name)
         bucket.load()
         for file in bucket.objects.all():
