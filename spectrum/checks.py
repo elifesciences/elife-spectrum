@@ -5,6 +5,8 @@ import polling
 import requests
 from spectrum import aws
 
+GLOBAL_TIMEOUT=120
+
 class TimeoutException(RuntimeError):
     @staticmethod
     def giving_up_on(what):
@@ -25,7 +27,7 @@ class BucketFileCheck:
         try:
             polling.poll(
                 lambda: self._is_present(criteria),
-                timeout=120,
+                timeout=GLOBAL_TIMEOUT,
                 step=5
             )
         except polling.TimeoutException:
@@ -54,7 +56,7 @@ class WebsiteArticleCheck:
             article = polling.poll(
                 # try to put some good error message here
                 lambda: self._is_present(id, version),
-                timeout=60,
+                timeout=GLOBAL_TIMEOUT,
                 step=5
             )
         except polling.TimeoutException:
