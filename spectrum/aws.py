@@ -1,9 +1,11 @@
 import datetime
+import logging
 import re
 
 import boto3
 import settings
 
+LOGGER = logging.getLogger(__name__)
 SETTINGS = settings.get_settings('end2end')
 S3 = boto3.resource(
     's3',
@@ -37,16 +39,23 @@ def clean():
             runId=workflow['execution']['runId'],
             reason='end2end testing environment cleanup'
         )
-        print "Terminated workflow: workflowId=%s runId=%s" \
-                % (workflow['execution']['workflowId'], workflow['execution']['runId'])
+        LOGGER.info(
+            "Terminated workflow: workflowId=%s runId=%s",
+            workflow['execution']['workflowId'],
+            workflow['execution']['runId']
+        )
 
     all_buckets = S3.meta.client.list_buckets()['Buckets']
     buckets_to_clean = [b['Name'] for b in all_buckets if re.match(r".*end2end.*", b['Name'])]
-    print "Cleaning up %d buckets: %s" % (len(buckets_to_clean), buckets_to_clean)
+    LOGGER.info("Cleaning up %d buckets: %s", len(buckets_to_clean), buckets_to_clean)
     for bucket_name in buckets_to_clean:
         bucket = S3.Bucket(bucket_name)
         bucket.load()
         for file in bucket.objects.all():
             file.delete()
-            print "Deleted %s:%s" % (bucket_name, file.key)
+            LOGGER.info(
+                "Deleted %s:%s",
+                bucket_name,
+                file.key
+            )
 

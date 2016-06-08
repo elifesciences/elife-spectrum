@@ -1,11 +1,13 @@
 import re
 import datetime
+import logging
 
 import polling
 import requests
 from spectrum import aws
 
-GLOBAL_TIMEOUT=300
+GLOBAL_TIMEOUT = 300
+LOGGER = logging.getLogger(__name__)
 
 class TimeoutException(RuntimeError):
     @staticmethod
@@ -26,7 +28,7 @@ class BucketFileCheck:
         criteria = self._key.format(**kwargs)
         try:
             polling.poll(
-                lambda: self._is_present(criteria),
+                lambda: self._is_present(criteria, kwargs['id']),
                 timeout=GLOBAL_TIMEOUT,
                 step=5
             )
@@ -36,12 +38,12 @@ class BucketFileCheck:
                     % (criteria, self._bucket_name)
             )
 
-    def _is_present(self, criteria):
+    def _is_present(self, criteria, id):
         bucket = self._s3.Bucket(self._bucket_name)
         bucket.load()
         for file in bucket.objects.all():
             if re.match(criteria, file.key):
-                print "Found %s in bucket %s" % (file.key, self._bucket_name)
+                LOGGER.info("Found %s in bucket %s", file.key, self._bucket_name, extra={'id': id})
                 return True
         return False
 
@@ -74,7 +76,7 @@ class WebsiteArticleCheck:
         url = template % (self._host, id, version)
         response = requests.get(url, auth=(self._user, self._password))
         if response.status_code == 200:
-            print "Found %s on website" % url
+            LOGGER.info("Found %s on website", url, extra={'id': id})
             return response.json()
         return False
 

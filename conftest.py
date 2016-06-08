@@ -1,6 +1,7 @@
 import sys
 
 import pytest
+from spectrum import logger
 
 # so that other processes run by xdist can still print
 # http://stackoverflow.com/questions/27006884/pytest-xdist-without-capturing-output

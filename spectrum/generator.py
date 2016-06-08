@@ -1,5 +1,6 @@
 import datetime
 import glob
+import logging
 import os
 from os import path
 import re
@@ -7,6 +8,8 @@ import shutil
 import zipfile
 
 import jinja2
+
+LOGGER = logging.getLogger(__name__)
 
 def article_zip(template_id):
     template = _choose_template(template_id)
@@ -30,7 +33,7 @@ def article_zip(template_id):
             match = re.match(r".*/elife-\d+-(.+)-v[\d+]?\.tif", generated_file)
             if match:
                 figure_names.append(match.groups()[0])
-    print "Generated %s with figures %s" % (zip_filename, figure_names)
+    LOGGER.info("Generated %s with figures %s", zip_filename, figure_names, extra={'id': id})
     has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
     return ArticleZip(id, zip_filename, version, figure_names, has_pdf)
 
@@ -38,10 +41,10 @@ def clean():
     for entry in glob.glob('/tmp/elife*'):
         if path.isdir(entry):
             shutil.rmtree(entry)
-            print "Deleted directory %s" % entry
+            LOGGER.info("Deleted directory %s", entry)
         else:
             os.remove(entry)
-            print "Deleted file %s" % entry
+            LOGGER.info("Deleted file %s", entry)
 
 def all_stored_articles():
     articles = []
