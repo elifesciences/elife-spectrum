@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable=missing-docstring,redefined-builtin,old-style-class,too-few-public-methods
+disable=missing-docstring,redefined-builtin,old-style-class,too-few-public-methods,too-many-arguments
 
 good-names=id,s3,of,_
 function-rgx=[a-z_][a-z0-9_]{2,60}$

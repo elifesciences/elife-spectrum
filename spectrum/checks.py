@@ -6,7 +6,13 @@ import requests
 from spectrum import aws
 
 class TimeoutException(RuntimeError):
-    pass
+    @staticmethod
+    def giving_up_on(what):
+        timestamp = datetime.datetime.today().isoformat()
+        return TimeoutException(
+            "Cannot find '%s'; Giving up at %s" \
+                    % (what, timestamp)
+        )
 
 class BucketFileCheck:
     def __init__(self, s3, bucket_name, key):
@@ -23,10 +29,9 @@ class BucketFileCheck:
                 step=5
             )
         except polling.TimeoutException:
-            timestamp = datetime.datetime.today().isoformat()
-            raise TimeoutException(
-                "Cannot find object matching criteria %s in %s. Giving up at %s" \
-                        % (criteria, self._bucket_name, timestamp)
+            raise TimeoutException.giving_up_on(
+                "object matching criteria %s in %s" \
+                    % (criteria, self._bucket_name)
             )
 
     def _is_present(self, criteria):
@@ -53,10 +58,9 @@ class WebsiteArticleCheck:
                 step=5
             )
         except polling.TimeoutException:
-            timestamp = datetime.datetime.today().isoformat()
-            raise TimeoutException(
-                    "Cannot find article on website: /api/article/%s.%s.json; Giving up at %s" \
-                        % (criteria, self._bucket_name, timestamp)
+            raise TimeoutException.giving_up_on(
+                "article on website: /api/article/%s.%s.json" \
+                    % (id, version)
             )
         assert article['article-id'] == id, \
                 "The article id does not correspond to the one we were looking for"
@@ -72,11 +76,23 @@ class WebsiteArticleCheck:
             return response.json()
         return False
 
-EIF = BucketFileCheck(aws.S3, aws.SETTINGS.bucket_eif, '{id}.1/.*/elife-{id}-v{version}.json')
+EIF = BucketFileCheck(
+    aws.S3,
+    aws.SETTINGS.bucket_eif,
+    '{id}.1/.*/elife-{id}-v{version}.json'
+)
 WEBSITE = WebsiteArticleCheck(
     host=aws.SETTINGS.website_host,
     user=aws.SETTINGS.website_user,
     password=aws.SETTINGS.website_password
 )
-IMAGES = BucketFileCheck(aws.S3, aws.SETTINGS.bucket_cdn, '{id}/elife-{id}-{figure_name}-v{version}.jpg')
-PDF = BucketFileCheck(aws.S3, aws.SETTINGS.bucket_cdn, '{id}/elife-{id}-v{version}.pdf')
+IMAGES = BucketFileCheck(
+    aws.S3,
+    aws.SETTINGS.bucket_cdn,
+    '{id}/elife-{id}-{figure_name}-v{version}.jpg'
+)
+PDF = BucketFileCheck(
+    aws.S3,
+    aws.SETTINGS.bucket_cdn,
+    '{id}/elife-{id}-v{version}.pdf'
+)
