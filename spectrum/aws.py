@@ -51,11 +51,16 @@ def clean():
     for bucket_name in buckets_to_clean:
         bucket = S3.Bucket(bucket_name)
         bucket.load()
-        for file in bucket.objects.all():
-            file.delete()
+        keys = [file.key for file in bucket.objects.all()]
+        batch_size = 100
+        batches = [keys[lower:lower+batch_size] for lower in range(0, len(keys), batch_size)]
+        for batch in batches:
+            bucket.delete_objects(Delete={    
+                'Objects': [{'Key': key} for key in batch]
+            })
             LOGGER.info(
-                "Deleted %s:%s",
+                "Deleted from bucket %s the keys %s",
                 bucket_name,
-                file.key
+                batch
             )
 
