@@ -83,7 +83,7 @@ class WebsiteArticleCheck:
 EIF = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_eif,
-    '{id}.1/.*/elife-{id}-v{version}.json'
+    '{id}.{version}/.*/elife-{id}-v{version}.json'
 )
 WEBSITE = WebsiteArticleCheck(
     host=aws.SETTINGS.website_host,
