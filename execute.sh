@@ -8,4 +8,5 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
 rm -f build/junit.xml
+rm -f build/test.log
 venv/bin/py.test -v --junitxml build/junit.xml -n 2 -s spectrum $*
