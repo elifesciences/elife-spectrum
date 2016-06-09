@@ -8,9 +8,14 @@ class OptionalArticleIdFilter(logging.Filter):
 
 FORMAT = "[%(asctime)-15s][%(levelname)s][%(name)s][%(id)s] %(message)s"
 FORMATTER = logging.Formatter(FORMAT)
-HANDLER = logging.StreamHandler()
-HANDLER.setFormatter(FORMATTER)
-HANDLER.addFilter(logging.Filter('spectrum'))
-HANDLER.addFilter(OptionalArticleIdFilter())
-logging.getLogger().addHandler(HANDLER)
+
+def configure_handler(handler):
+    handler.addFilter(logging.Filter('spectrum'))
+    handler.addFilter(OptionalArticleIdFilter())
+    handler.setFormatter(FORMATTER)
+    logging.getLogger().addHandler(handler)
+
 logging.getLogger().setLevel(logging.INFO)
+
+configure_handler(logging.StreamHandler())
+configure_handler(logging.FileHandler('build/test.log', 'w'))
