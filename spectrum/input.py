@@ -29,7 +29,7 @@ class Dashboard:
         response = requests.post(url, auth=(self._user, self._password), json=body, verify=False)
         print response
         assert response.status_code == 200
-        LOGGER.info("Pressed Publish on dashboard", url, extra={'id': id})
+        LOGGER.info("Pressed Publish for %s version %s on dashboard", url, version, extra={'id': id})
 
 
 PRODUCTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_input)

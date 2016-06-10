@@ -89,32 +89,46 @@ class DashboardArticleCheck:
         self._user = user
         self._password = password
 
-    # TODO: pass in run and check it
-    def ready_to_publish(self, id, version, run=None):
+    def ready_to_publish(self, id, version):
+        return self._wait_for_status(id, version, "ready to publish")
+
+    def published(self, id, version):
+        return self._wait_for_status(id, version, "published")
+
+    def _wait_for_status(self, id, version, status):
         try:
             article = polling.poll(
-                lambda: self._is_present(id, version),
+                lambda: self._is_present(id, version, status),
                 timeout=GLOBAL_TIMEOUT,
                 step=5
             )
             # TODO: make some assertions over the response
             return article
         except polling.TimeoutException:
+            # TODO: duplication with _is_present
             raise TimeoutException.giving_up_on(
-                "article version %s on dashboard: /api/article/%s" \
-                    % (version, id)
+                "article version %s in status %s on dashboard: /api/article/%s" \
+                    % (version, status, id)
             )
 
-    # TODO: pass in status and check it 
-    def _is_present(self, id, version, status=None):
+    def _is_present(self, id, version, status):
         template = "%s/api/article/%s"
         url = template % (self._host, id)
+        version_key = str(version)
         response = requests.get(url, auth=(self._user, self._password), verify=False)
-        if response.status_code == 200:
-            LOGGER.info("Found %s on dashboard", url, extra={'id': id})
-            # TODO: only if version is there return the response
-            return response.json()
-        return False
+        # TODO: log response codes and fail immediately if it is 500 or so
+        if response.status_code != 200:
+            return False
+        article = response.json()
+        if 'versions' not in article:
+            return False
+        if version_key not in article['versions']:
+            return False
+        version_details = article['versions'][version_key]['details']
+        if version_details['publication-status'] != status:
+            return False
+        LOGGER.info("Found %s version %s in status %s on dashboard", url, version_key, status, extra={'id': id})
+        return article
 
 EIF = BucketFileCheck(
     aws.S3,
