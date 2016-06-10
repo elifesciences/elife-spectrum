@@ -59,20 +59,20 @@ class WebsiteArticleCheck:
     def unpublished(self, id, version=1):
         try:
             article = polling.poll(
-                # try to put some good error message here
                 lambda: self._is_present(id, version),
                 timeout=GLOBAL_TIMEOUT,
                 step=5
             )
+            assert article['article-id'] == id, \
+                    "The article id does not correspond to the one we were looking for"
+            assert article['publish'] is False, \
+                    "The article 'publish' status is not False: %s" % article
+            return article
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on(
                 "article on website: /api/article/%s.%s.json" \
                     % (id, version)
             )
-        assert article['article-id'] == id, \
-                "The article id does not correspond to the one we were looking for"
-        assert article['publish'] is False, \
-                "The article 'publish' status is not False: %s" % article
 
     def _is_present(self, id, version):
         template = "%s/api/article/%s.%s.json"
@@ -80,6 +80,39 @@ class WebsiteArticleCheck:
         response = requests.get(url, auth=(self._user, self._password))
         if response.status_code == 200:
             LOGGER.info("Found %s on website", url, extra={'id': id})
+            return response.json()
+        return False
+
+class DashboardArticleCheck:
+    def __init__(self, host, user, password):
+        self._host = host
+        self._user = user
+        self._password = password
+
+    # TODO: pass in run and check it
+    def ready_to_publish(self, id, version, run=None):
+        try:
+            article = polling.poll(
+                lambda: self._is_present(id, version),
+                timeout=GLOBAL_TIMEOUT,
+                step=5
+            )
+            # TODO: make some assertions over the response
+            return article
+        except polling.TimeoutException:
+            raise TimeoutException.giving_up_on(
+                "article version %s on dashboard: /api/article/%s" \
+                    % (version, id)
+            )
+
+    # TODO: pass in status and check it 
+    def _is_present(self, id, version, status=None):
+        template = "%s/api/article/%s"
+        url = template % (self._host, id)
+        response = requests.get(url, auth=(self._user, self._password), verify=False)
+        if response.status_code == 200:
+            LOGGER.info("Found %s on dashboard", url, extra={'id': id})
+            # TODO: only if version is there return the response
             return response.json()
         return False
 
@@ -102,4 +135,9 @@ PDF = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_cdn,
     '{id}/elife-{id}-v{version}.pdf'
+)
+DASHBOARD = DashboardArticleCheck(
+    host=aws.SETTINGS.dashboard_host,
+    user=aws.SETTINGS.dashboard_user,
+    password=aws.SETTINGS.dashboard_password
 )

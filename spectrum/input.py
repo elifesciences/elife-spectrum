@@ -26,7 +26,7 @@ class Dashboard:
         url = template % self._host
         body = {}
         body = {'articles': [{'id': id, 'version': version, 'run': run}]}
-        response = requests.post(url, auth=(self._user, self._password), json=body)
+        response = requests.post(url, auth=(self._user, self._password), json=body, verify=False)
         print response
         assert response.status_code == 200
         LOGGER.info("Pressed Publish on dashboard", url, extra={'id': id})

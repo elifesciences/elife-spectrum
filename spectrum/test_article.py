@@ -17,5 +17,6 @@ def test_article_flows_in_the_pipeline(template_id, article_id_filter):
     if article.has_pdf():
         checks.PDF.of(id=article.id(), version=article.version())
     checks.WEBSITE.unpublished(id=article.id(), version=article.version())
+    checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version())
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
 
