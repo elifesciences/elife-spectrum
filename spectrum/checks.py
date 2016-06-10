@@ -105,7 +105,6 @@ class DashboardArticleCheck:
                 timeout=GLOBAL_TIMEOUT,
                 step=5
             )
-            # TODO: make some assertions over the response
             return article
         except polling.TimeoutException:
             # TODO: duplication with _is_present
@@ -119,9 +118,10 @@ class DashboardArticleCheck:
         url = template % (self._host, id)
         version_key = str(version)
         response = requests.get(url, auth=(self._user, self._password), verify=False)
-        # TODO: log response codes and fail immediately if it is 500 or so
         if response.status_code != 200:
             return False
+        if response.status_code >= 500:
+            raise RuntimeError(response)
         article = response.json()
         if 'versions' not in article:
             return False
