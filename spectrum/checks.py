@@ -6,6 +6,9 @@ import polling
 import requests
 from spectrum import aws
 
+# TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
+requests.packages.urllib3.disable_warnings()
+
 GLOBAL_TIMEOUT = 300
 LOGGER = logging.getLogger(__name__)
 
