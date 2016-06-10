@@ -1,8 +1,10 @@
 import datetime
 import glob
 import logging
+import math
 import os
 from os import path
+import random
 import re
 import shutil
 import zipfile
@@ -11,9 +13,12 @@ import jinja2
 
 LOGGER = logging.getLogger(__name__)
 
+def generate_article_id():
+    return str(int(random.randrange(100000, math.pow(2, 31))))
+
 def article_zip(template_id):
     template = _choose_template(template_id)
-    id = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+    id = generate_article_id()
     generated_article_directory = '/tmp/' + path.basename(template).replace(template_id, id)
     match_version = re.match(r"elife-.+-.+-v(.+)-\d+", path.basename(template))
     if match_version:
