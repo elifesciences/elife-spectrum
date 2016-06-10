@@ -27,7 +27,7 @@ class BucketFileCheck:
     def of(self, **kwargs):
         criteria = self._key.format(**kwargs)
         try:
-            polling.poll(
+            return polling.poll(
                 lambda: self._is_present(criteria, kwargs['id']),
                 timeout=GLOBAL_TIMEOUT,
                 step=5
@@ -42,9 +42,12 @@ class BucketFileCheck:
         bucket = self._s3.Bucket(self._bucket_name)
         bucket.load()
         for file in bucket.objects.all():
-            if re.match(criteria, file.key):
+            match = re.match(criteria, file.key)
+            if match:
                 LOGGER.info("Found %s in bucket %s", file.key, self._bucket_name, extra={'id': id})
-                return True
+                if match.groups():
+                    LOGGER.info("Found groups %s in matching the file name" % match.groupdict())
+                return match.groups()
         return False
 
 class WebsiteArticleCheck:
@@ -83,7 +86,7 @@ class WebsiteArticleCheck:
 EIF = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_eif,
-    '{id}.{version}/.*/elife-{id}-v{version}.json'
+    '{id}.{version}/(?P<run>.*)/elife-{id}-v{version}.json'
 )
 WEBSITE = WebsiteArticleCheck(
     host=aws.SETTINGS.website_host,
