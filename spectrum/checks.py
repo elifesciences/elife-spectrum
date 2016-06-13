@@ -71,21 +71,25 @@ class WebsiteArticleCheck:
         self._password = password
 
     def unpublished(self, id, version=1):
+        return self._wait_for_status(id, version, publish=False)
+
+    def published(self, id, version=1):
+        return self._wait_for_status(id, version, publish=True)
+        
+    def _wait_for_status(self, id, version, publish):
         try:
             article = polling.poll(
-                lambda: self._is_present(id, version),
+                lambda: self._is_present(id, version, publish),
                 timeout=GLOBAL_TIMEOUT,
                 step=5
             )
             assert article['article-id'] == id, \
                     "The article id does not correspond to the one we were looking for"
-            assert article['publish'] is False, \
-                    "The article 'publish' status is not False: %s" % article
             return article
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on(
-                "article on website: /api/article/%s.%s.json" \
-                    % (id, version)
+                "article on website with publish status %s: /api/article/%s.%s.json" \
+                    % (publish, id, version)
             )
 
     def visible(self, path):
@@ -102,13 +106,15 @@ class WebsiteArticleCheck:
                     % path
             )
 
-    def _is_present(self, id, version):
+    def _is_present(self, id, version, publish):
         template = "%s/api/article/%s.%s.json"
         url = template % (self._host, id, version)
         response = requests.get(url, auth=(self._user, self._password))
         if response.status_code == 200:
-            LOGGER.info("Found %s on website", url, extra={'id': id})
-            return response.json()
+            article = response.json()
+            if article['publish'] is publish:
+                LOGGER.info("Found %s on website with publish status %s", url, publish, extra={'id': id})
+                return article 
         return False
 
     def _is_visible(self, path):
