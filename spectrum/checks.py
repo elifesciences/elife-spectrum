@@ -50,7 +50,9 @@ class BucketFileCheck:
                 LOGGER.info("Found %s in bucket %s", file.key, self._bucket_name, extra={'id': id})
                 if match.groups():
                     LOGGER.info("Found groups %s in matching the file name" % match.groupdict())
-                return match.groups()
+                    return match.groups()
+                else:
+                    return True
         return False
 
 class WebsiteArticleCheck:
