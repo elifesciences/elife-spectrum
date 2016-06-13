@@ -21,6 +21,15 @@ class TimeoutException(RuntimeError):
                     % (what, timestamp)
         )
 
+class UnrecoverableException(RuntimeError):
+    def __init__(self, response):
+        self._response = response
+
+    def __str__(self):
+        return "RESPONSE CODE: %d\nRESPONSE BODY:\n%s\n" \
+                % (self._response.status_code, self._response.text)
+
+
 class BucketFileCheck:
     def __init__(self, s3, bucket_name, key):
         self._s3 = s3
@@ -79,6 +88,20 @@ class WebsiteArticleCheck:
                     % (id, version)
             )
 
+    def visible(self, path):
+        try:
+            article = polling.poll(
+                lambda: self._is_visible(path),
+                timeout=GLOBAL_TIMEOUT,
+                step=5
+            )
+            return article
+        except polling.TimeoutException:
+            raise TimeoutException.giving_up_on(
+                "article visible on website: %s" \
+                    % path
+            )
+
     def _is_present(self, id, version):
         template = "%s/api/article/%s.%s.json"
         url = template % (self._host, id, version)
@@ -86,6 +109,16 @@ class WebsiteArticleCheck:
         if response.status_code == 200:
             LOGGER.info("Found %s on website", url, extra={'id': id})
             return response.json()
+        return False
+
+    def _is_visible(self, path):
+        template = "%s/%s"
+        url = template % (self._host, path)
+        response = requests.get(url)
+        if response.status_code >= 500:
+            raise UnrecoverableException(response)
+        if response.status_code == 200:
+            LOGGER.info("Found %s visible on website", url, extra={'id': id})
         return False
 
 class DashboardArticleCheck:
@@ -123,7 +156,7 @@ class DashboardArticleCheck:
         if response.status_code != 200:
             return False
         if response.status_code >= 500:
-            raise RuntimeError(response)
+            raise UnrecoverableException(response)
         article = response.json()
         if 'versions' not in article:
             return False
@@ -135,6 +168,42 @@ class DashboardArticleCheck:
         LOGGER.info("Found %s version %s in status %s on dashboard", url, version_key, status, extra={'id': id})
         return article
 
+class LaxArticleCheck:
+    def __init__(self, host):
+        self._host = host
+
+    def published(self, id, version):
+        try:
+            article = polling.poll(
+                lambda: self._is_present(id, version),
+                # TODO: duplication of polling configuration
+                timeout=GLOBAL_TIMEOUT,
+                step=5
+            )
+            return article
+        except polling.TimeoutException:
+            # TODO: duplication with _is_present
+            raise TimeoutException.giving_up_on(
+                "article version %s in lax: /api/v1/article/10.7554/eLife.%s/version" \
+                    % (version, id)
+            )
+
+    def _is_present(self, id, version):
+        template = "%s/api/v1/article/10.7554/eLife.%s/version"
+        url = template % (self._host, id)
+        version_key = str(version)
+        # TODO: remove verify=False
+        response = requests.get(url, verify=False)
+        if response.status_code != 200:
+            return False
+        if response.status_code >= 500:
+            raise UnrecoverableException(response)
+        article_versions = response.json()
+        if version_key not in article_versions:
+            return False
+        LOGGER.info("Found article version %s in lax: %s", version_key, url, extra={'id': id})
+        return article_versions[version_key]
+    
 EIF = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_eif,
@@ -159,4 +228,7 @@ DASHBOARD = DashboardArticleCheck(
     host=aws.SETTINGS.dashboard_host,
     user=aws.SETTINGS.dashboard_user,
     password=aws.SETTINGS.dashboard_password
+)
+LAX = LaxArticleCheck(
+    host=aws.SETTINGS.lax_host
 )
