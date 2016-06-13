@@ -23,5 +23,5 @@ def test_article_flows_in_the_pipeline(template_id, article_id_filter):
     checks.DASHBOARD.published(id=article.id(), version=article.version())
     version_info = checks.LAX.published(id=article.id(), version=article.version())
     checks.WEBSITE.published(id=article.id(), version=article.version())
-    # checks.WEBSITE.visible(version_info['website_path'])
+    checks.WEBSITE.visible(version_info['website_path'], id=article.id())
 

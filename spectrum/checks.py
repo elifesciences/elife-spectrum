@@ -92,10 +92,10 @@ class WebsiteArticleCheck:
                     % (publish, id, version)
             )
 
-    def visible(self, path):
+    def visible(self, path, **kwargs):
         try:
             article = polling.poll(
-                lambda: self._is_visible(path),
+                lambda: self._is_visible(path, extra=kwargs),
                 timeout=GLOBAL_TIMEOUT,
                 step=5
             )
@@ -117,14 +117,15 @@ class WebsiteArticleCheck:
                 return article 
         return False
 
-    def _is_visible(self, path):
+    def _is_visible(self, path, extra={}):
         template = "%s/%s"
         url = template % (self._host, path)
         response = requests.get(url)
         if response.status_code >= 500:
             raise UnrecoverableException(response)
         if response.status_code == 200:
-            LOGGER.info("Found %s visible on website", url, extra={'id': id})
+            LOGGER.info("Found %s visible on website", url, extra=extra)
+            return True
         return False
 
 class DashboardArticleCheck:
