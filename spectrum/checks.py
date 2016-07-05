@@ -4,6 +4,7 @@ import logging
 
 import polling
 import requests
+from requests.exceptions import ConnectionError
 from spectrum import aws
 
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
@@ -200,16 +201,19 @@ class LaxArticleCheck:
         url = template % (self._host, id)
         version_key = str(version)
         # TODO: remove verify=False
-        response = requests.get(url, verify=False)
-        if response.status_code != 200:
+        try:
+            response = requests.get(url, verify=False)
+            if response.status_code != 200:
+                return False
+            if response.status_code >= 500:
+                raise UnrecoverableException(response)
+            article_versions = response.json()
+            if version_key not in article_versions:
+                return False
+            LOGGER.info("Found article version %s in lax: %s", version_key, url, extra={'id': id})
+            return article_versions[version_key]
+        except ConnectionError:
             return False
-        if response.status_code >= 500:
-            raise UnrecoverableException(response)
-        article_versions = response.json()
-        if version_key not in article_versions:
-            return False
-        LOGGER.info("Found article version %s in lax: %s", version_key, url, extra={'id': id})
-        return article_versions[version_key]
     
 EIF = BucketFileCheck(
     aws.S3,
