@@ -110,24 +110,32 @@ class WebsiteArticleCheck:
     def _is_present(self, id, version, publish):
         template = "%s/api/article/%s.%s.json"
         url = template % (self._host, id, version)
-        response = requests.get(url, auth=(self._user, self._password))
-        if response.status_code == 200:
-            article = response.json()
-            if article['publish'] is publish:
-                LOGGER.info("Found %s on website with publish status %s", url, publish, extra={'id': id})
-                return article 
-        return False
+        try:
+            response = requests.get(url, auth=(self._user, self._password))
+            if response.status_code == 200:
+                article = response.json()
+                if article['publish'] is publish:
+                    LOGGER.info("Found %s on website with publish status %s", url, publish, extra={'id': id})
+                    return article 
+            return False
+        except ConnectionError as e:
+            _log_connection_error(e)
+            return False
 
     def _is_visible(self, path, extra={}):
         template = "%s/%s"
         url = template % (self._host, path)
-        response = requests.get(url)
-        if response.status_code >= 500:
-            raise UnrecoverableException(response)
-        if response.status_code == 200:
-            LOGGER.info("Found %s visible on website", url, extra=extra)
-            return True
-        return False
+        try:
+            response = requests.get(url)
+            if response.status_code >= 500:
+                raise UnrecoverableException(response)
+            if response.status_code == 200:
+                LOGGER.info("Found %s visible on website", url, extra=extra)
+                return True
+            return False
+        except ConnectionError as e:
+            _log_connection_error(e)
+            return False
 
 class DashboardArticleCheck:
     def __init__(self, host, user, password):
@@ -160,21 +168,25 @@ class DashboardArticleCheck:
         template = "%s/api/article/%s"
         url = template % (self._host, id)
         version_key = str(version)
-        response = requests.get(url, auth=(self._user, self._password), verify=False)
-        if response.status_code != 200:
+        try:
+            response = requests.get(url, auth=(self._user, self._password), verify=False)
+            if response.status_code != 200:
+                return False
+            if response.status_code >= 500:
+                raise UnrecoverableException(response)
+            article = response.json()
+            if 'versions' not in article:
+                return False
+            if version_key not in article['versions']:
+                return False
+            version_details = article['versions'][version_key]['details']
+            if version_details['publication-status'] != status:
+                return False
+            LOGGER.info("Found %s version %s in status %s on dashboard", url, version_key, status, extra={'id': id})
+            return article
+        except ConnectionError as e:
+            _log_connection_error(e)
             return False
-        if response.status_code >= 500:
-            raise UnrecoverableException(response)
-        article = response.json()
-        if 'versions' not in article:
-            return False
-        if version_key not in article['versions']:
-            return False
-        version_details = article['versions'][version_key]['details']
-        if version_details['publication-status'] != status:
-            return False
-        LOGGER.info("Found %s version %s in status %s on dashboard", url, version_key, status, extra={'id': id})
-        return article
 
 class LaxArticleCheck:
     def __init__(self, host):
@@ -212,8 +224,12 @@ class LaxArticleCheck:
                 return False
             LOGGER.info("Found article version %s in lax: %s", version_key, url, extra={'id': id})
             return article_versions[version_key]
-        except ConnectionError:
+        except ConnectionError as e:
+            _log_connection_error(e)
             return False
+
+def _log_connection_error(e):
+    LOGGER.debug("Connection error, will retry: %s", e)
     
 EIF = BucketFileCheck(
     aws.S3,
