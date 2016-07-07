@@ -228,6 +228,19 @@ class LaxArticleCheck:
             _log_connection_error(e)
             return False
 
+class ApiCheck:
+    def __init__(self, api_gateway_host):
+        self._api_gateway_host = api_gateway_host
+
+    def labs_health(self):
+        url = "%s/labs-experiments?_format=json" % self._api_gateway_host
+        response = requests.get(url)
+        # TODO: will become 200
+        assert response.status_code == 500, "We were still expecting /labs-experiments to show a 500 for lack of data"
+        assert response.json() == {}, "We were expecting /labs-experiments to have no content (e.g. {})"
+        
+
+
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
     
@@ -258,4 +271,7 @@ DASHBOARD = DashboardArticleCheck(
 )
 LAX = LaxArticleCheck(
     host=aws.SETTINGS.lax_host
+)
+API = ApiCheck(
+    api_gateway_host=aws.SETTINGS.api_gateway_host
 )
