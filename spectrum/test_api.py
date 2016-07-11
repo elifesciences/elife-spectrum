@@ -1,6 +1,7 @@
 import pytest
 from spectrum import checks
 
-def test_article_flows_in_the_pipeline():
+@pytest.mark.two
+def test_integration_of_gateway():
     checks.API.labs_health()
 
