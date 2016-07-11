@@ -250,9 +250,9 @@ class ApiCheck:
         url = "%s/labs-experiments?_format=json" % self._api_gateway_host
         response = requests.get(url)
         # will become 200
-        assert response.status_code == 500, \
-            "We were still expecting /labs-experiments to show a 500 for lack of data"
-        assert response.json() == {}, \
+        assert response.status_code in [200, 500], \
+            "Response had status %d, body %s" % (response.status_code, response.content)
+        assert response.json() == {} or response.json()['total'] >= 1, \
             "We were expecting /labs-experiments to have no content (e.g. {})"
 
 def _log_connection_error(e):

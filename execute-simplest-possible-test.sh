@@ -1,2 +1,2 @@
 #!/bin/bash
-./execute.sh --article-id=15893
+./execute.sh --article-id=15893 $*
