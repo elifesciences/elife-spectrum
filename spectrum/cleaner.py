@@ -1,5 +1,5 @@
-from spectrum import aws, generator, logger
+from spectrum import aws, generator
 
 def everything():
-    aws.clean();
+    aws.clean()
     generator.clean()

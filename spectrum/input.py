@@ -1,7 +1,6 @@
 import logging
-import requests
 from os import path
-
+import requests
 from spectrum import aws
 
 LOGGER = logging.getLogger(__name__)
@@ -28,8 +27,17 @@ class Dashboard:
         body = {'articles': [{'id': id, 'version': version, 'run': run}]}
         response = requests.post(url, auth=(self._user, self._password), json=body, verify=False)
         assert response.status_code == 200
-        LOGGER.info("Pressed Publish for %s version %s on dashboard", url, version, extra={'id': id})
+        LOGGER.info(
+            "Pressed Publish for %s version %s on dashboard",
+            url,
+            version,
+            extra={'id': id}
+        )
 
 
 PRODUCTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_input)
-DASHBOARD = Dashboard(aws.SETTINGS.dashboard_host, aws.SETTINGS.dashboard_user, aws.SETTINGS.dashboard_password)
+DASHBOARD = Dashboard(
+    aws.SETTINGS.dashboard_host,
+    aws.SETTINGS.dashboard_user,
+    aws.SETTINGS.dashboard_password
+)

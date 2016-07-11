@@ -55,7 +55,7 @@ def clean():
         batch_size = 100
         batches = [keys[lower:lower+batch_size] for lower in range(0, len(keys), batch_size)]
         for batch in batches:
-            bucket.delete_objects(Delete={    
+            bucket.delete_objects(Delete={
                 'Objects': [{'Key': key} for key in batch]
             })
             LOGGER.info(

@@ -24,6 +24,7 @@ class TimeoutException(RuntimeError):
 
 class UnrecoverableException(RuntimeError):
     def __init__(self, response):
+        super(UnrecoverableException, self).__init__(self, response)
         self._response = response
 
     def __str__(self):
@@ -59,7 +60,10 @@ class BucketFileCheck:
             if match:
                 LOGGER.info("Found %s in bucket %s", file.key, self._bucket_name, extra={'id': id})
                 if match.groups():
-                    LOGGER.info("Found groups %s in matching the file name" % match.groupdict())
+                    LOGGER.info(
+                        "Found groups %s in matching the file name",
+                        match.groupdict()
+                    )
                     return match.groups()
                 else:
                     return True
@@ -76,7 +80,7 @@ class WebsiteArticleCheck:
 
     def published(self, id, version=1):
         return self._wait_for_status(id, version, publish=True)
-        
+
     def _wait_for_status(self, id, version, publish):
         try:
             article = polling.poll(
@@ -115,14 +119,20 @@ class WebsiteArticleCheck:
             if response.status_code == 200:
                 article = response.json()
                 if article['publish'] is publish:
-                    LOGGER.info("Found %s on website with publish status %s", url, publish, extra={'id': id})
-                    return article 
+                    LOGGER.info(
+                        "Found %s on website with publish status %s",
+                        url,
+                        publish,
+                        extra={'id': id}
+                    )
+                    return article
             return False
         except ConnectionError as e:
             _log_connection_error(e)
             return False
 
-    def _is_visible(self, path, extra={}):
+    def _is_visible(self, path, extra=None):
+        extra = {} if extra is None else extra
         template = "%s/%s"
         url = template % (self._host, path)
         try:
@@ -158,7 +168,6 @@ class DashboardArticleCheck:
             )
             return article
         except polling.TimeoutException:
-            # TODO: duplication with _is_present
             raise TimeoutException.giving_up_on(
                 "article version %s in status %s on dashboard: /api/article/%s" \
                     % (version, status, id)
@@ -182,7 +191,13 @@ class DashboardArticleCheck:
             version_details = article['versions'][version_key]['details']
             if version_details['publication-status'] != status:
                 return False
-            LOGGER.info("Found %s version %s in status %s on dashboard", url, version_key, status, extra={'id': id})
+            LOGGER.info(
+                "Found %s version %s in status %s on dashboard",
+                url,
+                version_key,
+                status,
+                extra={'id': id}
+            )
             return article
         except ConnectionError as e:
             _log_connection_error(e)
@@ -202,7 +217,6 @@ class LaxArticleCheck:
             )
             return article
         except polling.TimeoutException:
-            # TODO: duplication with _is_present
             raise TimeoutException.giving_up_on(
                 "article version %s in lax: /api/v1/article/10.7554/eLife.%s/version" \
                     % (version, id)
@@ -235,15 +249,15 @@ class ApiCheck:
     def labs_health(self):
         url = "%s/labs-experiments?_format=json" % self._api_gateway_host
         response = requests.get(url)
-        # TODO: will become 200
-        assert response.status_code == 500, "We were still expecting /labs-experiments to show a 500 for lack of data"
-        assert response.json() == {}, "We were expecting /labs-experiments to have no content (e.g. {})"
-        
-
+        # will become 200
+        assert response.status_code == 500, \
+            "We were still expecting /labs-experiments to show a 500 for lack of data"
+        assert response.json() == {}, \
+            "We were expecting /labs-experiments to have no content (e.g. {})"
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
-    
+
 EIF = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_eif,
