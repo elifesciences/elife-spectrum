@@ -10,17 +10,20 @@ SETTINGS = settings.get_settings('end2end')
 S3 = boto3.resource(
     's3',
     aws_access_key_id=SETTINGS.aws_access_key_id,
-    aws_secret_access_key=SETTINGS.aws_secret_access_key
+    aws_secret_access_key=SETTINGS.aws_secret_access_key,
+    region_name=SETTINGS.region_name
 )
 SWF = boto3.client(
     'swf',
     aws_access_key_id=SETTINGS.aws_access_key_id,
-    aws_secret_access_key=SETTINGS.aws_secret_access_key
+    aws_secret_access_key=SETTINGS.aws_secret_access_key,
+    region_name=SETTINGS.region_name
 )
 SQS = boto3.client(
     'sqs',
     aws_access_key_id=SETTINGS.aws_access_key_id,
-    aws_secret_access_key=SETTINGS.aws_secret_access_key
+    aws_secret_access_key=SETTINGS.aws_secret_access_key,
+    region_name=SETTINGS.region_name
 )
 
 def clean():
