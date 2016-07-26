@@ -1,6 +1,7 @@
 import re
 import datetime
 import logging
+from ssl import SSLError
 
 import polling
 import requests
@@ -53,27 +54,30 @@ class BucketFileCheck:
             )
 
     def _is_present(self, criteria, id):
-        bucket = self._s3.Bucket(self._bucket_name)
-        bucket.load()
-        for file in bucket.objects.all():
-            match = re.match(criteria, file.key)
-            if match:
-                LOGGER.info(
-                    "Found %s in bucket %s",
-                    file.key,
-                    self._bucket_name,
-                    extra={'id': id}
-                )
-                if match.groups():
+        try:
+            bucket = self._s3.Bucket(self._bucket_name)
+            bucket.load()
+            for file in bucket.objects.all():
+                match = re.match(criteria, file.key)
+                if match:
                     LOGGER.info(
-                        "Found groups %s in matching the file name %s",
-                        match.groupdict(),
+                        "Found %s in bucket %s",
                         file.key,
+                        self._bucket_name,
                         extra={'id': id}
                     )
-                    return match.groups()
-                else:
-                    return True
+                    if match.groups():
+                        LOGGER.info(
+                            "Found groups %s in matching the file name %s",
+                            match.groupdict(),
+                            file.key,
+                            extra={'id': id}
+                        )
+                        return match.groups()
+                    else:
+                        return True
+        except SSLError as e:
+            _log_connection_error(e)
         return False
 
 class WebsiteArticleCheck:
@@ -133,10 +137,9 @@ class WebsiteArticleCheck:
                         extra={'id': id}
                     )
                     return article
-            return False
         except ConnectionError as e:
             _log_connection_error(e)
-            return False
+        return False
 
     def _is_visible(self, path, extra=None):
         extra = {} if extra is None else extra
@@ -149,10 +152,9 @@ class WebsiteArticleCheck:
             if response.status_code == 200:
                 LOGGER.info("Found %s visible on website", url, extra=extra)
                 return True
-            return False
         except ConnectionError as e:
             _log_connection_error(e)
-            return False
+        return False
 
 class DashboardArticleCheck:
     def __init__(self, host, user, password):
