@@ -58,11 +58,18 @@ class BucketFileCheck:
         for file in bucket.objects.all():
             match = re.match(criteria, file.key)
             if match:
-                LOGGER.info("Found %s in bucket %s", file.key, self._bucket_name, extra={'id': id})
+                LOGGER.info(
+                    "Found %s in bucket %s",
+                    file.key,
+                    self._bucket_name,
+                    extra={'id': id}
+                )
                 if match.groups():
                     LOGGER.info(
-                        "Found groups %s in matching the file name",
-                        match.groupdict()
+                        "Found groups %s in matching the file name %s",
+                        match.groupdict(),
+                        file.key,
+                        extra={'id': id}
                     )
                     return match.groups()
                 else:
