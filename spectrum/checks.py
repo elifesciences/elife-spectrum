@@ -49,7 +49,7 @@ class BucketFileCheck:
             )
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on(
-                "object matching criteria %s in %s" \
+                "object matching criteria %s in bucket %s" \
                     % (criteria, self._bucket_name)
             )
 
@@ -104,8 +104,8 @@ class WebsiteArticleCheck:
             return article
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on(
-                "article on website with publish status %s: /api/article/%s.%s.json" \
-                    % (publish, id, version)
+                "article on website with publish status %s: %s/api/article/%s.%s.json" \
+                    % (publish, self._host, id, version)
             )
 
     def visible(self, path, **kwargs):
@@ -118,8 +118,8 @@ class WebsiteArticleCheck:
             return article
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on(
-                "article visible on website: %s" \
-                    % path
+                "article visible on website: %s%s" \
+                    % (self._host, path)
             )
 
     def _is_present(self, id, version, publish):
@@ -178,8 +178,8 @@ class DashboardArticleCheck:
             return article
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on(
-                "article version %s in status %s on dashboard: /api/article/%s" \
-                    % (version, status, id)
+                "article version %s in status %s on dashboard: %s/api/article/%s" \
+                    % (version, status, self._host, id)
             )
 
     def _is_present(self, id, version, status):
@@ -227,8 +227,8 @@ class LaxArticleCheck:
             return article
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on(
-                "article version %s in lax: /api/v1/article/10.7554/eLife.%s/version" \
-                    % (version, id)
+                "article version %s in lax: %s/api/v1/article/10.7554/eLife.%s/version" \
+                    % (version, self._host, id)
             )
 
     def _is_present(self, id, version):
