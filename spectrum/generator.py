@@ -39,7 +39,7 @@ def article_zip(template_id):
                 figure_names.append(match.groups()[0])
     LOGGER.info("Generated %s with figures %s", zip_filename, figure_names, extra={'id': id})
     has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
-    return ArticleZip(id, zip_filename, version, figure_names, has_pdf)
+    return ArticleZip(id, zip_filename, generated_article_directory, version, figure_names, has_pdf)
 
 def clean():
     for entry in glob.glob('/tmp/elife*'):
@@ -83,9 +83,10 @@ def _generate(filename, id, generated_article_directory, template_id):
     return target
 
 class ArticleZip:
-    def __init__(self, id, filename, version, figure_names=None, has_pdf=False):
+    def __init__(self, id, filename, directory, version, figure_names=None, has_pdf=False):
         self._id = id
         self._filename = filename
+        self._directory = directory
         self._version = version
         self._figure_names = figure_names if figure_names else []
         self._has_pdf = has_pdf
@@ -107,3 +108,10 @@ class ArticleZip:
 
     def has_pdf(self):
         return self._has_pdf
+
+    def clean(self):
+        os.remove(self._filename)
+        LOGGER.info("Deleted file %s", self._filename)
+        shutil.rmtree(self._directory)
+        LOGGER.info("Deleted directory %s", self._directory)
+

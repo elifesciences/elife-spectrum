@@ -1,6 +1,7 @@
 import sys
 
 import pytest
+from spectrum import generator
 from spectrum import logger
 
 # so that other processes run by xdist can still print
@@ -15,3 +16,15 @@ def pytest_addoption(parser):
 @pytest.fixture
 def article_id_filter(request):
     return request.config.getoption('--article-id')
+
+@pytest.yield_fixture
+#@pytest.fixture in pytest>=2.10
+def generate_article():
+    created_articles = []
+    def from_template_id(template_id):
+        article = generator.article_zip(template_id)
+        created_articles.append(article)
+        return article
+    yield from_template_id
+    for article in created_articles:
+        article.clean()
