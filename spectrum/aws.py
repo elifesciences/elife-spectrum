@@ -1,12 +1,14 @@
 import datetime
 import logging
+import os
 import re
 
 import boto3
 import settings
 
 LOGGER = logging.getLogger(__name__)
-SETTINGS = settings.get_settings('end2end')
+ENV = os.environ['ENVIRONMENT'] if 'ENVIRONMENT' in os.environ else 'end2end'
+SETTINGS = settings.get_settings(ENV)
 S3 = boto3.resource(
     's3',
     aws_access_key_id=SETTINGS.aws_access_key_id,
