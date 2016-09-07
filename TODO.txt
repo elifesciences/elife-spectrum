@@ -1,3 +1,0 @@
-- deploy elife-website into end2end environment to avoid continuous failure of EIF delivery
-- use the `polling` library if convenient
-- move _test into their own separate folder to separate the tests of the project from the actual end2end tests?

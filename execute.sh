@@ -10,4 +10,4 @@ cd $DIR
 rm -f build/junit.xml
 rm -f build/test.log
 rm -rf /tmp/elife-*
-venv/bin/py.test -v --junitxml build/junit.xml -n 2 -s spectrum $*
+venv/bin/py.test -v --junitxml build/junit.xml -s -n 2 spectrum $*
