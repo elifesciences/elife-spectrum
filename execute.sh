@@ -1,8 +1,8 @@
 #!/bin/bash
+set -e
 # ARGUMENTS
 # --article-id=15600  optional, if you want to filter a particular article
 
-set -e
 # cd to the project's directory so that the script can be run from anywhere
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
