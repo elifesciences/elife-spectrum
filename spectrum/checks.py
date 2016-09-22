@@ -271,6 +271,7 @@ class JournalCheck:
 
     def article(self, id, volume=5):
         url = "%s/content/%s/e%s" % (self._host, volume, id)
+        LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200)
         _assert_all_resources_of_page_load(response.content, self._host)
@@ -294,8 +295,9 @@ def _assert_all_resources_of_page_load(html_content, host):
         resources.append(link.get("href"))
     for path in resources:
         url = _build_url(path, host)
+        LOGGER.info("Loading %s", url)
         # there are no caches involved with this headless client
-        _assert_status_code(requests.get(url), 200)
+        _assert_status_code(requests.head(url), 200)
 
 def _build_url(path, host):
     if path.startswith("http://") or path.startswith("https://"):
