@@ -2,6 +2,7 @@ import re
 import datetime
 import logging
 from ssl import SSLError
+from bs4 import BeautifulSoup
 
 import polling
 import requests
@@ -272,6 +273,7 @@ class JournalCheck:
         url = "%s/content/%s/e%s" % (self._host, volume, id)
         response = requests.get(url)
         _assert_status_code(response, 200)
+        _assert_all_resources_of_page_load(response.content, self._host)
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
@@ -279,6 +281,27 @@ def _log_connection_error(e):
 def _assert_status_code(response, expected_status_code):
     assert response.status_code == expected_status_code, \
         "Response had status %d, body %s" % (response.status_code, response.content)
+
+def _assert_all_resources_of_page_load(html_content, host):
+    soup = BeautifulSoup(html_content, "html.parser")
+    resources = []     
+    for img in soup.find_all("img"):
+        resources.append(img.get("src"))
+    for script in soup.find_all("script"):
+        if script.get("src"):
+            resources.append(script.get("src"))
+    for link in soup.find_all("link"):
+        resources.append(link.get("href"))
+    for path in resources:
+        url = _build_url(path, host)
+        # there are no caches involved with this headless client
+        _assert_status_code(requests.get(url), 200)
+
+def _build_url(path, host):
+    if path.startswith("http://") or path.startswith("https://"):
+        return path
+    assert path.startswith("/"), ("I found a non-absolute path %s and I don't know how to load it" % path)
+    return "%s%s" % (host, path)
 
 EIF = BucketFileCheck(
     aws.S3,
