@@ -252,11 +252,11 @@ class LaxArticleCheck:
             return False
 
 class ApiCheck:
-    def __init__(self, api_gateway_host):
-        self._api_gateway_host = api_gateway_host
+    def __init__(self, host):
+        self._host = host
 
     def labs_health(self):
-        url = "%s/labs-experiments?_format=json" % self._api_gateway_host
+        url = "%s/labs-experiments?_format=json" % self._host
         response = requests.get(url)
         # will become 200
         assert response.status_code in [200, 500], \
@@ -264,8 +264,21 @@ class ApiCheck:
         assert response.json() == {} or response.json()['total'] >= 1, \
             "We were expecting /labs-experiments to have no content (e.g. {})"
 
+class JournalCheck:
+    def __init__(self, host):
+        self._host = host
+
+    def article(self, id, volume=5):
+        url = "%s/content/%s/e%s" % (self._host, volume, id)
+        response = requests.get(url)
+        _assert_status_code(response, 200)
+
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
+
+def _assert_status_code(response, expected_status_code):
+    assert response.status_code == expected_status_code, \
+        "Response had status %d, body %s" % (response.status_code, response.content)
 
 EIF = BucketFileCheck(
     aws.S3,
@@ -296,5 +309,8 @@ LAX = LaxArticleCheck(
     host=aws.SETTINGS.lax_host
 )
 API = ApiCheck(
-    api_gateway_host=aws.SETTINGS.api_gateway_host
+    host=aws.SETTINGS.api_gateway_host
+)
+JOURNAL = JournalCheck(
+    host=aws.SETTINGS.journal_host
 )
