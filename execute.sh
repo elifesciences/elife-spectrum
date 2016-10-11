@@ -6,7 +6,7 @@ set -e
 # cd to the project's directory so that the script can be run from anywhere
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
-SPECTRUM_PROCESSES==${SPECTRUM_PROCESSES:-4}
+SPECTRUM_PROCESSES=${SPECTRUM_PROCESSES:-4}
 
 rm -f build/junit.xml
 rm -f build/test.log
