@@ -257,13 +257,13 @@ class ApiCheck:
         self._host = host
 
     def labs_health(self):
-        url = "%s/labs-experiments?_format=json" % self._host
-        response = requests.get(url)
+        url = "%s/labs-experiments" % self._host
+        response = requests.get(url, headers={'Accept': 'application/vnd.elife.labs-experiment-list+json'})
         # will become 200
-        assert response.status_code in [200, 500], \
+        assert response.status_code is 200, \
             "Response had status %d, body %s" % (response.status_code, response.content)
-        assert response.json() == {} or response.json()['total'] >= 1, \
-            "We were expecting /labs-experiments to have no content (e.g. {})"
+        assert response.json()['total'] >= 1, \
+            "We were expecting /labs-experiments to have some content, but the total is not >= 1"
 
 class JournalCheck:
     def __init__(self, host):
