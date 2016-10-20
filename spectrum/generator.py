@@ -17,16 +17,14 @@ def generate_article_id():
 
 def article_zip(template_id, version=1):
     (template, kind) = _choose_template(template_id)
-    print template
-    print kind
     id = generate_article_id()
-    generated_article_directory = '/tmp/elife-%s-%s-v%d' % (id, kind, version)
+    generated_article_directory = '/tmp/elife-%s-%s-r%d' % (id, kind, version)
     os.mkdir(generated_article_directory)
     generated_files = []
     for file in glob.glob(template + "/*"):
         generated_file = _generate(file, id, generated_article_directory, template_id)
         generated_files.append(generated_file)
-    zip_filename = '/tmp/' + path.basename(template).replace(template_id, id) + '.zip'
+    zip_filename = generated_article_directory + '.zip'
     figure_names = []
     with zipfile.ZipFile(zip_filename, 'w') as zip_file:
         for generated_file in generated_files:
