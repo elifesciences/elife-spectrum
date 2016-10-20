@@ -16,13 +16,13 @@ def generate_article_id():
     return str(int(random.randrange(100000, math.pow(2, 31))))
 
 def article_zip(template_id, version=1):
-    (template, kind) = _choose_template(template_id)
+    (template, kind, rerun) = _choose_template(template_id)
     id = generate_article_id()
-    generated_article_directory = '/tmp/elife-%s-%s-r%d' % (id, kind, version)
+    generated_article_directory = '/tmp/elife-%s-%s-%s%d' % (id, kind, 'v' if rerun else 'r', version)
     os.mkdir(generated_article_directory)
     generated_files = []
     for file in glob.glob(template + "/*"):
-        generated_file = _generate(file, id, generated_article_directory, template_id)
+        generated_file = _generate(file, id, generated_article_directory, template_id, version)
         generated_files.append(generated_file)
     zip_filename = generated_article_directory + '.zip'
     figure_names = []
@@ -59,16 +59,17 @@ def _choose_template(template_id):
     templates_found = glob.glob(templates_pattern)
     assert len(templates_found) == 1, "Found multiple candidate templates: %s" % templates_found
     chosen = templates_found[0]
-    match = re.match(r'.*/elife-\d+-(vor|poa)-.+', chosen)
+    match = re.match(r'.*/elife-\d+-(vor|poa)-(r|v)\d+', chosen)
     assert match is not None, ("Bad name for template directory %s" % chosen)
-    assert len(match.groups()) == 1
+    assert len(match.groups()) == 2
     kind = match.groups()[0] # vor or poa
-    return (chosen, kind)
+    r_or_v = match.groups()[1] # new run or an already processed version
+    return (chosen, kind, True if r_or_v == 'v' else False)
 
 
-def _generate(filename, id, generated_article_directory, template_id):
+def _generate(filename, id, generated_article_directory, template_id, version):
     filename_components = path.splitext(filename)
-    target = generated_article_directory + '/' + path.basename(filename).replace(template_id, id)
+    target = generated_article_directory + '/' + re.sub(r'-v\d+\.', ('-v%d.' % version), path.basename(filename).replace(template_id, id))
     assert len(filename_components) == 2
     extension = filename_components[1]
     if extension == '.jinja':
@@ -109,6 +110,14 @@ class ArticleZip:
 
     def has_pdf(self):
         return self._has_pdf
+
+    def new_version(self, version):
+        # what is changed is actually the "run"
+        new_filename = re.sub(r'-r\d+.zip$', ('-r%s.zip' % version), filename)
+        shutil.copy(filename, new_filename)
+        new_directory = re.sub(r'-r\d+$', ('-r%s' % version), directory)
+        shutil.copytree(directory, new_directory)
+        return ArticleZip(id, new_filename, new_directory, version, figure_names, has_pdf)
 
     def clean(self):
         os.remove(self._filename)

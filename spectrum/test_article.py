@@ -5,12 +5,23 @@ from spectrum import checks
 
 @pytest.mark.continuum
 @pytest.mark.parametrize("template_id", generator.all_stored_articles())
-def test_article_flows_in_the_pipeline(template_id, article_id_filter, generate_article):
+def test_article_first_version(template_id, article_id_filter, generate_article):
     if article_id_filter:
         if template_id != article_id_filter:
             pytest.skip("Filtered out through the article_id_filter")
 
     article = generate_article(template_id)
+    _feed_and_verify(article)
+
+# TODO:  will need to pass a filter in execute-simplest-possible-test.sh
+@pytest.mark.continuum
+def _test_article_multiple_versions():
+    article = generate_article(template_id, version=1)
+    _feed_and_verify(article)
+    new_version = article.new_version(version=2)
+    _feed_and_verify(new_version)
+
+def _feed_and_verify(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
     (run, ) = checks.EIF.of(id=article.id(), version=article.version())
     for each in article.figure_names():

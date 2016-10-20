@@ -19,12 +19,22 @@ def article_id_filter(request):
 
 @pytest.yield_fixture
 #@pytest.fixture in pytest>=2.10
-def generate_article():
+def generate_article(version=1):
     created_articles = []
     def from_template_id(template_id):
-        article = generator.article_zip(template_id)
+        article = generator.article_zip(template_id, version=version)
         created_articles.append(article)
         return article
     yield from_template_id
+    for article in created_articles:
+        article.clean()
+
+def version_article(original_article, new_version):
+    created_articles = []
+    def from_original_article(original_article):
+        article = original_article.new_version(version=new_version)
+        created_articles.append(article)
+        return article
+    yield from_original_article
     for article in created_articles:
         article.clean()
