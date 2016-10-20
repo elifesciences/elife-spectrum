@@ -15,15 +15,12 @@ LOGGER = logging.getLogger(__name__)
 def generate_article_id():
     return str(int(random.randrange(100000, math.pow(2, 31))))
 
-def article_zip(template_id):
-    template = _choose_template(template_id)
+def article_zip(template_id, version=1):
+    (template, kind) = _choose_template(template_id)
+    print template
+    print kind
     id = generate_article_id()
-    generated_article_directory = '/tmp/' + path.basename(template).replace(template_id, id)
-    match_version = re.match(r"elife-.+-.+-v(.+)-\d+", path.basename(template))
-    if match_version:
-        version = match_version.groups()[0]
-    else:
-        version = 1
+    generated_article_directory = '/tmp/elife-%s-%s-v%d' % (id, kind, version)
     os.mkdir(generated_article_directory)
     generated_files = []
     for file in glob.glob(template + "/*"):
@@ -63,7 +60,13 @@ def _choose_template(template_id):
     templates_pattern = './spectrum/templates/elife-%s-*-*' % template_id
     templates_found = glob.glob(templates_pattern)
     assert len(templates_found) == 1, "Found multiple candidate templates: %s" % templates_found
-    return templates_found[0]
+    chosen = templates_found[0]
+    match = re.match(r'.*/elife-\d+-(vor|poa)-.+', chosen)
+    assert match is not None, ("Bad name for template directory %s" % chosen)
+    assert len(match.groups()) == 1
+    kind = match.groups()[0] # vor or poa
+    return (chosen, kind)
+
 
 def _generate(filename, id, generated_article_directory, template_id):
     filename_components = path.splitext(filename)
