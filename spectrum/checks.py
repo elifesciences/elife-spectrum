@@ -265,7 +265,9 @@ class ApiCheck:
 
     def article(self, id):
         url = "%s/articles/%s" % (self._host, id)
-        response = requests.get(url, headers={'Accept': 'application/vnd.elife.article+json'})
+        # we should pass 'Accept': 'application/vnd.elife.article-poa+json,application/vnd.elife.article-vor+json'
+        # if that works... requests does not support a multidict, it seems
+        response = requests.get(url, headers={})
         body = self._ensure_sane_response(response)
         assert body['version'] >= 1, \
             ("We were expecting /article/%s to have a version >= 1" % id)
