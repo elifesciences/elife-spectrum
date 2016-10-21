@@ -37,3 +37,4 @@ def _feed_and_verify(article):
     checks.WEBSITE.published(id=article.id(), version=article.version())
     checks.WEBSITE.visible('/content/%s/e%sv%s' % (version_info['volume'], version_info['manuscript_id'], version_info['version']), id=article.id())
 
+    checks.ARCHIVE.of(id=article.id(), version=article.version())

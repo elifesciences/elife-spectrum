@@ -310,6 +310,13 @@ EIF = BucketFileCheck(
     aws.SETTINGS.bucket_eif,
     '{id}.{version}/(?P<run>.*)/elife-{id}-v{version}.json'
 )
+ARCHIVE = BucketFileCheck(
+    aws.S3,
+    aws.SETTINGS.bucket_archive,
+    # notice {{6}} is the escaping for {6} in the regex,
+    # it should not be substituted
+    'elife-{id}-(poa|vor)-v{version}-20[0-9]{{12}}.zip'
+)
 WEBSITE = WebsiteArticleCheck(
     host=aws.SETTINGS.website_host,
     user=aws.SETTINGS.website_user,
