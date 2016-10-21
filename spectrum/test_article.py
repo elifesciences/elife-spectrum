@@ -13,9 +13,9 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
     article = generate_article(template_id)
     _feed_and_verify(article)
 
-# TODO:  will need to pass a filter in execute-simplest-possible-test.sh
 @pytest.mark.continuum
-def _test_article_multiple_versions():
+def _test_article_multiple_versions(generate_article):
+    template_id = 15893
     article = generate_article(template_id, version=1)
     _feed_and_verify(article)
     new_version = article.new_version(version=2)
@@ -35,6 +35,11 @@ def _feed_and_verify(article):
     checks.DASHBOARD.published(id=article.id(), version=article.version())
     version_info = checks.LAX.published(id=article.id(), version=article.version())
     checks.WEBSITE.published(id=article.id(), version=article.version())
-    checks.WEBSITE.visible('/content/%s/e%sv%s' % (version_info['volume'], version_info['manuscript_id'], version_info['version']), id=article.id())
+    checks.WEBSITE.visible('/content/%s/e%sv%s' % \
+        (version_info['volume'], version_info['manuscript_id'], \
+         version_info['version']), id=article.id())
 
     checks.ARCHIVE.of(id=article.id(), version=article.version())
+    checks.API.article(id=article.id())
+    # is volume 5? dynamically derive from year? from api call
+    #checks.JOURNAL.article(id=10627, volume=5)

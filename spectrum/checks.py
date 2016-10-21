@@ -256,14 +256,25 @@ class ApiCheck:
     def __init__(self, host):
         self._host = host
 
-    def labs_health(self):
+    def labs_experiments(self):
         url = "%s/labs-experiments" % self._host
         response = requests.get(url, headers={'Accept': 'application/vnd.elife.labs-experiment-list+json'})
-        # will become 200
+        body = self._ensure_sane_response(response)
+        assert body['total'] >= 1, \
+            "We were expecting /labs-experiments to have some content, but the total is not >= 1"
+
+    def article(self, id):
+        url = "%s/articles/%s" % (self._host, id)
+        response = requests.get(url, headers={'Accept': 'application/vnd.elife.article+json'})
+        body = self._ensure_sane_response(response)
+        assert body['version'] >= 1, \
+            ("We were expecting /article/%s to have a version >= 1" % id)
+        return body
+
+    def _ensure_sane_response(self, response):
         assert response.status_code is 200, \
             "Response had status %d, body %s" % (response.status_code, response.content)
-        assert response.json()['total'] >= 1, \
-            "We were expecting /labs-experiments to have some content, but the total is not >= 1"
+        return response.json()
 
 class JournalCheck:
     def __init__(self, host):
@@ -285,7 +296,7 @@ def _assert_status_code(response, expected_status_code):
 
 def _assert_all_resources_of_page_load(html_content, host):
     soup = BeautifulSoup(html_content, "html.parser")
-    resources = []     
+    resources = []
     for img in soup.find_all("img"):
         resources.append(img.get("src"))
     for script in soup.find_all("script"):
