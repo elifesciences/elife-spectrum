@@ -113,11 +113,11 @@ class ArticleZip:
 
     def new_version(self, version):
         # what is changed is actually the "run"
-        new_filename = re.sub(r'-r\d+.zip$', ('-r%s.zip' % version), filename)
-        shutil.copy(filename, new_filename)
-        new_directory = re.sub(r'-r\d+$', ('-r%s' % version), directory)
-        shutil.copytree(directory, new_directory)
-        return ArticleZip(id, new_filename, new_directory, version, figure_names, has_pdf)
+        new_filename = re.sub(r'-r\d+.zip$', ('-r%s.zip' % version), self._filename)
+        shutil.copy(self._filename, new_filename)
+        new_directory = re.sub(r'-r\d+$', ('-r%s' % version), self._directory)
+        shutil.copytree(self._directory, new_directory)
+        return ArticleZip(id, new_filename, new_directory, version, self._figure_names, self._has_pdf)
 
     def clean(self):
         os.remove(self._filename)
