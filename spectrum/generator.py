@@ -69,7 +69,9 @@ def _choose_template(template_id):
 
 def _generate(filename, id, generated_article_directory, template_id, version):
     filename_components = path.splitext(filename)
-    target = generated_article_directory + '/' + re.sub(r'-v\d+\.', ('-v%d.' % version), path.basename(filename).replace(template_id, id))
+    version_label = '-v%s.' % version
+    generated_filename = re.sub(r'-v\d+\.', version_label, path.basename(filename).replace(template_id, id))
+    target = generated_article_directory + '/' + generated_filename 
     assert len(filename_components) == 2
     extension = filename_components[1]
     if extension == '.jinja':
@@ -117,7 +119,7 @@ class ArticleZip:
         shutil.copy(self._filename, new_filename)
         new_directory = re.sub(r'-r\d+$', ('-r%s' % version), self._directory)
         shutil.copytree(self._directory, new_directory)
-        return ArticleZip(id, new_filename, new_directory, version, self._figure_names, self._has_pdf)
+        return ArticleZip(self._id, new_filename, new_directory, version, self._figure_names, self._has_pdf)
 
     def clean(self):
         os.remove(self._filename)

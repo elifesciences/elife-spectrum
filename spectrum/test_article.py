@@ -14,12 +14,12 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
     _feed_and_verify(article)
 
 @pytest.mark.continuum
-def _test_article_multiple_versions(generate_article):
+def test_article_multiple_versions(generate_article, version_article):
     template_id = 15893
     article = generate_article(template_id, version=1)
     _feed_and_verify(article)
-    new_version = article.new_version(version=2)
-    _feed_and_verify(new_version)
+    new_article = version_article(article, new_version=2)
+    _feed_and_verify(new_article)
 
 def _feed_and_verify(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
