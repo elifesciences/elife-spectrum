@@ -263,14 +263,22 @@ class ApiCheck:
         assert body['total'] >= 1, \
             "We were expecting /labs-experiments to have some content, but the total is not >= 1"
 
-    def article(self, id):
-        url = "%s/articles/%s" % (self._host, id)
+    def article(self, id, version=1):
+        versioned_url = "%s/articles/%s/versions/%s" % (self._host, id, version)
         # we should pass 'Accept': 'application/vnd.elife.article-poa+json,application/vnd.elife.article-vor+json'
         # if that works... requests does not support a multidict, it seems
-        response = requests.get(url, headers={})
+        response = requests.get(versioned_url, headers={})
         body = self._ensure_sane_response(response)
-        assert body['version'] >= 1, \
-            ("We were expecting /article/%s to have a version >= 1" % id)
+        assert body['version'] == version, \
+            ("Version in body %s not consistent with requested version %s" % (body['version'], version))
+        LOGGER.info("Found article version %s on api: %s", body['version'], versioned_url, extra={'id': id})
+
+        latest_url = "%s/articles/%s" % (self._host, id)
+        response = requests.get(latest_url, headers={})
+        body = self._ensure_sane_response(response)
+        assert body['version'] == version, \
+            ("We were expecting /article/%s to be at version %s now" % (id, version))
+        LOGGER.info("Found article version %s on api: %s", version, latest_url, extra={'id': id})
         return body
 
     def _ensure_sane_response(self, response):

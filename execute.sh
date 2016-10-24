@@ -8,6 +8,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 SPECTRUM_PROCESSES=${SPECTRUM_PROCESSES:-4}
 
+./pylint.sh
 rm -f build/junit.xml
 rm -f build/test.log
 rm -rf /tmp/elife-*

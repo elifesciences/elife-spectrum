@@ -71,7 +71,7 @@ def _generate(filename, id, generated_article_directory, template_id, version):
     filename_components = path.splitext(filename)
     version_label = '-v%s.' % version
     generated_filename = re.sub(r'-v\d+\.', version_label, path.basename(filename).replace(template_id, id))
-    target = generated_article_directory + '/' + generated_filename 
+    target = generated_article_directory + '/' + generated_filename
     assert len(filename_components) == 2
     extension = filename_components[1]
     if extension == '.jinja':
