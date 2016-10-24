@@ -5,4 +5,4 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-venv/bin/py.test -v -s spectrum/test_article.py::test_article_first_version --article-id=15893
+venv/bin/py.test -v -s spectrum/test_article.py::test_article_first_version --article-id=15893 --assert=plain $*
