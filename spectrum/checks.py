@@ -260,8 +260,13 @@ class ApiCheck:
         url = "%s/labs-experiments" % self._host
         response = requests.get(url, headers={'Accept': 'application/vnd.elife.labs-experiment-list+json'})
         body = self._ensure_sane_response(response)
-        assert body['total'] >= 1, \
-            "We were expecting /labs-experiments to have some content, but the total is not >= 1"
+        self._ensure_list_has_at_least_1_element(body)
+
+    def subjects(self):
+        url = "%s/subjects" % self._host
+        response = requests.get(url, headers={'Accept': 'application/vnd.elife.subject-list+json'})
+        body = self._ensure_sane_response(response)
+        self._ensure_list_has_at_least_1_element(body)
 
     def article(self, id, version=1):
         versioned_url = "%s/articles/%s/versions/%s" % (self._host, id, version)
@@ -285,6 +290,10 @@ class ApiCheck:
         assert response.status_code is 200, \
             "Response had status %d, body %s" % (response.status_code, response.content)
         return response.json()
+
+    def _ensure_list_has_at_least_1_element(self, body):
+        assert body['total'] >= 1, \
+                ("We were expecting the body of the list to have some content, but the total is not >= 1: %s" % body)
 
 class JournalCheck:
     def __init__(self, host):

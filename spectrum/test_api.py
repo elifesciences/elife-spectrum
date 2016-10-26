@@ -4,6 +4,8 @@ from spectrum import checks
 @pytest.mark.two
 def test_integration_of_gateway():
     checks.API.labs_experiments()
+    checks.API.subjects()
+
 
 # being moved in test_article
 #@pytest.mark.two
