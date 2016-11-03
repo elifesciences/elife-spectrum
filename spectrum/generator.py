@@ -113,11 +113,11 @@ class ArticleZip:
     def has_pdf(self):
         return self._has_pdf
 
-    def new_version(self, version):
+    def new_version(self, version, version_number_prefix='r'):
         # what is changed is actually the "run"
-        new_filename = re.sub(r'-r\d+.zip$', ('-r%s.zip' % version), self._filename)
+        new_filename = re.sub(r'-(r|v)\d+.zip$', ('-%s%s.zip' % (version_number_prefix, version)), self._filename)
         shutil.copy(self._filename, new_filename)
-        new_directory = re.sub(r'-r\d+$', ('-r%s' % version), self._directory)
+        new_directory = re.sub(r'-(r|v)\d+$', ('-%s%s' % (version_number_prefix, version)), self._directory)
         shutil.copytree(self._directory, new_directory)
         return ArticleZip(self._id, new_filename, new_directory, version, self._figure_names, self._has_pdf)
 

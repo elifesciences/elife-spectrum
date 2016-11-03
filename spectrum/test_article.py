@@ -1,3 +1,4 @@
+import re
 import pytest
 from spectrum import generator
 from spectrum import input
@@ -21,8 +22,23 @@ def test_article_multiple_versions(generate_article, version_article):
     new_article = version_article(article, new_version=2)
     _feed_and_verify(new_article)
 
-def _feed_and_verify(article):
+@pytest.mark.continuum
+def test_article_already_present_version(generate_article, version_article):
+    template_id = 15893
+    article = generate_article(template_id, version=1)
+    _feed_and_verify(article)
+    new_article = version_article(article, new_version=1, version_number_prefix='v')
+    _feed(new_article)
+    # article stops in this state, it's stable
+    checks.DASHBOARD.publication_in_progress(id=article.id(), version=article.version())
+    error = checks.DASHBOARD.error(id=article.id(), version=1, run=2)
+    assert re.match(r".*already published article version.*", error['event-message']), ("Error found on the dashboard does not match the expected description: %s" % error)
+
+def _feed(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
+
+def _feed_and_verify(article):
+    _feed(article)
     (run, ) = checks.EIF.of(id=article.id(), version=article.version())
     for each in article.figure_names():
         checks.IMAGES.of(id=article.id(), figure_name=each, version=article.version())

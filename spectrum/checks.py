@@ -169,6 +169,24 @@ class DashboardArticleCheck:
     def published(self, id, version):
         return self._wait_for_status(id, version, "published")
 
+    def publication_in_progress(self, id, version):
+        return self._wait_for_status(id, version, "publication in progress")
+
+    def error(self, id, version, run=1):
+        try:
+            error = polling.poll(
+                lambda: self._is_last_event_error(id, version, run),
+                timeout=GLOBAL_TIMEOUT,
+                step=5
+            )
+            return error
+        except polling.TimeoutException:
+            pass
+            #raise TimeoutException.giving_up_on(
+            #    "article version %s in status %s on dashboard: %s/api/article/%s" \
+            #        % (version, status, self._host, id)
+            #)
+
     def _wait_for_status(self, id, version, status):
         try:
             article = polling.poll(
@@ -212,6 +230,38 @@ class DashboardArticleCheck:
         except ConnectionError as e:
             _log_connection_error(e)
             return False
+
+    def _is_last_event_error(self, id, version, run):
+        template = "%s/api/article/%s"
+        url = template % (self._host, id)
+        version_key = str(version)
+        try:
+            response = requests.get(url, auth=(self._user, self._password), verify=False)
+            if response.status_code >= 500:
+                raise UnrecoverableException(response)
+            article = response.json()
+            version_runs = article['versions'][version_key]['runs']
+            run_key = str(run)
+            if not run_key in version_runs:
+                return False
+            run_details = version_runs[run_key]
+            events = run_details['events']
+            last_event = events[-1]
+            LOGGER.info(
+                "Found last event of %s version %s run %s on dashboard: %s",
+                url,
+                version_key,
+                run_key,
+                last_event,
+                extra={'id': id}
+            )
+            if last_event['event-status'] == 'error':
+                return last_event
+            return False
+        except ConnectionError as e:
+            _log_connection_error(e)
+            return False
+
 
 class LaxArticleCheck:
     def __init__(self, host):
