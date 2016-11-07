@@ -14,6 +14,9 @@ class InputBucket:
         self._s3.meta.client.upload_file(filename, self._bucket_name, path.basename(filename))
         LOGGER.info("Uploaded %s to %s", filename, self._bucket_name, extra={'id': id})
 
+    def name(self):
+        return self._bucket_name
+
 class Dashboard:
     def __init__(self, host, user, password):
         self._host = host
