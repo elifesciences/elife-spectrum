@@ -5,6 +5,7 @@ boto3==1.3.1
 botocore==1.4.24
 colorama==0.3.7
 docutils==0.12
+git+git://github.com/elifesciences/econ-tools.git@setup_py#egg=econtools
 execnet==1.4.1
 funcsigs==1.0.2
 futures==3.0.5
@@ -23,3 +24,4 @@ python-dateutil==2.5.3
 requests==2.10.0
 six==1.10.0
 wrapt==1.10.8
+
