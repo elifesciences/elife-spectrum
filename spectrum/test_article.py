@@ -4,8 +4,6 @@ import pytest
 from spectrum import generator
 from spectrum import input
 from spectrum import checks
-from spectrum.aws import SETTINGS
-from econtools import econ_article_feeder
 
 @pytest.mark.continuum
 @pytest.mark.parametrize("template_id", generator.all_stored_articles())
@@ -30,18 +28,7 @@ def test_article_silent_correction(generate_article):
     template_id = 15893
     article = generate_article(template_id, version=1)
     _feed_and_verify(article)
-    # $ python econ_article_feeder.py -p elife-14721-vor-r1 -r 1  elife-production-final workflow-starter-queue IngestArticleZip
-    # def feed_econ(bucket_name, queue_name, rate=30, prefix=None, key_filter=None, working=False, workflow_name="IngestArticleZip"):
-    os.environ['AWS_ACCESS_KEY_ID'] = SETTINGS.aws_access_key_id
-    os.environ['AWS_SECRET_ACCESS_KEY'] = SETTINGS.aws_secret_access_key
-    os.environ['AWS_DEFAULT_REGION'] = SETTINGS.region_name
-    econ_article_feeder.feed_econ(
-        input.PRODUCTION_BUCKET.name(),
-        SETTINGS.queue_workflow_starter,
-        rate=1,
-        prefix=os.path.basename(article.filename()),
-        workflow_name='SilentCorrectionsIngest'
-    )
+    input.SILENT_CORRECTION.article(os.path.basename(article.filename()))
 
 @pytest.mark.continuum
 def test_article_already_present_version(generate_article, version_article):

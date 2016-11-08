@@ -2,6 +2,8 @@ import logging
 from os import path
 import requests
 from spectrum import aws
+from econtools import econ_article_feeder
+from pollute import modified_environ
 
 LOGGER = logging.getLogger(__name__)
 
@@ -37,10 +39,37 @@ class Dashboard:
             extra={'id': id}
         )
 
+class SilentCorrectionWorkflowStarter:
+    def __init__(self, aws_access_key_id, aws_secret_access_key, region_name, input_bucket_name, queue_name, workflow_name):
+        self._aws_access_key_id = aws_access_key_id
+        self._aws_secret_access_key = aws_secret_access_key
+        self._region_name = region_name
+        self._input_bucket_name = input_bucket_name
+        self._queue_name = queue_name
+        self._workflow_name = workflow_name
+
+    def article(self, filename):
+        with modified_environ(added={'AWS_ACCESS_KEY_ID': self._aws_access_key_id, 'AWS_SECRET_ACCESS_KEY': self._aws_secret_access_key, 'AWS_DEFAULT_REGION': self._region_name}):
+            econ_article_feeder.feed_econ(
+                self._input_bucket_name,
+                self._queue_name,
+                rate=1,
+                prefix=filename,
+                workflow_name='SilentCorrectionsIngest'
+            )
 
 PRODUCTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_input)
 DASHBOARD = Dashboard(
     aws.SETTINGS.dashboard_host,
     aws.SETTINGS.dashboard_user,
     aws.SETTINGS.dashboard_password
+)
+
+SILENT_CORRECTION = SilentCorrectionWorkflowStarter(
+    aws.SETTINGS.aws_access_key_id,
+    aws.SETTINGS.aws_secret_access_key,
+    aws.SETTINGS.region_name,
+    PRODUCTION_BUCKET.name(),
+    aws.SETTINGS.queue_workflow_starter,
+    'SilentCorrectionsIngest'
 )
