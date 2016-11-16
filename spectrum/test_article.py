@@ -65,5 +65,6 @@ def _feed_and_verify(article):
 
     checks.ARCHIVE.of(id=article.id(), version=article.version())
     checks.API.article(id=article.id(), version=article.version())
+    checks.GITHUB_XML.article(id=article.id(), version=article.version())
     # is volume 5? dynamically derive from year? from api call
     #checks.JOURNAL.article(id=10627, volume=5)

@@ -356,6 +356,32 @@ class JournalCheck:
         _assert_status_code(response, 200)
         _assert_all_resources_of_page_load(response.content, self._host)
 
+class GithubCheck:
+    def __init__(self, repo_url):
+        "repo_url must have a {path} placeholder in it that will be substituted with the file path"
+        self._repo_url = repo_url
+
+    def article(self, id, version=1):
+        url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
+        try:
+            polling.poll(
+                lambda: self._is_present(url),
+                timeout=GLOBAL_TIMEOUT,
+                step=5
+            )
+        except polling.TimeoutException:
+            raise TimeoutException.giving_up_on("article on github with URL %s" % url)
+
+    def _is_present(self, url):
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                LOGGER.info("HEAD on %s with status 200", url)
+                return True
+        except ConnectionError as e:
+            _log_connection_error(e)
+        return False
+
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
 
@@ -425,4 +451,7 @@ API = ApiCheck(
 )
 JOURNAL = JournalCheck(
     host=aws.SETTINGS.journal_host
+)
+GITHUB_XML = GithubCheck(
+    repo_url=aws.SETTINGS.github_article_xml_repository_url
 )
