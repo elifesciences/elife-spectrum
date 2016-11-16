@@ -181,11 +181,10 @@ class DashboardArticleCheck:
             )
             return error
         except polling.TimeoutException:
-            pass
-            #raise TimeoutException.giving_up_on(
-            #    "article version %s in status %s on dashboard: %s/api/article/%s" \
-            #        % (version, status, self._host, id)
-            #)
+            raise TimeoutException.giving_up_on(
+                "having the last event as an error on the article version %s in status %s on dashboard: %s/api/article/%s" \
+                    % (version, status, self._host, id)
+            )
 
     def _wait_for_status(self, id, version, status):
         try:
