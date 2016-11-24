@@ -308,13 +308,13 @@ class ApiCheck:
     def labs_experiments(self):
         url = "%s/labs-experiments" % self._host
         response = requests.get(url, headers={'Accept': 'application/vnd.elife.labs-experiment-list+json'})
-        body = self._ensure_sane_response(response)
+        body = self._ensure_sane_response(response, url)
         self._ensure_list_has_at_least_1_element(body)
 
     def subjects(self):
         url = "%s/subjects" % self._host
         response = requests.get(url, headers={'Accept': 'application/vnd.elife.subject-list+json'})
-        body = self._ensure_sane_response(response)
+        body = self._ensure_sane_response(response, url)
         self._ensure_list_has_at_least_1_element(body)
 
     def article(self, id, version=1):
@@ -322,23 +322,26 @@ class ApiCheck:
         # we should pass 'Accept': 'application/vnd.elife.article-poa+json,application/vnd.elife.article-vor+json'
         # if that works... requests does not support a multidict, it seems
         response = requests.get(versioned_url, headers={})
-        body = self._ensure_sane_response(response)
+        body = self._ensure_sane_response(response, versioned_url)
         assert body['version'] == version, \
             ("Version in body %s not consistent with requested version %s" % (body['version'], version))
         LOGGER.info("Found article version %s on api: %s", body['version'], versioned_url, extra={'id': id})
 
         latest_url = "%s/articles/%s" % (self._host, id)
         response = requests.get(latest_url, headers={})
-        body = self._ensure_sane_response(response)
+        body = self._ensure_sane_response(response, latest_url)
         assert body['version'] == version, \
             ("We were expecting /article/%s to be at version %s now" % (id, version))
         LOGGER.info("Found article version %s on api: %s", version, latest_url, extra={'id': id})
         return body
 
-    def _ensure_sane_response(self, response):
+    def _ensure_sane_response(self, response, url):
         assert response.status_code is 200, \
-            "Response had status %d, body %s" % (response.status_code, response.content)
-        return response.json()
+            "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
+        try:
+            return response.json()
+        except ValueError:
+            raise ValueError("Response from %s is not JSON: %s" % (url, response.content))
 
     def _ensure_list_has_at_least_1_element(self, body):
         assert body['total'] >= 1, \
@@ -398,6 +401,15 @@ def _assert_all_resources_of_page_load(html_content, host):
             resources.append(script.get("src"))
     for link in soup.find_all("link"):
         resources.append(link.get("href"))
+    for video in soup.find_all("video"):
+        resources.append(video.get("poster"))
+    for media_source in soup.find_all("source"):
+        resources.append(media_source.get("src"))
+    # <srcset sources="/assets/img/patterns/molecules/nav-primary-menu-ic_2x.png?v1 48w, /assets/img/patterns/molecules/nav-primary-menu-ic_1x.png?v1 24w">
+    for srcset in soup.find_all("srcset"):
+        for source in [s.strip() for s in srcset.get("sources").split(",")]:
+            (path, _) = source.split(" ")
+            resources.append(path)
     for path in resources:
         url = _build_url(path, host)
         LOGGER.info("Loading %s", url)
