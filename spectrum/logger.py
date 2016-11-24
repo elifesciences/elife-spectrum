@@ -18,4 +18,4 @@ def configure_handler(handler):
 logging.getLogger().setLevel(logging.INFO)
 
 configure_handler(logging.StreamHandler())
-configure_handler(logging.FileHandler('build/test.log', 'w'))
+configure_handler(logging.FileHandler('build/test.log'))
