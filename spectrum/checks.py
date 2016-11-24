@@ -352,7 +352,7 @@ class JournalCheck:
         url = "%s/content/%s/e%s" % (self._host, volume, id)
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
-        _assert_status_code(response, 200)
+        _assert_status_code(response, 200, url)
         _assert_all_resources_of_page_load(response.content, self._host)
 
 class GithubCheck:
@@ -384,9 +384,9 @@ class GithubCheck:
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
 
-def _assert_status_code(response, expected_status_code):
+def _assert_status_code(response, expected_status_code, url):
     assert response.status_code == expected_status_code, \
-        "Response had status %d, body %s" % (response.status_code, response.content)
+        "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
 
 def _assert_all_resources_of_page_load(html_content, host):
     soup = BeautifulSoup(html_content, "html.parser")
@@ -402,7 +402,7 @@ def _assert_all_resources_of_page_load(html_content, host):
         url = _build_url(path, host)
         LOGGER.info("Loading %s", url)
         # there are no caches involved with this headless client
-        _assert_status_code(requests.head(url), 200)
+        _assert_status_code(requests.head(url), 200, url)
 
 def _build_url(path, host):
     if path.startswith("http://") or path.startswith("https://"):
