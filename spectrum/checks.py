@@ -306,16 +306,41 @@ class ApiCheck:
         self._host = host
 
     def labs_experiments(self):
-        url = "%s/labs-experiments" % self._host
-        response = requests.get(url, headers={'Accept': 'application/vnd.elife.labs-experiment-list+json'})
-        body = self._ensure_sane_response(response, url)
+	body = self._list_api('/labs-experiments', 'labs-experiment')
         self._ensure_list_has_at_least_1_element(body)
 
     def subjects(self):
-        url = "%s/subjects" % self._host
-        response = requests.get(url, headers={'Accept': 'application/vnd.elife.subject-list+json'})
-        body = self._ensure_sane_response(response, url)
+	body = self._list_api('/subjects', 'subject')
         self._ensure_list_has_at_least_1_element(body)
+
+    def podcast_episodes(self):
+	self._list_api('/podcast-episodes', 'podcast-episode')
+
+    def people(self):
+        self._list_api('/people', 'person')
+
+    def medium_articles(self):
+        self._list_api('/medium-articles', 'medium-article')
+
+    def blog_articles(self):
+        self._list_api('/blog-articles', 'blog-article')
+
+    def events(self):
+        self._list_api('/events', 'event')
+
+    def interviews(self):
+        self._list_api('/interviews', 'interview')
+
+    def collections(self):
+        self._list_api('/collections', 'collection')
+
+    def _list_api(self, path, entity):
+        url = "%s%s" % (self._host, path)
+        response = requests.get(url, headers={'Accept': 'application/vnd.elife.%s-list+json' % entity})
+        body = self._ensure_sane_response(response, url)
+	return body
+
+
 
     def article(self, id, version=1):
         versioned_url = "%s/articles/%s/versions/%s" % (self._host, id, version)
