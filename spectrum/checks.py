@@ -358,6 +358,11 @@ class ApiCheck:
         LOGGER.info("Found article version %s on api: %s", version, latest_url, extra={'id': id})
         return body
 
+    def search(self, for_input):
+        url = "%s/search?for=%s" % (self._host, for_input)
+        response = requests.get(url)
+        return self._ensure_sane_response(response, url)
+
     def _ensure_sane_response(self, response, url):
         assert response.status_code is 200, \
             "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
