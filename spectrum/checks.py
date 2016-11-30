@@ -306,15 +306,15 @@ class ApiCheck:
         self._host = host
 
     def labs_experiments(self):
-	body = self._list_api('/labs-experiments', 'labs-experiment')
+        body = self._list_api('/labs-experiments', 'labs-experiment')
         self._ensure_list_has_at_least_1_element(body)
 
     def subjects(self):
-	body = self._list_api('/subjects', 'subject')
+        body = self._list_api('/subjects', 'subject')
         self._ensure_list_has_at_least_1_element(body)
 
     def podcast_episodes(self):
-	self._list_api('/podcast-episodes', 'podcast-episode')
+        self._list_api('/podcast-episodes', 'podcast-episode')
 
     def people(self):
         self._list_api('/people', 'person')
@@ -338,9 +338,7 @@ class ApiCheck:
         url = "%s%s" % (self._host, path)
         response = requests.get(url, headers={'Accept': 'application/vnd.elife.%s-list+json' % entity})
         body = self._ensure_sane_response(response, url)
-	return body
-
-
+        return body
 
     def article(self, id, version=1):
         versioned_url = "%s/articles/%s/versions/%s" % (self._host, id, version)
