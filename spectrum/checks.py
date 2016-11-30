@@ -357,6 +357,11 @@ class JournalCheck:
         response = requests.get(url)
         _assert_status_code(response, 200, url)
         #_assert_all_resources_of_page_load(response.content, self._host)
+        url = "%s/content/%s/e%s/figures" % (self._host, volume, id)
+        LOGGER.info("Loading %s", url)
+        response = requests.get(url)
+        _assert_status_code(response, 200, url)
+        #_assert_all_resources_of_page_load(response.content, self._host)
 
 class GithubCheck:
     def __init__(self, repo_url):
