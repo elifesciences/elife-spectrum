@@ -385,12 +385,24 @@ class JournalCheck:
         response = requests.get(url)
         _assert_status_code(response, 200, url)
         #_assert_all_resources_of_page_load(response.content, self._host)
-        #if False:
-        url = "%s/content/%s/e%s/figures" % (self._host, volume, id)
-        LOGGER.info("Loading %s", url)
-        response = requests.get(url)
-        _assert_status_code(response, 200, url)
-        #_assert_all_resources_of_page_load(response.content, self._host)
+        figures_link = self._link(response.content, 'view-selector__link--figures')
+        if figures_link:
+            #url = "%s/content/%s/e%s/figures" % (self._host, volume, id)
+            LOGGER.info("Loading %s", figures_link)
+            response = requests.get(figures_link)
+            _assert_status_code(response, 200, figures_link)
+            #_assert_all_resources_of_page_load(response.content, self._host)
+
+    def _link(self, body, class_name):
+        """Finds out where the link selected with CSS class_name points to.
+
+        May return None if there is no actual link with this class on the page"""
+        soup = BeautifulSoup(body, "html.parser")
+        links = soup.find_all("a", class_=class_name)
+        assert len(links) <= 1, \
+               ("Found too many links for the class name %s: %s" % (class_name, links))
+        return links[0].href if len(links) == 1 else None
+
 
 class GithubCheck:
     def __init__(self, repo_url):
@@ -426,6 +438,9 @@ def _assert_status_code(response, expected_status_code, url):
         "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
 
 def _assert_all_resources_of_page_load(html_content, host):
+    """Checks that all <script>, <link>, <video>, <source>, <srcset> load, by issuing HEAD requests that must give 200 OK.
+
+    Returns the BeautifulSoup for reuse"""
     soup = BeautifulSoup(html_content, "html.parser")
     resources = []
     for img in soup.find_all("img"):
@@ -449,6 +464,7 @@ def _assert_all_resources_of_page_load(html_content, host):
         LOGGER.info("Loading %s", url)
         # there are no caches involved with this headless client
         _assert_status_code(requests.head(url), 200, url)
+    return soup
 
 def _build_url(path, host):
     if path.startswith("http://") or path.startswith("https://"):
