@@ -1,7 +1,9 @@
-import re
 import datetime
 import logging
+from pprint import pformat
+import re
 from ssl import SSLError
+
 from bs4 import BeautifulSoup
 
 import polling
@@ -384,7 +386,7 @@ class JournalCheck:
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200, url)
-        #_assert_all_resources_of_page_load(response.content, self._host)
+        _assert_all_resources_of_page_load(response.content, self._host)
         figures_link = self._link(response.content, 'view-selector__link--figures')
         if figures_link:
             #url = "%s/content/%s/e%s/figures" % (self._host, volume, id)
@@ -441,29 +443,41 @@ def _assert_all_resources_of_page_load(html_content, host):
     """Checks that all <script>, <link>, <video>, <source>, <srcset> load, by issuing HEAD requests that must give 200 OK.
 
     Returns the BeautifulSoup for reuse"""
+    def _srcset_values(srcset):
+        values = []
+        for candidate_string in [s.strip() for s in srcset.split(",")]:
+            url_and_maybe_descriptors = candidate_string.split(" ")
+            values.append(url_and_maybe_descriptors[0])
+            return values
+    def _resources_from(soup):
+        resources = []
+        for img in soup.find_all("img"):
+            resources.append(img.get("src"))
+            srcset = img.get("srcset")
+            if srcset:
+                resources.extend(_srcset_values(srcset))
+        for script in soup.find_all("script"):
+            if script.get("src"):
+                resources.append(script.get("src"))
+        for link in soup.find_all("link"):
+            resources.append(link.get("href"))
+        for video in soup.find_all("video"):
+            resources.append(video.get("poster"))
+        for media_source in soup.find_all("source"):
+            srcset = media_source.get("srcset")
+            if srcset:
+                resources.extend(_srcset_values(srcset))
+        return resources
     soup = BeautifulSoup(html_content, "html.parser")
-    resources = []
-    for img in soup.find_all("img"):
-        resources.append(img.get("src"))
-    for script in soup.find_all("script"):
-        if script.get("src"):
-            resources.append(script.get("src"))
-    for link in soup.find_all("link"):
-        resources.append(link.get("href"))
-    for video in soup.find_all("video"):
-        resources.append(video.get("poster"))
-    for media_source in soup.find_all("source"):
-        resources.append(media_source.get("src"))
-    # <srcset sources="/assets/img/patterns/molecules/nav-primary-menu-ic_2x.png?v1 48w, /assets/img/patterns/molecules/nav-primary-menu-ic_1x.png?v1 24w">
-    for srcset in soup.find_all("srcset"):
-        for source in [s.strip() for s in srcset.get("sources").split(",")]:
-            (path, _) = source.split(" ")
-            resources.append(path)
+    resources = _resources_from(soup)
+    LOGGER.info("Found resources %s", pformat(resources))
     for path in resources:
+        if path is None:
+            continue
         url = _build_url(path, host)
         LOGGER.info("Loading %s", url)
-        # there are no caches involved with this headless client
-        _assert_status_code(requests.head(url), 200, url)
+        response = requests.head(url)
+        _assert_status_code(response, 200, url)
     return soup
 
 def _build_url(path, host):
