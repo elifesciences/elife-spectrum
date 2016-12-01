@@ -24,11 +24,13 @@ def test_article_multiple_versions(generate_article, version_article):
     _feed_and_verify(new_article)
 
 @pytest.mark.continuum
-def test_article_silent_correction(generate_article):
+def test_article_silent_correction(generate_article, silently_correct_article):
     template_id = 15893
     article = generate_article(template_id, version=1)
     _feed_and_verify(article)
-    input.SILENT_CORRECTION.article(os.path.basename(article.filename()))
+    corrected_article = silently_correct_article(article, {'a': 'b'})
+    _feed_silent_correction(corrected_article)
+    input.SILENT_CORRECTION.article(os.path.basename(corrected_article.filename()))
 
 @pytest.mark.continuum
 def test_article_already_present_version(generate_article, version_article):
@@ -44,6 +46,9 @@ def test_article_already_present_version(generate_article, version_article):
 
 def _feed(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
+
+def _feed_silent_correction(article):
+    input.SILENT_CORRECTION_BUCKET.upload(article.filename(), article.id())
 
 def _feed_and_verify(article):
     _feed(article)

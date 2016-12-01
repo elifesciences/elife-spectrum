@@ -63,8 +63,10 @@ def _choose_template(template_id):
     assert match is not None, ("Bad name for template directory %s" % chosen)
     assert len(match.groups()) == 2
     kind = match.groups()[0] # vor or poa
-    r_or_v = match.groups()[1] # new run or an already processed version
-    return (chosen, kind, True if r_or_v == 'v' else False)
+    #r_or_v = match.groups()[1] # new run or an already processed version
+    # return (chosen, kind, True if r_or_v == 'v' else False)
+    # in the testing environment every new generated article is never a re-run
+    return (chosen, kind, False)
 
 
 def _generate(filename, id, generated_article_directory, template_id, version):
@@ -120,6 +122,12 @@ class ArticleZip:
         new_directory = re.sub(r'-(r|v)\d+$', ('-%s%s' % (version_number_prefix, version)), self._directory)
         shutil.copytree(self._directory, new_directory)
         return ArticleZip(self._id, new_filename, new_directory, version, self._figure_names, self._has_pdf)
+
+    def replace_in_text(self, replacements):
+        """Beware: violates immutability, as it modifies the file in place for performance reasons"""
+        # replace the text
+        print replacements
+        return self
 
     def clean(self):
         os.remove(self._filename)

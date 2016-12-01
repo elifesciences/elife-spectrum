@@ -59,6 +59,7 @@ class SilentCorrectionWorkflowStarter:
             )
 
 PRODUCTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_input)
+SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, 'end2end-elife-silent-corrections')
 DASHBOARD = Dashboard(
     aws.SETTINGS.dashboard_host,
     aws.SETTINGS.dashboard_user,
@@ -69,7 +70,7 @@ SILENT_CORRECTION = SilentCorrectionWorkflowStarter(
     aws.SETTINGS.aws_access_key_id,
     aws.SETTINGS.aws_secret_access_key,
     aws.SETTINGS.region_name,
-    PRODUCTION_BUCKET.name(),
+    SILENT_CORRECTION_BUCKET.name(),
     aws.SETTINGS.queue_workflow_starter,
     'SilentCorrectionsIngest'
 )
