@@ -26,8 +26,7 @@ def generate_article():
         created_articles.append(article)
         return article
     yield from_template_id
-    for article in created_articles:
-        article.clean()
+    _clean_all(created_articles)
 
 @pytest.yield_fixture
 def version_article():
@@ -37,8 +36,7 @@ def version_article():
         created_articles.append(article)
         return article
     yield from_original_article
-    for article in created_articles:
-        article.clean()
+    _clean_all(created_articles)
 
 @pytest.yield_fixture
 def silently_correct_article():
@@ -52,6 +50,8 @@ def silently_correct_article():
         created_articles.append(article)
         return article
     yield from_original_article
-    # TODO: duplication
+    _clean_all(created_articles)
+
+def _clean_all(created_articles):
     for article in created_articles:
         article.clean()
