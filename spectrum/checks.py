@@ -1,5 +1,4 @@
 import datetime
-import logging
 from pprint import pformat
 import re
 from ssl import SSLError
@@ -9,13 +8,14 @@ from bs4 import BeautifulSoup
 import polling
 import requests
 from requests.exceptions import ConnectionError
-from spectrum import aws
+from spectrum import aws, logger
+
 
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
 requests.packages.urllib3.disable_warnings()
 
 GLOBAL_TIMEOUT = 300
-LOGGER = logging.getLogger(__name__)
+LOGGER = logger.logger(__name__)
 
 class TimeoutException(RuntimeError):
     @staticmethod
@@ -359,6 +359,30 @@ class ApiCheck:
             ("We were expecting /article/%s to be at version %s now" % (id, version))
         LOGGER.info("Found article version %s on api: %s", version, latest_url, extra={'id': id})
         return body
+
+    def wait_article(self, id, **constraints):
+        "Article must be immediately present with this version, but will poll until the constraints (fields with certain values) are satisfied"
+        latest_url = "%s/articles/%s" % (self._host, id)
+        def _is_ready():
+            response = requests.get(latest_url, headers={})
+            body = self._ensure_sane_response(response, latest_url)
+            for field, value in constraints.iteritems():
+                if body[field] != value:
+                    LOGGER.debug("%s: field `%s` is not `%s` but `%s`",
+                                 latest_url, field, value, body[field])
+                    return False
+            LOGGER.info("%s: conforming to constraints %s",
+                        latest_url, constraints)
+            return True
+        try:
+            # TODO: duplication
+            polling.poll(
+                _is_ready,
+                timeout=GLOBAL_TIMEOUT,
+                step=5
+            )
+        except polling.TimeoutException:
+            raise TimeoutException.giving_up_on("%s to satisfy constraints %s" % (latest_url, constraints))
 
     def search(self, for_input):
         url = "%s/search?for=%s" % (self._host, for_input)

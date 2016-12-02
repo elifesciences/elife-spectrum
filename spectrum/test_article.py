@@ -23,14 +23,21 @@ def test_article_multiple_versions(generate_article, version_article):
     new_article = version_article(article, new_version=2)
     _feed_and_verify(new_article)
 
+# this is a silent correction of a 'correction' article, don't be confused
+# we use this article because it's small and fast to process
+# the silent correction is changing one word from lowercase to uppercase
 @pytest.mark.continuum
 def test_article_silent_correction(generate_article, silently_correct_article):
     template_id = 15893
     article = generate_article(template_id, version=1)
     _feed_and_verify(article)
-    corrected_article = silently_correct_article(article, {'a': 'b'})
+    corrected_article = silently_correct_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _feed_silent_correction(corrected_article)
     input.SILENT_CORRECTION.article(os.path.basename(corrected_article.filename()))
+    checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
+    # check GITHUB
+    # check ARCHIVE
+
 
 @pytest.mark.continuum
 def test_article_already_present_version(generate_article, version_article):
@@ -50,8 +57,7 @@ def _feed(article):
 def _feed_silent_correction(article):
     input.SILENT_CORRECTION_BUCKET.upload(article.filename(), article.id())
 
-def _feed_and_verify(article):
-    _feed(article)
+def _verify(article):
     (run, ) = checks.EIF.of(id=article.id(), version=article.version())
     for each in article.figure_names():
         checks.IMAGES.of(id=article.id(), figure_name=each, version=article.version())
@@ -72,3 +78,8 @@ def _feed_and_verify(article):
     article_from_api = checks.API.article(id=article.id(), version=article.version())
     checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'])
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
+
+def _feed_and_verify(article):
+    _feed(article)
+    _verify(article)
+

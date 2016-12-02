@@ -1,5 +1,4 @@
 import glob
-import logging
 import math
 import os
 from os import path
@@ -9,8 +8,9 @@ import shutil
 import zipfile
 
 import jinja2
+from spectrum import logger
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logger.logger(__name__)
 
 def generate_article_id():
     return str(int(random.randrange(100000, math.pow(2, 31))))
@@ -127,6 +127,16 @@ class ArticleZip:
         """Beware: violates immutability, as it modifies the file in place for performance reasons"""
         # replace the text
         print replacements
+        with zipfile.ZipFile(self._filename, 'w') as zip_file:
+            for file in glob.glob(self._directory + "/*"):
+                if file.endswith('.xml'):
+                    with open(file) as xml:
+                        contents = xml.read()
+                    for search, replace in replacements.iteritems():
+                        contents = contents.replace(search, replace)
+                    with open(file, 'w') as xml:
+                        xml.write(contents)
+                zip_file.write(file, path.basename(file))
         return self
 
     def clean(self):

@@ -1,11 +1,10 @@
-import logging
 from os import path
 import requests
-from spectrum import aws
+from spectrum import aws, logger
 from econtools import econ_article_feeder
 from pollute import modified_environ
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logger.logger(__name__)
 
 class InputBucket:
     def __init__(self, s3, bucket_name):

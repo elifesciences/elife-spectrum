@@ -1,12 +1,12 @@
 import datetime
-import logging
 import os
 import re
 
 import boto3
 import settings
+from spectrum import logger
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logger.logger(__name__)
 ENV = os.environ['SPECTRUM_ENVIRONMENT'] if 'SPECTRUM_ENVIRONMENT' in os.environ else 'end2end'
 SETTINGS = settings.get_settings(ENV)
 S3 = boto3.resource(
