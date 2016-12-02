@@ -44,15 +44,11 @@ class BucketFileCheck:
 
     def of(self, **kwargs):
         criteria = self._key.format(**kwargs)
-        try:
-            return _poll(
-                lambda: self._is_present(criteria, kwargs['id'])
-            )
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "object matching criteria %s in bucket %s" \
-                    % (criteria, self._bucket_name)
-            )
+        return _poll(
+            lambda: self._is_present(criteria, kwargs['id']),
+            "object matching criteria %s in bucket %s",
+            criteria, self._bucket_name
+        )
 
     def _is_present(self, criteria, id):
         try:
@@ -94,30 +90,22 @@ class WebsiteArticleCheck:
         return self._wait_for_status(id, version, publish=True)
 
     def _wait_for_status(self, id, version, publish):
-        try:
-            article = _poll(
-                lambda: self._is_present(id, version, publish)
-            )
-            assert article['article-id'] == id, \
-                    "The article id does not correspond to the one we were looking for"
-            return article
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "article on website with publish status %s: %s/api/article/%s.%s.json" \
-                    % (publish, self._host, id, version)
-            )
+        article = _poll(
+            lambda: self._is_present(id, version, publish),
+            "article on website with publish status %s: %s/api/article/%s.%s.json",
+            publish, self._host, id, version
+        )
+        assert article['article-id'] == id, \
+                "The article id does not correspond to the one we were looking for"
+        return article
 
     def visible(self, path, **kwargs):
-        try:
-            article = _poll(
-                lambda: self._is_visible(path, extra=kwargs)
-            )
-            return article
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "article visible on website: %s%s" \
-                    % (self._host, path)
-            )
+        article = _poll(
+            lambda: self._is_visible(path, extra=kwargs),
+            "article visible on website: %s%s",
+            self._host, path
+        )
+        return article
 
     def _is_present(self, id, version, publish):
         template = "%s/api/article/%s.%s.json"
@@ -169,28 +157,18 @@ class DashboardArticleCheck:
         return self._wait_for_status(id, version, "publication in progress")
 
     def error(self, id, version, run=1):
-        try:
-            error = _poll(
-                lambda: self._is_last_event_error(id, version, run)
-            )
-            return error
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "having the last event as an error on the article version %s on dashboard: %s/api/article/%s" \
-                    % (version, self._host, id)
-            )
+        return _poll(
+            lambda: self._is_last_event_error(id, version, run),
+            "having the last event as an error on the article version %s on dashboard: %s/api/article/%s",
+            version, self._host, id
+        )
 
     def _wait_for_status(self, id, version, status):
-        try:
-            article = _poll(
-                lambda: self._is_present(id, version, status)
-            )
-            return article
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "article version %s in status %s on dashboard: %s/api/article/%s" \
-                    % (version, status, self._host, id)
-            )
+        return _poll(
+            lambda: self._is_present(id, version, status),
+            "article version %s in status %s on dashboard: %s/api/article/%s",
+            version, status, self._host, id
+        )
 
     def _is_present(self, id, version, status):
         template = "%s/api/article/%s"
@@ -259,16 +237,11 @@ class LaxArticleCheck:
         self._host = host
 
     def published(self, id, version):
-        try:
-            article = _poll(
-                lambda: self._is_present(id, version)
-            )
-            return article
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "article version %s in lax: %s/api/v1/article/10.7554/eLife.%s/version" \
-                    % (version, self._host, id)
-            )
+        return _poll(
+            lambda: self._is_present(id, version),
+            "article version %s in lax: %s/api/v1/article/10.7554/eLife.%s/version",
+            version, self._host, id
+        )
 
     def _is_present(self, id, version):
         template = "%s/api/v1/article/10.7554/eLife.%s/version"
@@ -361,10 +334,11 @@ class ApiCheck:
             LOGGER.info("%s: conforming to constraints %s",
                         latest_url, constraints)
             return True
-        try:
-            _poll(_is_ready)
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on("%s to satisfy constraints %s" % (latest_url, constraints))
+        _poll(
+            _is_ready,
+            "%s to satisfy constraints %s",
+            latest_url, constraints
+        )
 
     def search(self, for_input):
         url = "%s/search?for=%s" % (self._host, for_input)
@@ -419,10 +393,11 @@ class GithubCheck:
 
     def article(self, id, version=1):
         url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
-        try:
-            _poll(lambda: self._is_present(url))
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on("article on github with URL %s" % url)
+        _poll(
+            lambda: self._is_present(url),
+            "article on github with URL %s",
+            url
+        )
 
     def _is_present(self, url):
         try:
@@ -434,12 +409,15 @@ class GithubCheck:
             _log_connection_error(e)
         return False
 
-def _poll(action_fn):
-    return polling.poll(
-        action_fn,
-        timeout=GLOBAL_TIMEOUT,
-        step=5
-    )
+def _poll(action_fn, error_message, *error_message_args):
+    try:
+        return polling.poll(
+            action_fn,
+            timeout=GLOBAL_TIMEOUT,
+            step=5
+        )
+    except polling.TimeoutException:
+        raise TimeoutException.giving_up_on(error_message % tuple(error_message_args))
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
