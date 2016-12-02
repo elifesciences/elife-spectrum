@@ -45,10 +45,8 @@ class BucketFileCheck:
     def of(self, **kwargs):
         criteria = self._key.format(**kwargs)
         try:
-            return polling.poll(
-                lambda: self._is_present(criteria, kwargs['id']),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
+            return _poll(
+                lambda: self._is_present(criteria, kwargs['id'])
             )
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on(
@@ -97,10 +95,8 @@ class WebsiteArticleCheck:
 
     def _wait_for_status(self, id, version, publish):
         try:
-            article = polling.poll(
-                lambda: self._is_present(id, version, publish),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
+            article = _poll(
+                lambda: self._is_present(id, version, publish)
             )
             assert article['article-id'] == id, \
                     "The article id does not correspond to the one we were looking for"
@@ -113,10 +109,8 @@ class WebsiteArticleCheck:
 
     def visible(self, path, **kwargs):
         try:
-            article = polling.poll(
-                lambda: self._is_visible(path, extra=kwargs),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
+            article = _poll(
+                lambda: self._is_visible(path, extra=kwargs)
             )
             return article
         except polling.TimeoutException:
@@ -176,10 +170,8 @@ class DashboardArticleCheck:
 
     def error(self, id, version, run=1):
         try:
-            error = polling.poll(
-                lambda: self._is_last_event_error(id, version, run),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
+            error = _poll(
+                lambda: self._is_last_event_error(id, version, run)
             )
             return error
         except polling.TimeoutException:
@@ -190,10 +182,8 @@ class DashboardArticleCheck:
 
     def _wait_for_status(self, id, version, status):
         try:
-            article = polling.poll(
-                lambda: self._is_present(id, version, status),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
+            article = _poll(
+                lambda: self._is_present(id, version, status)
             )
             return article
         except polling.TimeoutException:
@@ -270,11 +260,8 @@ class LaxArticleCheck:
 
     def published(self, id, version):
         try:
-            article = polling.poll(
-                lambda: self._is_present(id, version),
-                # TODO: duplication of polling configuration
-                timeout=GLOBAL_TIMEOUT,
-                step=5
+            article = _poll(
+                lambda: self._is_present(id, version)
             )
             return article
         except polling.TimeoutException:
@@ -375,12 +362,7 @@ class ApiCheck:
                         latest_url, constraints)
             return True
         try:
-            # TODO: duplication
-            polling.poll(
-                _is_ready,
-                timeout=GLOBAL_TIMEOUT,
-                step=5
-            )
+            _poll(_is_ready)
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on("%s to satisfy constraints %s" % (latest_url, constraints))
 
@@ -438,11 +420,7 @@ class GithubCheck:
     def article(self, id, version=1):
         url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
         try:
-            polling.poll(
-                lambda: self._is_present(url),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
-            )
+            _poll(lambda: self._is_present(url))
         except polling.TimeoutException:
             raise TimeoutException.giving_up_on("article on github with URL %s" % url)
 
@@ -455,6 +433,13 @@ class GithubCheck:
         except ConnectionError as e:
             _log_connection_error(e)
         return False
+
+def _poll(action_fn):
+    return polling.poll(
+        action_fn,
+        timeout=GLOBAL_TIMEOUT,
+        step=5
+    )
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
