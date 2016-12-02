@@ -391,20 +391,27 @@ class GithubCheck:
         "repo_url must have a {path} placeholder in it that will be substituted with the file path"
         self._repo_url = repo_url
 
-    def article(self, id, version=1):
+    def article(self, id, version=1, text_match=None):
         url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
+        error_message_suffix = (" and matching %s" % text_match) if text_match else ""
         _poll(
-            lambda: self._is_present(url),
-            "article on github with URL %s",
+            lambda: self._is_present(url, text_match),
+            "article on github with URL %s existing" + error_message_suffix,
             url
         )
 
-    def _is_present(self, url):
+    def _is_present(self, url, text_match):
         try:
             response = requests.get(url)
             if response.status_code == 200:
-                LOGGER.info("HEAD on %s with status 200", url)
-                return True
+                LOGGER.info("GET on %s with status 200", url)
+                if text_match:
+                    if text_match in response.content:
+                        LOGGER.info("Body of %s matches %s", url, text_match)
+                        return True
+                else:
+                    return True
+            return False
         except ConnectionError as e:
             _log_connection_error(e)
         return False

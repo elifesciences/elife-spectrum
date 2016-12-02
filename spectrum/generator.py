@@ -125,8 +125,6 @@ class ArticleZip:
 
     def replace_in_text(self, replacements):
         """Beware: violates immutability, as it modifies the file in place for performance reasons"""
-        # replace the text
-        print replacements
         with zipfile.ZipFile(self._filename, 'w') as zip_file:
             for file in glob.glob(self._directory + "/*"):
                 if file.endswith('.xml'):

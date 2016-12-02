@@ -35,7 +35,7 @@ def test_article_silent_correction(generate_article, silently_correct_article):
     _feed_silent_correction(corrected_article)
     input.SILENT_CORRECTION.article(os.path.basename(corrected_article.filename()))
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
-    # check GITHUB
+    checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match="CYTOMEGALOVIRUS")
     # check ARCHIVE
 
 
