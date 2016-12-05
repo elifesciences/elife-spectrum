@@ -42,15 +42,16 @@ class BucketFileCheck:
         self._bucket_name = bucket_name
         self._key = key
 
-    def of(self, **kwargs):
+    def of(self, last_modified_after=None, **kwargs):
         criteria = self._key.format(**kwargs)
+        last_modified_suffix = (" and being last_modified after %s" % last_modified_after) if last_modified_after else ""
         return _poll(
-            lambda: self._is_present(criteria, kwargs['id']),
-            "object matching criteria %s in bucket %s",
+            lambda: self._is_present(criteria, kwargs['id'], last_modified_after),
+            "object matching criteria %s in bucket %s"+last_modified_suffix,
             criteria, self._bucket_name
         )
 
-    def _is_present(self, criteria, id):
+    def _is_present(self, criteria, id, last_modified_after):
         try:
             bucket = self._s3.Bucket(self._bucket_name)
             bucket.load()
@@ -58,11 +59,15 @@ class BucketFileCheck:
                 match = re.match(criteria, file.key)
                 if match:
                     LOGGER.info(
-                        "Found %s in bucket %s",
+                        "Found %s in bucket %s (last modified: %s)",
                         file.key,
                         self._bucket_name,
+                        file.last_modified,
                         extra={'id': id}
                     )
+                    if last_modified_after:
+                        if file.last_modified.strftime('%s') <= last_modified_after.strftime('%s'):
+                            return False
                     if match.groups():
                         LOGGER.info(
                             "Found groups %s in matching the file name %s",
@@ -76,6 +81,26 @@ class BucketFileCheck:
         except SSLError as e:
             _log_connection_error(e)
         return False
+        #try:
+        #    text_file = StringIO.StringIO()
+        #    LOGGER.debug(
+        #        "Downloading %s/%s",
+        #        self._bucket_name,
+        #        file.key,
+        #        extra={'id': id}
+        #    )
+        #    bucket.download_fileobj(file.key, text_file)
+        #    if text_match not in text_file.getvalue():
+        #        LOGGER.info(
+        #            "%s/%s does not match `%s`",
+        #            self._bucket_name,
+        #            file.key,
+        #            text_match,
+        #            extra={'id': id}
+        #        )
+        #        return False
+        #finally:
+        #    text_file.close()
 
 class WebsiteArticleCheck:
     def __init__(self, host, user, password):
@@ -404,12 +429,12 @@ class GithubCheck:
         try:
             response = requests.get(url)
             if response.status_code == 200:
-                LOGGER.info("GET on %s with status 200", url)
                 if text_match:
                     if text_match in response.content:
                         LOGGER.info("Body of %s matches %s", url, text_match)
                         return True
                 else:
+                    LOGGER.info("GET on %s with status 200", url)
                     return True
             return False
         except ConnectionError as e:

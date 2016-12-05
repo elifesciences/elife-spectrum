@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import re
 import pytest
@@ -31,12 +32,13 @@ def test_article_silent_correction(generate_article, silently_correct_article):
     template_id = 15893
     article = generate_article(template_id, version=1)
     _feed_and_verify(article)
+    silent_correction_start = datetime.now()
     corrected_article = silently_correct_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _feed_silent_correction(corrected_article)
     input.SILENT_CORRECTION.article(os.path.basename(corrected_article.filename()))
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
-    checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match="CYTOMEGALOVIRUS")
-    # check ARCHIVE
+    checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='CYTOMEGALOVIRUS')
+    checks.ARCHIVE.of(id=article.id(), version=article.version(), last_modified_after=silent_correction_start)
 
 
 @pytest.mark.continuum
