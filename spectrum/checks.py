@@ -420,21 +420,21 @@ class GithubCheck:
         url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
         error_message_suffix = (" and matching %s" % text_match) if text_match else ""
         _poll(
-            lambda: self._is_present(url, text_match),
+            lambda: self._is_present(url, text_match, id),
             "article on github with URL %s existing" + error_message_suffix,
             url
         )
 
-    def _is_present(self, url, text_match):
+    def _is_present(self, url, text_match, id):
         try:
             response = requests.get(url)
             if response.status_code == 200:
                 if text_match:
                     if text_match in response.content:
-                        LOGGER.info("Body of %s matches %s", url, text_match)
+                        LOGGER.info("Body of %s matches %s", url, text_match, extra={'id': id})
                         return True
                 else:
-                    LOGGER.info("GET on %s with status 200", url)
+                    LOGGER.info("GET on %s with status 200", url, extra={'id': id})
                     return True
             return False
         except ConnectionError as e:
