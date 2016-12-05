@@ -1,6 +1,5 @@
 import glob
 import logging
-import math
 import os
 from os import path
 import random
@@ -12,12 +11,15 @@ import jinja2
 
 LOGGER = logging.getLogger(__name__)
 
-def generate_article_id():
-    return str(int(random.randrange(100000, math.pow(2, 31))))
+def generate_article_id(template_id):
+    # 2^31 = 2147483648 which is the maximum id
+    maximum_prefix = 21474 # covers until template_id reaches 83648
+    prefix = random.randrange(1, maximum_prefix + 1)
+    return str(prefix * 100000 + int(template_id))
 
 def article_zip(template_id, version=1):
     (template, kind, rerun) = _choose_template(template_id)
-    id = generate_article_id()
+    id = generate_article_id(template_id)
     generated_article_directory = '/tmp/elife-%s-%s-%s%d' % (id, kind, 'v' if rerun else 'r', version)
     os.mkdir(generated_article_directory)
     generated_files = []
