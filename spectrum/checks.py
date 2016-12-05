@@ -1,5 +1,4 @@
 import datetime
-import logging
 from pprint import pformat
 import re
 from ssl import SSLError
@@ -9,13 +8,14 @@ from bs4 import BeautifulSoup
 import polling
 import requests
 from requests.exceptions import ConnectionError
-from spectrum import aws
+from spectrum import aws, logger
+
 
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
 requests.packages.urllib3.disable_warnings()
 
 GLOBAL_TIMEOUT = 300
-LOGGER = logging.getLogger(__name__)
+LOGGER = logger.logger(__name__)
 
 class TimeoutException(RuntimeError):
     @staticmethod
@@ -42,21 +42,16 @@ class BucketFileCheck:
         self._bucket_name = bucket_name
         self._key = key
 
-    def of(self, **kwargs):
+    def of(self, last_modified_after=None, **kwargs):
         criteria = self._key.format(**kwargs)
-        try:
-            return polling.poll(
-                lambda: self._is_present(criteria, kwargs['id']),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
-            )
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "object matching criteria %s in bucket %s" \
-                    % (criteria, self._bucket_name)
-            )
+        last_modified_suffix = (" and being last_modified after %s" % last_modified_after) if last_modified_after else ""
+        return _poll(
+            lambda: self._is_present(criteria, kwargs['id'], last_modified_after),
+            "object matching criteria %s in bucket %s"+last_modified_suffix,
+            criteria, self._bucket_name
+        )
 
-    def _is_present(self, criteria, id):
+    def _is_present(self, criteria, id, last_modified_after):
         try:
             bucket = self._s3.Bucket(self._bucket_name)
             bucket.load()
@@ -64,11 +59,15 @@ class BucketFileCheck:
                 match = re.match(criteria, file.key)
                 if match:
                     LOGGER.info(
-                        "Found %s in bucket %s",
+                        "Found %s in bucket %s (last modified: %s)",
                         file.key,
                         self._bucket_name,
+                        file.last_modified,
                         extra={'id': id}
                     )
+                    if last_modified_after:
+                        if file.last_modified.strftime('%s') <= last_modified_after.strftime('%s'):
+                            return False
                     if match.groups():
                         LOGGER.info(
                             "Found groups %s in matching the file name %s",
@@ -82,6 +81,26 @@ class BucketFileCheck:
         except SSLError as e:
             _log_connection_error(e)
         return False
+        #try:
+        #    text_file = StringIO.StringIO()
+        #    LOGGER.debug(
+        #        "Downloading %s/%s",
+        #        self._bucket_name,
+        #        file.key,
+        #        extra={'id': id}
+        #    )
+        #    bucket.download_fileobj(file.key, text_file)
+        #    if text_match not in text_file.getvalue():
+        #        LOGGER.info(
+        #            "%s/%s does not match `%s`",
+        #            self._bucket_name,
+        #            file.key,
+        #            text_match,
+        #            extra={'id': id}
+        #        )
+        #        return False
+        #finally:
+        #    text_file.close()
 
 class WebsiteArticleCheck:
     def __init__(self, host, user, password):
@@ -96,34 +115,22 @@ class WebsiteArticleCheck:
         return self._wait_for_status(id, version, publish=True)
 
     def _wait_for_status(self, id, version, publish):
-        try:
-            article = polling.poll(
-                lambda: self._is_present(id, version, publish),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
-            )
-            assert article['article-id'] == id, \
-                    "The article id does not correspond to the one we were looking for"
-            return article
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "article on website with publish status %s: %s/api/article/%s.%s.json" \
-                    % (publish, self._host, id, version)
-            )
+        article = _poll(
+            lambda: self._is_present(id, version, publish),
+            "article on website with publish status %s: %s/api/article/%s.%s.json",
+            publish, self._host, id, version
+        )
+        assert article['article-id'] == id, \
+                "The article id does not correspond to the one we were looking for"
+        return article
 
     def visible(self, path, **kwargs):
-        try:
-            article = polling.poll(
-                lambda: self._is_visible(path, extra=kwargs),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
-            )
-            return article
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "article visible on website: %s%s" \
-                    % (self._host, path)
-            )
+        article = _poll(
+            lambda: self._is_visible(path, extra=kwargs),
+            "article visible on website: %s%s",
+            self._host, path
+        )
+        return article
 
     def _is_present(self, id, version, publish):
         template = "%s/api/article/%s.%s.json"
@@ -175,32 +182,18 @@ class DashboardArticleCheck:
         return self._wait_for_status(id, version, "publication in progress")
 
     def error(self, id, version, run=1):
-        try:
-            error = polling.poll(
-                lambda: self._is_last_event_error(id, version, run),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
-            )
-            return error
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "having the last event as an error on the article version %s on dashboard: %s/api/article/%s" \
-                    % (version, self._host, id)
-            )
+        return _poll(
+            lambda: self._is_last_event_error(id, version, run),
+            "having the last event as an error on the article version %s on dashboard: %s/api/article/%s",
+            version, self._host, id
+        )
 
     def _wait_for_status(self, id, version, status):
-        try:
-            article = polling.poll(
-                lambda: self._is_present(id, version, status),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
-            )
-            return article
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "article version %s in status %s on dashboard: %s/api/article/%s" \
-                    % (version, status, self._host, id)
-            )
+        return _poll(
+            lambda: self._is_present(id, version, status),
+            "article version %s in status %s on dashboard: %s/api/article/%s",
+            version, status, self._host, id
+        )
 
     def _is_present(self, id, version, status):
         template = "%s/api/article/%s"
@@ -269,19 +262,11 @@ class LaxArticleCheck:
         self._host = host
 
     def published(self, id, version):
-        try:
-            article = polling.poll(
-                lambda: self._is_present(id, version),
-                # TODO: duplication of polling configuration
-                timeout=GLOBAL_TIMEOUT,
-                step=5
-            )
-            return article
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on(
-                "article version %s in lax: %s/api/v1/article/10.7554/eLife.%s/version" \
-                    % (version, self._host, id)
-            )
+        return _poll(
+            lambda: self._is_present(id, version),
+            "article version %s in lax: %s/api/v1/article/10.7554/eLife.%s/version",
+            version, self._host, id
+        )
 
     def _is_present(self, id, version):
         template = "%s/api/v1/article/10.7554/eLife.%s/version"
@@ -360,6 +345,26 @@ class ApiCheck:
         LOGGER.info("Found article version %s on api: %s", version, latest_url, extra={'id': id})
         return body
 
+    def wait_article(self, id, **constraints):
+        "Article must be immediately present with this version, but will poll until the constraints (fields with certain values) are satisfied"
+        latest_url = "%s/articles/%s" % (self._host, id)
+        def _is_ready():
+            response = requests.get(latest_url, headers={})
+            body = self._ensure_sane_response(response, latest_url)
+            for field, value in constraints.iteritems():
+                if body[field] != value:
+                    LOGGER.debug("%s: field `%s` is not `%s` but `%s`",
+                                 latest_url, field, value, body[field])
+                    return False
+            LOGGER.info("%s: conforming to constraints %s",
+                        latest_url, constraints)
+            return True
+        _poll(
+            _is_ready,
+            "%s to satisfy constraints %s",
+            latest_url, constraints
+        )
+
     def search(self, for_input):
         url = "%s/search?for=%s" % (self._host, for_input)
         response = requests.get(url)
@@ -411,26 +416,40 @@ class GithubCheck:
         "repo_url must have a {path} placeholder in it that will be substituted with the file path"
         self._repo_url = repo_url
 
-    def article(self, id, version=1):
+    def article(self, id, version=1, text_match=None):
         url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
-        try:
-            polling.poll(
-                lambda: self._is_present(url),
-                timeout=GLOBAL_TIMEOUT,
-                step=5
-            )
-        except polling.TimeoutException:
-            raise TimeoutException.giving_up_on("article on github with URL %s" % url)
+        error_message_suffix = (" and matching %s" % text_match) if text_match else ""
+        _poll(
+            lambda: self._is_present(url, text_match),
+            "article on github with URL %s existing" + error_message_suffix,
+            url
+        )
 
-    def _is_present(self, url):
+    def _is_present(self, url, text_match):
         try:
             response = requests.get(url)
             if response.status_code == 200:
-                LOGGER.info("HEAD on %s with status 200", url)
-                return True
+                if text_match:
+                    if text_match in response.content:
+                        LOGGER.info("Body of %s matches %s", url, text_match)
+                        return True
+                else:
+                    LOGGER.info("GET on %s with status 200", url)
+                    return True
+            return False
         except ConnectionError as e:
             _log_connection_error(e)
         return False
+
+def _poll(action_fn, error_message, *error_message_args):
+    try:
+        return polling.poll(
+            action_fn,
+            timeout=GLOBAL_TIMEOUT,
+            step=5
+        )
+    except polling.TimeoutException:
+        raise TimeoutException.giving_up_on(error_message % tuple(error_message_args))
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)

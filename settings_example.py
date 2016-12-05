@@ -15,10 +15,12 @@ class end2end():
     aws_secret_access_key = ""
     bucket_input = 'end2end-elife-production-final'
     bucket_eif = 'end2end-elife-publishing-eif'
+    # ...
+    # see https://github.com/elifesciences/elife-alfred-formula/blob/master/salt/elife-alfred/config/srv-elife-spectrum-settings.py for a complete list
 
-def get_settings(ENV = "end2end"):
+def get_settings(env="end2end"):
     """
     Returns the settings class based on the environment type provided,
     by default use the end2end environment settings
     """
-    return eval(ENV)
+    return eval(env)

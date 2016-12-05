@@ -19,3 +19,6 @@ logging.getLogger().setLevel(logging.INFO)
 
 configure_handler(logging.StreamHandler())
 configure_handler(logging.FileHandler('build/test.log'))
+
+def logger(name):
+    return logging.getLogger(name)
