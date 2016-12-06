@@ -502,7 +502,6 @@ def _assert_all_resources_of_page_load(html_content, host):
         if path is None:
             continue
         url = _build_url(path, host)
-        print RESOURCE_CACHE
         if url in RESOURCE_CACHE:
             LOGGER.info("Cached %s: %s", url, RESOURCE_CACHE[url])
         else:
