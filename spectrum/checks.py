@@ -386,18 +386,23 @@ class JournalCheck:
     def __init__(self, host):
         self._host = host
 
-    def article(self, id, volume=5):
-        url = "%s/content/%s/e%s" % (self._host, volume, id)
+    def article(self, id, volume, has_figures):
+        url = _build_url("/content/%s/e%s" % (volume, id), self._host)
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200, url)
         _assert_all_resources_of_page_load(response.content, self._host)
-        figures_link = self._link(response.content, 'view-selector__link--figures')
-        if figures_link:
-            LOGGER.info("Loading %s", figures_link)
-            response = requests.get(figures_link)
-            _assert_status_code(response, 200, figures_link)
+        figures_link_selector = 'view-selector__link--figures'
+        figures_link = self._link(response.content, figures_link_selector)
+        if has_figures:
+            assert figures_link is not None, "Cannot find figures link with selector %s" % figures_link_selector
+            figures_url = _build_url(figures_link, self._host)
+            LOGGER.info("Loading %s", figures_url)
+            response = requests.get(figures_url)
+            _assert_status_code(response, 200, figures_url)
             _assert_all_resources_of_page_load(response.content, self._host)
+        else:
+            assert figures_link is None, "Found a figure link %s but it should not be there as the article has no figures" % figures_link
 
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
@@ -407,7 +412,7 @@ class JournalCheck:
         links = soup.find_all("a", class_=class_name)
         assert len(links) <= 1, \
                ("Found too many links for the class name %s: %s" % (class_name, links))
-        return links[0].href if len(links) == 1 else None
+        return links[0]['href'] if len(links) == 1 else None
 
 
 class GithubCheck:

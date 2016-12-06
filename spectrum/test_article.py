@@ -80,7 +80,7 @@ def _verify(article):
 
     checks.ARCHIVE.of(id=article.id(), version=article.version())
     article_from_api = checks.API.article(id=article.id(), version=article.version())
-    checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'])
+    checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], has_figures=article.has_figures())
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
 
 def _feed_and_verify(article):
