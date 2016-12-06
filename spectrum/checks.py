@@ -391,14 +391,13 @@ class JournalCheck:
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200, url)
-        #_assert_all_resources_of_page_load(response.content, self._host)
+        _assert_all_resources_of_page_load(response.content, self._host)
         figures_link = self._link(response.content, 'view-selector__link--figures')
         if figures_link:
-            #url = "%s/content/%s/e%s/figures" % (self._host, volume, id)
             LOGGER.info("Loading %s", figures_link)
             response = requests.get(figures_link)
             _assert_status_code(response, 200, figures_link)
-            #_assert_all_resources_of_page_load(response.content, self._host)
+            _assert_all_resources_of_page_load(response.content, self._host)
 
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
