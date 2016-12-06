@@ -21,7 +21,7 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
 @pytest.mark.continuum
 def test_article_multiple_versions(generate_article, version_article):
     template_id = 15893
-    article = generate_article(template_id, version=1)
+    article = generate_article(template_id)
     _feed_and_verify(article)
     new_article = version_article(article, new_version=2)
     _feed_and_verify(new_article)
@@ -32,7 +32,7 @@ def test_article_multiple_versions(generate_article, version_article):
 @pytest.mark.continuum
 def test_article_silent_correction(generate_article, silently_correct_article):
     template_id = 15893
-    article = generate_article(template_id, version=1)
+    article = generate_article(template_id)
     _feed_and_verify(article)
     silent_correction_start = datetime.now()
     corrected_article = silently_correct_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
@@ -46,7 +46,7 @@ def test_article_silent_correction(generate_article, silently_correct_article):
 @pytest.mark.continuum
 def test_article_already_present_version(generate_article, version_article):
     template_id = 15893
-    article = generate_article(template_id, version=1)
+    article = generate_article(template_id)
     _feed_and_verify(article)
     new_article = version_article(article, new_version=1, version_number_prefix='v')
     _feed(new_article)

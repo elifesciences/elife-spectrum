@@ -21,8 +21,8 @@ def article_id_filter(request):
 #@pytest.fixture in pytest>=2.10
 def generate_article():
     created_articles = []
-    def from_template_id(template_id, version=1):
-        article = generator.article_zip(str(template_id), version=version)
+    def from_template_id(template_id):
+        article = generator.article_zip(str(template_id))
         created_articles.append(article)
         return article
     yield from_template_id

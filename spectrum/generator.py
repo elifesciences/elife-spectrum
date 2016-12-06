@@ -17,26 +17,26 @@ def generate_article_id(template_id):
     prefix = random.randrange(1, maximum_prefix + 1)
     return str(prefix * 100000 + int(template_id))
 
-def article_zip(template_id, version=1):
-    (template, kind, rerun) = _choose_template(template_id)
+def article_zip(template_id):
+    (template, kind) = _choose_template(template_id)
     id = generate_article_id(template_id)
-    generated_article_directory = '/tmp/elife-%s-%s-%s%d' % (id, kind, 'v' if rerun else 'r', version)
+    generated_article_directory = '/tmp/elife-%s-%s-r1' % (id, kind)
     os.mkdir(generated_article_directory)
     generated_files = []
     for file in glob.glob(template + "/*"):
-        generated_file = _generate(file, id, generated_article_directory, template_id, version)
+        generated_file = _generate(file, id, generated_article_directory, template_id)
         generated_files.append(generated_file)
     zip_filename = generated_article_directory + '.zip'
     figure_names = []
     with zipfile.ZipFile(zip_filename, 'w') as zip_file:
         for generated_file in generated_files:
             zip_file.write(generated_file, path.basename(generated_file))
-            match = re.match(r".*/elife-\d+-(.+)-v[\d+]?\.tif", generated_file)
+            match = re.match(r".*/elife-\d+-(.+).tif", generated_file)
             if match:
                 figure_names.append(match.groups()[0])
     LOGGER.info("Generated %s with figures %s", zip_filename, figure_names, extra={'id': id})
     has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
-    return ArticleZip(id, zip_filename, generated_article_directory, version, figure_names, has_pdf)
+    return ArticleZip(id, zip_filename, generated_article_directory, version=1, figure_names=figure_names, has_pdf=has_pdf)
 
 def clean():
     for entry in glob.glob('/tmp/elife*'):
@@ -65,16 +65,12 @@ def _choose_template(template_id):
     assert match is not None, ("Bad name for template directory %s" % chosen)
     assert len(match.groups()) == 2
     kind = match.groups()[0] # vor or poa
-    #r_or_v = match.groups()[1] # new run or an already processed version
-    # return (chosen, kind, True if r_or_v == 'v' else False)
-    # in the testing environment every new generated article is never a re-run
-    return (chosen, kind, False)
+    return (chosen, kind)
 
 
-def _generate(filename, id, generated_article_directory, template_id, version):
+def _generate(filename, id, generated_article_directory, template_id):
     filename_components = path.splitext(filename)
-    version_label = '-v%s.' % version
-    generated_filename = re.sub(r'-v\d+\.', version_label, path.basename(filename).replace(template_id, id))
+    generated_filename = path.basename(filename).replace(template_id, id)
     target = generated_article_directory + '/' + generated_filename
     assert len(filename_components) == 2
     extension = filename_components[1]
