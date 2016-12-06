@@ -462,6 +462,8 @@ def _assert_status_code(response, expected_status_code, url):
     assert response.status_code == expected_status_code, \
         "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
 
+RESOURCE_CACHE = {}
+
 def _assert_all_resources_of_page_load(html_content, host):
     """Checks that all <script>, <link>, <video>, <source>, <srcset> load, by issuing HEAD requests that must give 200 OK.
 
@@ -498,9 +500,14 @@ def _assert_all_resources_of_page_load(html_content, host):
         if path is None:
             continue
         url = _build_url(path, host)
-        LOGGER.info("Loading %s", url)
-        response = requests.head(url)
-        _assert_status_code(response, 200, url)
+        print RESOURCE_CACHE
+        if url in RESOURCE_CACHE:
+            LOGGER.info("Cached %s: %s", url, RESOURCE_CACHE[url])
+        else:
+            LOGGER.info("Loading %s", url)
+            response = requests.head(url)
+            _assert_status_code(response, 200, url)
+            RESOURCE_CACHE[url] = response.status_code
     return soup
 
 def _build_url(path, host):
