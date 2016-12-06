@@ -394,7 +394,9 @@ class JournalCheck:
         _assert_all_resources_of_page_load(response.content, self._host)
         figures_link_selector = 'view-selector__link--figures'
         figures_link = self._link(response.content, figures_link_selector)
-        if has_figures:
+        #if has_figures:
+        print "has_figures: %s" % has_figures
+        if figures_link:
             assert figures_link is not None, "Cannot find figures link with selector %s" % figures_link_selector
             figures_url = _build_url(figures_link, self._host)
             LOGGER.info("Loading %s", figures_url)
