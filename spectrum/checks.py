@@ -532,7 +532,7 @@ WEBSITE = WebsiteArticleCheck(
     user=aws.SETTINGS.website_user,
     password=aws.SETTINGS.website_password
 )
-IMAGES = BucketFileCheck(
+IMAGES_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_cdn,
     '{id}/elife-{id}-{figure_name}-v{version}.jpg'
