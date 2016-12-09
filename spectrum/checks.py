@@ -532,10 +532,25 @@ WEBSITE = WebsiteArticleCheck(
     user=aws.SETTINGS.website_user,
     password=aws.SETTINGS.website_password
 )
-IMAGES_CDN = BucketFileCheck(
+IMAGES_BOT_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_cdn,
     '{id}/elife-{id}-{figure_name}-v{version}.jpg'
+)
+IMAGES_PUBLISHED_CDN = BucketFileCheck(
+    aws.S3,
+    aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg'
+)
+XML_PUBLISHED_CDN = BucketFileCheck(
+    aws.S3,
+    aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-v{version}.xml'
+)
+XML_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
+    aws.S3,
+    aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-v{version}-download.xml'
 )
 PDF = BucketFileCheck(
     aws.S3,

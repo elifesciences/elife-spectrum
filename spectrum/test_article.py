@@ -64,7 +64,10 @@ def _feed_silent_correction(article):
 def _verify(article):
     (run, ) = checks.EIF.of(id=article.id(), version=article.version())
     for each in article.figure_names():
-        checks.IMAGES_CDN.of(id=article.id(), figure_name=each, version=article.version())
+        checks.IMAGES_BOT_CDN.of(id=article.id(), figure_name=each, version=article.version())
+        checks.IMAGES_PUBLISHED_CDN.of(id=article.id(), figure_name=each, version=article.version())
+    checks.XML_PUBLISHED_CDN.of(id=article.id(), version=article.version())
+    checks.XML_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
     if article.has_pdf():
         checks.PDF.of(id=article.id(), version=article.version())
     checks.WEBSITE.unpublished(id=article.id(), version=article.version())
