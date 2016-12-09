@@ -552,10 +552,20 @@ XML_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
     aws.SETTINGS.bucket_published,
     'articles/{id}/elife-{id}-v{version}-download.xml'
 )
-PDF = BucketFileCheck(
+PDF_BOT_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_cdn,
     '{id}/elife-{id}-v{version}.pdf'
+)
+PDF_PUBLISHED_CDN = BucketFileCheck(
+    aws.S3,
+    aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-v{version}.pdf'
+)
+PDF_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
+    aws.S3,
+    aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-v{version}-download.pdf'
 )
 DASHBOARD = DashboardArticleCheck(
     host=aws.SETTINGS.dashboard_host,

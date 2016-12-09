@@ -69,7 +69,9 @@ def _verify(article):
     checks.XML_PUBLISHED_CDN.of(id=article.id(), version=article.version())
     checks.XML_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
     if article.has_pdf():
-        checks.PDF.of(id=article.id(), version=article.version())
+        checks.PDF_BOT_CDN.of(id=article.id(), version=article.version())
+        checks.PDF_PUBLISHED_CDN.of(id=article.id(), version=article.version())
+        checks.PDF_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
     checks.WEBSITE.unpublished(id=article.id(), version=article.version())
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version())
 
