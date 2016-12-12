@@ -400,8 +400,8 @@ class ApiCheck:
                     return False
             LOGGER.info("%s: conforming to constraints %s",
                         latest_url, constraints)
-            return True
-        _poll(
+            return body
+        return _poll(
             _is_ready,
             "%s to satisfy constraints %s",
             latest_url, constraints
@@ -411,6 +411,24 @@ class ApiCheck:
         url = "%s/search?for=%s" % (self._host, for_input)
         response = requests.get(url)
         return self._ensure_sane_response(response, url)
+
+    def wait_search(self, word):
+        "Returns as soon as there is one result"
+        search_url = "%s/search?for=%s" % (self._host, word)
+        def _is_ready():
+            response = requests.get(search_url, headers={})
+            body = self._ensure_sane_response(response, search_url)
+            if len(body['items']) == 0:
+                return False
+            LOGGER.info("%s: returning %d results",
+                        search_url,
+                        len(body['items']))
+            return body
+        return _poll(
+            _is_ready,
+            "%s returning at least 1 result",
+            search_url
+        )
 
     def _ensure_sane_response(self, response, url):
         assert response.status_code is 200, \

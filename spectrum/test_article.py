@@ -1,6 +1,8 @@
 from datetime import datetime
 import os
+import random
 import re
+import string
 import pytest
 from spectrum import generator
 from spectrum import input
@@ -71,6 +73,15 @@ def test_article_already_present_version(generate_article, version_article):
     error = checks.DASHBOARD.error(id=article.id(), version=1, run=2)
     assert re.match(r".*already published article version.*", error['event-message']), ("Error found on the dashboard does not match the expected description: %s" % error)
 
+@pytest.mark.continuum
+def test_searching_for_a_new_article(generate_article, modify_article):
+    template_id = 15893
+    invented_word = _invented_word()
+    new_article = modify_article(generate_article(template_id), replacements={'cytomegalovirus':invented_word})
+    _ingest_and_publish(new_article)
+    result = checks.API.wait_search(invented_word)
+    assert len(result['items']) == 1, "Searching for %s returned too many results: %d" % (invented_word, len(result['items']))
+
 def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
 
@@ -116,3 +127,5 @@ def _ingest_and_publish(article):
     _ingest(article)
     _publish(article)
 
+def _invented_word():
+    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))
