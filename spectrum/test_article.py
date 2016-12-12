@@ -16,15 +16,28 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
         pytest.skip("SKIPPING 00230 due to incomplete support for videos")
 
     article = generate_article(template_id)
-    _feed_and_verify(article)
+    _ingest_and_publish(article)
+
+@pytest.mark.continuum
+def test_article_multiple_ingests_of_the_same_version(generate_article, silently_correct_article):
+    template_id = 15893
+    article = generate_article(template_id)
+    _ingest(article)
+    run1 = _wait_for_publishable(article)
+    print run1
+    run2_start = datetime.now()
+    corrected_article = silently_correct_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
+    _ingest(corrected_article)
+    run2 = _wait_for_publishable(corrected_article, last_modified_after=run2_start)
+    print run2
 
 @pytest.mark.continuum
 def test_article_multiple_versions(generate_article, version_article):
     template_id = 15893
     article = generate_article(template_id)
-    _feed_and_verify(article)
+    _ingest_and_publish(article)
     new_article = version_article(article, new_version=2)
-    _feed_and_verify(new_article)
+    _ingest_and_publish(new_article)
 
 # this is a silent correction of a 'correction' article, don't be confused
 # we use this article because it's small and fast to process
@@ -33,7 +46,7 @@ def test_article_multiple_versions(generate_article, version_article):
 def test_article_silent_correction(generate_article, silently_correct_article):
     template_id = 15893
     article = generate_article(template_id)
-    _feed_and_verify(article)
+    _ingest_and_publish(article)
     silent_correction_start = datetime.now()
     corrected_article = silently_correct_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _feed_silent_correction(corrected_article)
@@ -47,22 +60,22 @@ def test_article_silent_correction(generate_article, silently_correct_article):
 def test_article_already_present_version(generate_article, version_article):
     template_id = 15893
     article = generate_article(template_id)
-    _feed_and_verify(article)
+    _ingest_and_publish(article)
     new_article = version_article(article, new_version=1, version_number_prefix='v')
-    _feed(new_article)
+    _ingest(new_article)
     # article stops in this state, it's stable
     checks.DASHBOARD.publication_in_progress(id=article.id(), version=article.version())
     error = checks.DASHBOARD.error(id=article.id(), version=1, run=2)
     assert re.match(r".*already published article version.*", error['event-message']), ("Error found on the dashboard does not match the expected description: %s" % error)
 
-def _feed(article):
+def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
 
 def _feed_silent_correction(article):
     input.SILENT_CORRECTION_BUCKET.upload(article.filename(), article.id())
 
-def _verify(article):
-    (run, ) = checks.EIF.of(id=article.id(), version=article.version())
+def _wait_for_publishable(article, last_modified_after=None):
+    (run, ) = checks.EIF.of(id=article.id(), version=article.version(), last_modified_after=last_modified_after)
     for each in article.figure_names():
         checks.IMAGES_BOT_CDN.of(id=article.id(), figure_name=each, version=article.version())
         checks.IMAGES_PUBLISHED_CDN.of(id=article.id(), figure_name=each, version=article.version())
@@ -74,8 +87,9 @@ def _verify(article):
         checks.PDF_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
     checks.WEBSITE.unpublished(id=article.id(), version=article.version())
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version())
+    return run
 
-    input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
+def _wait_for_published(article):
     checks.DASHBOARD.published(id=article.id(), version=article.version())
     version_info = checks.LAX.published(id=article.id(), version=article.version())
     checks.WEBSITE.published(id=article.id(), version=article.version())
@@ -88,7 +102,13 @@ def _verify(article):
     checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], has_figures=article.has_figures())
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
 
-def _feed_and_verify(article):
-    _feed(article)
-    _verify(article)
+def _publish(article):
+    run = _wait_for_publishable(article)
+    input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
+    _wait_for_published(article)
+
+
+def _ingest_and_publish(article):
+    _ingest(article)
+    _publish(article)
 
