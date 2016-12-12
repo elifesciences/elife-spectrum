@@ -203,9 +203,7 @@ class DashboardArticleCheck:
         )
 
     def _is_present(self, id, version, run, status):
-        template = "%s/api/article/%s"
-        url = template % (self._host, id)
-        version_key = str(version)
+        url = self._article_api(id)
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
             if response.status_code != 200:
@@ -213,17 +211,14 @@ class DashboardArticleCheck:
             if response.status_code >= 500:
                 raise UnrecoverableException(response)
             article = response.json()
-            if 'versions' not in article:
+            version_contents = self._check_for_version(article, version)
+            if not version:
                 return False
-            if version_key not in article['versions']:
+            if version_contents['details']['publication-status'] != status:
                 return False
-            version_details = article['versions'][version_key]['details']
-            if version_details['publication-status'] != status:
-                return False
-            version_runs = article['versions'][version_key]['runs']
             run_suffix = ''
             if run:
-                matching_runs = [r for _, r in version_runs.iteritems() if r['run-id'] == run]
+                matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
                 if len(matching_runs) > 1:
                     raise RuntimeError("Too many runs matching run-id %s: %s", run, matching_runs)
                 if len(matching_runs) == 0:
@@ -232,7 +227,7 @@ class DashboardArticleCheck:
             LOGGER.info(
                 "Found %s version %s in status %s on dashboard" + run_suffix,
                 url,
-                version_key,
+                version,
                 status,
                 extra={'id': id}
             )
@@ -241,9 +236,16 @@ class DashboardArticleCheck:
             _log_connection_error(e)
             return False
 
+    def _check_for_version(self, article, version):
+        version_key = str(version)
+        if 'versions' not in article:
+            return False
+        if version_key not in article['versions']:
+            return False
+        return article['versions'][version_key]
+
     def _is_last_event_error(self, id, version, run):
-        template = "%s/api/article/%s"
-        url = template % (self._host, id)
+        url = self._article_api(id)
         version_key = str(version)
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
@@ -272,6 +274,9 @@ class DashboardArticleCheck:
             _log_connection_error(e)
             return False
 
+    def _article_api(self, id):
+        template = "%s/api/article/%s"
+        return template % (self._host, id)
 
 class LaxArticleCheck:
     def __init__(self, host):
