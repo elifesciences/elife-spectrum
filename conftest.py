@@ -31,7 +31,7 @@ def generate_article():
 @pytest.yield_fixture
 def version_article():
     created_articles = []
-    def from_original_article(original_article, new_version, version_number_prefix='r'):
+    def from_original_article(original_article, new_version):
         article = original_article.new_version(version=new_version)
         created_articles.append(article)
         return article
@@ -42,6 +42,7 @@ def version_article():
 def modify_article():
     created_articles = []
     def from_original_article(original_article, replacements=None):
+        # TODO: rename to new_revision()
         article = original_article.new_release()
         article.replace_in_text(replacements if replacements else {})
         created_articles.append(article)

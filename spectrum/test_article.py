@@ -28,7 +28,8 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     run2_start = datetime.now()
     modified_article = modify_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _ingest(modified_article)
-    run2 = _wait_for_publishable(modified_article, last_modified_after=run2_start)
+    (run2, ) = checks.EIF.of(id=article.id(), version=article.version(), last_modified_after=run2_start)
+    checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run2)
     assert run2 != run1, "A new run should have been triggered"
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run2)
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
@@ -38,6 +39,7 @@ def test_article_multiple_versions(generate_article, version_article):
     template_id = 15893
     article = generate_article(template_id)
     _ingest_and_publish(article)
+    # TODO: maybe use -r2? how does it detect a new version?
     new_article = version_article(article, new_version=2)
     _ingest_and_publish(new_article)
 
@@ -63,7 +65,7 @@ def test_article_already_present_version(generate_article, version_article):
     template_id = 15893
     article = generate_article(template_id)
     _ingest_and_publish(article)
-    new_article = version_article(article, new_version=1, version_number_prefix='v')
+    new_article = version_article(article, new_version=1)
     _ingest(new_article)
     # article stops in this state, it's stable
     checks.DASHBOARD.publication_in_progress(id=article.id(), version=article.version())
@@ -78,6 +80,7 @@ def _feed_silent_correction(article):
 
 def _wait_for_publishable(article, last_modified_after=None):
     (run, ) = checks.EIF.of(id=article.id(), version=article.version(), last_modified_after=last_modified_after)
+    # TODO use last_modified_after or someting similar everywhere
     for each in article.figure_names():
         checks.IMAGES_BOT_CDN.of(id=article.id(), figure_name=each, version=article.version())
         checks.IMAGES_PUBLISHED_CDN.of(id=article.id(), figure_name=each, version=article.version())
@@ -87,8 +90,9 @@ def _wait_for_publishable(article, last_modified_after=None):
         checks.PDF_BOT_CDN.of(id=article.id(), version=article.version())
         checks.PDF_PUBLISHED_CDN.of(id=article.id(), version=article.version())
         checks.PDF_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
+    # TODO: check they have been modified here?
     checks.WEBSITE.unpublished(id=article.id(), version=article.version())
-    checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version())
+    checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run)
     return run
 
 def _wait_for_published(article):

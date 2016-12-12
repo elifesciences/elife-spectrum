@@ -30,11 +30,12 @@ class Dashboard:
         body = {}
         body = {'articles': [{'id': id, 'version': version, 'run': run}]}
         response = requests.post(url, auth=(self._user, self._password), json=body, verify=False)
-        assert response.status_code == 200, ("Response status wass %s: %s" % (response.status_code, response.text))
+        assert response.status_code == 200, ("Response status was %s: %s" % (response.status_code, response.text))
         LOGGER.info(
-            "Pressed Publish for %s version %s on dashboard",
+            "Pressed Publish for %s version %s run %s on dashboard",
             url,
             version,
+            run,
             extra={'id': id}
         )
 

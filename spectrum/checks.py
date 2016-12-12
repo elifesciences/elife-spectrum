@@ -58,8 +58,8 @@ class BucketFileCheck:
             for file in bucket.objects.all():
                 match = re.match(criteria, file.key)
                 if match:
-                    LOGGER.info(
-                        "Found %s in bucket %s (last modified: %s)",
+                    LOGGER.debug(
+                        "Found candidate %s in bucket %s (last modified: %s)",
                         file.key,
                         self._bucket_name,
                         file.last_modified,
@@ -67,7 +67,14 @@ class BucketFileCheck:
                     )
                     if last_modified_after:
                         if file.last_modified.strftime('%s') <= last_modified_after.strftime('%s'):
-                            return False
+                            continue
+                    LOGGER.info(
+                        "Found %s in bucket %s (last modified: %s)",
+                        file.key,
+                        self._bucket_name,
+                        file.last_modified,
+                        extra={'id': id}
+                    )
                     if match.groups():
                         LOGGER.info(
                             "Found groups %s in matching the file name %s",
@@ -172,14 +179,14 @@ class DashboardArticleCheck:
         self._user = user
         self._password = password
 
-    def ready_to_publish(self, id, version):
-        return self._wait_for_status(id, version, "ready to publish")
+    def ready_to_publish(self, id, version, run=None):
+        return self._wait_for_status(id, version, run=run, status="ready to publish")
 
-    def published(self, id, version):
-        return self._wait_for_status(id, version, "published")
+    def published(self, id, version, run=None):
+        return self._wait_for_status(id, version, run=run, status="published")
 
-    def publication_in_progress(self, id, version):
-        return self._wait_for_status(id, version, "publication in progress")
+    def publication_in_progress(self, id, version, run=None):
+        return self._wait_for_status(id, version, run=run, status="publication in progress")
 
     def error(self, id, version, run=1):
         return _poll(
@@ -188,14 +195,14 @@ class DashboardArticleCheck:
             version, self._host, id
         )
 
-    def _wait_for_status(self, id, version, status):
+    def _wait_for_status(self, id, version, run, status):
         return _poll(
-            lambda: self._is_present(id, version, status),
+            lambda: self._is_present(id, version, run, status),
             "article version %s in status %s on dashboard: %s/api/article/%s",
             version, status, self._host, id
         )
 
-    def _is_present(self, id, version, status):
+    def _is_present(self, id, version, run, status):
         template = "%s/api/article/%s"
         url = template % (self._host, id)
         version_key = str(version)
@@ -213,8 +220,17 @@ class DashboardArticleCheck:
             version_details = article['versions'][version_key]['details']
             if version_details['publication-status'] != status:
                 return False
+            version_runs = article['versions'][version_key]['runs']
+            run_suffix = ''
+            if run:
+                matching_runs = [r for r_number, r in version_runs.iteritems() if r['run-id'] == run]
+                if len(matching_runs) > 1:
+                    raise RuntimeError("Too many runs matching run-id %s: %s", run, matching_runs)
+                if len(matching_runs) == 0:
+                    return False
+                run_suffix = " with run %s" % run
             LOGGER.info(
-                "Found %s version %s in status %s on dashboard",
+                "Found %s version %s in status %s on dashboard" + run_suffix,
                 url,
                 version_key,
                 status,
@@ -350,6 +366,9 @@ class ApiCheck:
         latest_url = "%s/articles/%s" % (self._host, id)
         def _is_ready():
             response = requests.get(latest_url, headers={})
+            if response.status_code == 404:
+                LOGGER.debug("%s: 404", latest_url)
+                return False
             body = self._ensure_sane_response(response, latest_url)
             for field, value in constraints.iteritems():
                 if body[field] != value:
