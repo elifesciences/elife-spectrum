@@ -218,10 +218,8 @@ class DashboardArticleCheck:
                 return False
             run_suffix = ''
             if run:
-                matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
-                if len(matching_runs) > 1:
-                    raise RuntimeError("Too many runs matching run-id %s: %s", run, matching_runs)
-                if len(matching_runs) == 0:
+                run_contents = self._check_for_run(version_contents, run)
+                if not run_contents:
                     return False
                 run_suffix = " with run %s" % run
             LOGGER.info(
@@ -243,6 +241,14 @@ class DashboardArticleCheck:
         if version_key not in article['versions']:
             return False
         return article['versions'][version_key]
+
+    def _check_for_run(self, version_contents, run):
+        matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
+        if len(matching_runs) > 1:
+            raise RuntimeError("Too many runs matching run-id %s: %s", run, matching_runs)
+        if len(matching_runs) == 0:
+            return False
+        return matching_runs[0]
 
     def _is_last_event_error(self, id, version, run):
         url = self._article_api(id)

@@ -26,7 +26,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     run1 = _wait_for_publishable(article)
 
     run2_start = datetime.now()
-    modified_article = modify_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
+    modified_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _ingest(modified_article)
     (run2, ) = checks.EIF.of(id=article.id(), version=article.version(), last_modified_after=run2_start)
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run2)
@@ -51,7 +51,7 @@ def test_article_silent_correction(generate_article, modify_article):
     article = generate_article(template_id)
     _ingest_and_publish(article)
     silent_correction_start = datetime.now()
-    silently_corrected_article = modify_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
+    silently_corrected_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _feed_silent_correction(silently_corrected_article)
     input.SILENT_CORRECTION.article(os.path.basename(silently_corrected_article.filename()))
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
