@@ -223,7 +223,7 @@ class DashboardArticleCheck:
             version_runs = article['versions'][version_key]['runs']
             run_suffix = ''
             if run:
-                matching_runs = [r for r_number, r in version_runs.iteritems() if r['run-id'] == run]
+                matching_runs = [r for _, r in version_runs.iteritems() if r['run-id'] == run]
                 if len(matching_runs) > 1:
                     raise RuntimeError("Too many runs matching run-id %s: %s", run, matching_runs)
                 if len(matching_runs) == 0:

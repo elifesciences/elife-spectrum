@@ -41,8 +41,8 @@ def version_article():
 @pytest.yield_fixture
 def modify_article():
     created_articles = []
-    def from_original_article(original_article, replacements=None):
-        article = original_article.new_revision()
+    def from_original_article(original_article, new_version, replacements=None):
+        article = original_article.new_revision(version=new_version)
         article.replace_in_text(replacements if replacements else {})
         created_articles.append(article)
         return article

@@ -35,12 +35,11 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
 
 @pytest.mark.continuum
-def test_article_multiple_versions(generate_article, version_article):
+def test_article_multiple_versions(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
     _ingest_and_publish(article)
-    # TODO: maybe use -r2? how does it detect a new version?
-    new_article = version_article(article, new_version=2)
+    new_article = modify_article(article, new_version=2)
     _ingest_and_publish(new_article)
 
 # this is a silent correction of a 'correction' article, don't be confused
