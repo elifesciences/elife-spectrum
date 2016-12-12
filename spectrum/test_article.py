@@ -19,17 +19,19 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
     _ingest_and_publish(article)
 
 @pytest.mark.continuum
-def test_article_multiple_ingests_of_the_same_version(generate_article, silently_correct_article):
+def test_article_multiple_ingests_of_the_same_version(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
     _ingest(article)
     run1 = _wait_for_publishable(article)
-    print run1
+
     run2_start = datetime.now()
-    corrected_article = silently_correct_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
-    _ingest(corrected_article)
-    run2 = _wait_for_publishable(corrected_article, last_modified_after=run2_start)
-    print run2
+    modified_article = modify_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
+    _ingest(modified_article)
+    run2 = _wait_for_publishable(modified_article, last_modified_after=run2_start)
+    assert run2 != run1, "A new run should have been triggered"
+    input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run2)
+    checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
 
 @pytest.mark.continuum
 def test_article_multiple_versions(generate_article, version_article):
@@ -43,14 +45,14 @@ def test_article_multiple_versions(generate_article, version_article):
 # we use this article because it's small and fast to process
 # the silent correction is changing one word from lowercase to uppercase
 @pytest.mark.continuum
-def test_article_silent_correction(generate_article, silently_correct_article):
+def test_article_silent_correction(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
     _ingest_and_publish(article)
     silent_correction_start = datetime.now()
-    corrected_article = silently_correct_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
-    _feed_silent_correction(corrected_article)
-    input.SILENT_CORRECTION.article(os.path.basename(corrected_article.filename()))
+    silently_corrected_article = modify_article(article, {'cytomegalovirus': 'CYTOMEGALOVIRUS'})
+    _feed_silent_correction(silently_corrected_article)
+    input.SILENT_CORRECTION.article(os.path.basename(silently_corrected_article.filename()))
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='CYTOMEGALOVIRUS')
     checks.ARCHIVE.of(id=article.id(), version=article.version(), last_modified_after=silent_correction_start)

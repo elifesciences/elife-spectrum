@@ -32,20 +32,17 @@ def generate_article():
 def version_article():
     created_articles = []
     def from_original_article(original_article, new_version, version_number_prefix='r'):
-        article = original_article.new_version(version=new_version, version_number_prefix=version_number_prefix)
+        article = original_article.new_version(version=new_version)
         created_articles.append(article)
         return article
     yield from_original_article
     _clean_all(created_articles)
 
 @pytest.yield_fixture
-def silently_correct_article():
+def modify_article():
     created_articles = []
     def from_original_article(original_article, replacements=None):
-        article = original_article.new_version(
-            original_article.version() + 1,
-            version_number_prefix='r'
-        )
+        article = original_article.new_release()
         article.replace_in_text(replacements if replacements else {})
         created_articles.append(article)
         return article
