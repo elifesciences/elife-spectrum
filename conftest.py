@@ -42,8 +42,7 @@ def version_article():
 def modify_article():
     created_articles = []
     def from_original_article(original_article, replacements=None):
-        # TODO: rename to new_revision()
-        article = original_article.new_release()
+        article = original_article.new_revision()
         article.replace_in_text(replacements if replacements else {})
         created_articles.append(article)
         return article

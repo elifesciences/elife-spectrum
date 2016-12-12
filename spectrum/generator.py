@@ -36,7 +36,7 @@ def article_zip(template_id):
                 figure_names.append(match.groups()[0])
     LOGGER.info("Generated %s with figures %s", zip_filename, figure_names, extra={'id': id})
     has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
-    return ArticleZip(id, zip_filename, generated_article_directory, release=1, version=1, figure_names=figure_names, has_pdf=has_pdf)
+    return ArticleZip(id, zip_filename, generated_article_directory, revision=1, version=1, figure_names=figure_names, has_pdf=has_pdf)
 
 def clean():
     for entry in glob.glob('/tmp/elife*'):
@@ -87,11 +87,11 @@ def _generate(filename, id, generated_article_directory, template_id):
     return target
 
 class ArticleZip:
-    def __init__(self, id, filename, directory, release, version, figure_names=None, has_pdf=False):
+    def __init__(self, id, filename, directory, revision, version, figure_names=None, has_pdf=False):
         self._id = id
         self._filename = filename
         self._directory = directory
-        self._release = release
+        self._revision = revision
         self._version = version
         self._figure_names = figure_names if figure_names else []
         self._has_pdf = has_pdf
@@ -117,22 +117,22 @@ class ArticleZip:
     def has_pdf(self):
         return self._has_pdf
 
-    def new_release(self):
-        new_release = self._release + 1
-        new_filename = re.sub(r'-(r|v)\d+.zip$', ('-r%s.zip' % new_release), self._filename)
+    def new_revision(self):
+        new_revision = self._revision + 1
+        new_filename = re.sub(r'-(r|v)\d+.zip$', ('-r%s.zip' % new_revision), self._filename)
         shutil.copy(self._filename, new_filename)
-        new_directory = re.sub(r'-(r|v)\d+$', ('-r%s' % new_release), self._directory)
+        new_directory = re.sub(r'-(r|v)\d+$', ('-r%s' % new_revision), self._directory)
         shutil.copytree(self._directory, new_directory)
-        return ArticleZip(self._id, new_filename, new_directory, new_release, self._version, self._figure_names, self._has_pdf)
+        return ArticleZip(self._id, new_filename, new_directory, new_revision, self._version, self._figure_names, self._has_pdf)
 
     def new_version(self, version):
         # what is changed is actually the "run"
-        new_release = self._release + 1
+        new_revision = self._revision + 1
         new_filename = re.sub(r'-(r|v)\d+.zip$', ('-v%s.zip' % version), self._filename)
         shutil.copy(self._filename, new_filename)
         new_directory = re.sub(r'-(r|v)\d+$', ('-v%s' % version), self._directory)
         shutil.copytree(self._directory, new_directory)
-        return ArticleZip(self._id, new_filename, new_directory, new_release, version, self._figure_names, self._has_pdf)
+        return ArticleZip(self._id, new_filename, new_directory, new_revision, version, self._figure_names, self._has_pdf)
 
     def replace_in_text(self, replacements):
         """Beware: violates immutability, as it modifies the file in place for performance reasons"""
