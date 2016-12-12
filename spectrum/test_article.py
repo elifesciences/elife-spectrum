@@ -78,9 +78,8 @@ def _ingest(article):
 def _feed_silent_correction(article):
     input.SILENT_CORRECTION_BUCKET.upload(article.filename(), article.id())
 
-def _wait_for_publishable(article, last_modified_after=None):
-    (run, ) = checks.EIF.of(id=article.id(), version=article.version(), last_modified_after=last_modified_after)
-    # TODO use last_modified_after or someting similar everywhere
+def _wait_for_publishable(article):
+    (run, ) = checks.EIF.of(id=article.id(), version=article.version())
     for each in article.figure_names():
         checks.IMAGES_BOT_CDN.of(id=article.id(), figure_name=each, version=article.version())
         checks.IMAGES_PUBLISHED_CDN.of(id=article.id(), figure_name=each, version=article.version())
@@ -90,7 +89,6 @@ def _wait_for_publishable(article, last_modified_after=None):
         checks.PDF_BOT_CDN.of(id=article.id(), version=article.version())
         checks.PDF_PUBLISHED_CDN.of(id=article.id(), version=article.version())
         checks.PDF_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
-    # TODO: check they have been modified here?
     checks.WEBSITE.unpublished(id=article.id(), version=article.version())
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run)
     return run
