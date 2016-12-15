@@ -37,25 +37,37 @@ class UnrecoverableException(RuntimeError):
 
 
 class BucketFileCheck:
-    def __init__(self, s3, bucket_name, key):
+    def __init__(self, s3, bucket_name, key, prefix=None):
         self._s3 = s3
         self._bucket_name = bucket_name
         self._key = key
+        self._prefix = prefix
 
     def of(self, last_modified_after=None, **kwargs):
         criteria = self._key.format(**kwargs)
         last_modified_suffix = (" and being last_modified after %s" % last_modified_after) if last_modified_after else ""
         return _poll(
-            lambda: self._is_present(criteria, kwargs['id'], last_modified_after),
+            lambda: self._is_present(criteria, last_modified_after, **kwargs),
             "object matching criteria %s in bucket %s"+last_modified_suffix,
             criteria, self._bucket_name
         )
 
-    def _is_present(self, criteria, id, last_modified_after):
+    def _is_present(self, criteria, last_modified_after, **kwargs):
         try:
+            id = kwargs['id']
             bucket = self._s3.Bucket(self._bucket_name)
+            # TODO: necessary?
             bucket.load()
-            for file in bucket.objects.all():
+            all = bucket.objects.all()
+            if self._prefix:
+                prefix = self._prefix.format(**kwargs)
+                all = all.filter(Prefix=prefix)
+                LOGGER.debug(
+                    "Filtering by prefix %s",
+                    prefix,
+                    extra={'id': id}
+                )
+            for file in all:
                 match = re.match(criteria, file.key)
                 if match:
                     LOGGER.debug(
@@ -548,14 +560,16 @@ def _build_url(path, host):
 EIF = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_eif,
-    '{id}.{version}/(?P<run>.*)/elife-{id}-v{version}.json'
+    '{id}.{version}/(?P<run>.*)/elife-{id}-v{version}.json',
+    '{id}.{version}/'
 )
 ARCHIVE = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_archive,
     # notice {{6}} is the escaping for {6} in the regex,
     # it should not be substituted
-    'elife-{id}-(poa|vor)-v{version}-20[0-9]{{12}}.zip'
+    'elife-{id}-(poa|vor)-v{version}-20[0-9]{{12}}.zip',
+    'elife-{id}-'
 )
 WEBSITE = WebsiteArticleCheck(
     host=aws.SETTINGS.website_host,
@@ -565,36 +579,43 @@ WEBSITE = WebsiteArticleCheck(
 IMAGES_BOT_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_cdn,
+    '{id}/elife-{id}-{figure_name}-v{version}.jpg',
     '{id}/elife-{id}-{figure_name}-v{version}.jpg'
 )
 IMAGES_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg',
     'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg'
 )
 XML_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-v{version}.xml',
     'articles/{id}/elife-{id}-v{version}.xml'
 )
 XML_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-v{version}-download.xml',
     'articles/{id}/elife-{id}-v{version}-download.xml'
 )
 PDF_BOT_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_cdn,
+    '{id}/elife-{id}-v{version}.pdf',
     '{id}/elife-{id}-v{version}.pdf'
 )
 PDF_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-v{version}.pdf',
     'articles/{id}/elife-{id}-v{version}.pdf'
 )
 PDF_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
     aws.SETTINGS.bucket_published,
+    'articles/{id}/elife-{id}-v{version}-download.pdf',
     'articles/{id}/elife-{id}-v{version}-download.pdf'
 )
 DASHBOARD = DashboardArticleCheck(

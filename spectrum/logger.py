@@ -21,4 +21,9 @@ configure_handler(logging.StreamHandler())
 configure_handler(logging.FileHandler('build/test.log'))
 
 def logger(name):
+    "Returns a configured Logger"
     return logging.getLogger(name)
+
+def set_logging_level(level):
+    "e.g. logging.INFO"
+    logging.getLogger().setLevel(level)

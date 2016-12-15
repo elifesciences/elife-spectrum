@@ -78,6 +78,7 @@ def _feed_silent_correction(article):
     input.SILENT_CORRECTION_BUCKET.upload(article.filename(), article.id())
 
 def _wait_for_publishable(article):
+    # fails quite often but is now late in the process, can we make an intermediate check?
     (run, ) = checks.EIF.of(id=article.id(), version=article.version())
     for each in article.figure_names():
         checks.IMAGES_BOT_CDN.of(id=article.id(), figure_name=each, version=article.version())
