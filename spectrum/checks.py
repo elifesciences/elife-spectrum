@@ -465,6 +465,12 @@ class JournalCheck:
         #else:
         #    assert figures_link is None, "Found a figure link %s but it should not be there as the article has no figures" % figures_link
 
+    def homepage():
+        url = _build_url("/", self._host)
+        LOGGER.info("Loading %s", url)
+        response = requests.get(url)
+        _assert_status_code(response, 200, url)
+
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
 
