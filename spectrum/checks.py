@@ -443,8 +443,9 @@ class JournalCheck:
             response = requests.get(figures_url)
             _assert_status_code(response, 200, figures_url)
             _assert_all_resources_of_page_load(response.content, self._host)
-        else:
-            assert figures_link is None, "Found a figure link %s but it should not be there as the article has no figures" % figures_link
+        #TODO figures page will also be present if article has any tables, data sets or additional files
+        #else:
+        #    assert figures_link is None, "Found a figure link %s but it should not be there as the article has no figures" % figures_link
 
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
