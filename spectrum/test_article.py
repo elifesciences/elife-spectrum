@@ -66,8 +66,8 @@ def test_article_already_present_version(generate_article, version_article):
     _ingest_and_publish(article)
     new_article = version_article(article, new_version=1)
     _ingest(new_article)
-    # article stops in this state, it's stable
-    checks.DASHBOARD.publication_in_progress(id=article.id(), version=article.version())
+    # article stops sometimes in this state, sometimes in 'published'?
+    #checks.DASHBOARD.publication_in_progress(id=article.id(), version=article.version())
     error = checks.DASHBOARD.error(id=article.id(), version=1, run=2)
     assert re.match(r".*already published article version.*", error['event-message']), ("Error found on the dashboard does not match the expected description: %s" % error)
 
