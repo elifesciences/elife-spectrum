@@ -465,7 +465,7 @@ class JournalCheck:
         #else:
         #    assert figures_link is None, "Found a figure link %s but it should not be there as the article has no figures" % figures_link
 
-    def homepage():
+    def homepage(self):
         url = _build_url("/", self._host)
         LOGGER.info("Loading %s", url)
         response = requests.get(url)

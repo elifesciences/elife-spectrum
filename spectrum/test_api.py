@@ -1,3 +1,4 @@
+"Tests that hit the API directly, checking the sanity of the JSON returned there"
 import pytest
 from spectrum import checks
 

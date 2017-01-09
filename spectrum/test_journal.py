@@ -1,3 +1,4 @@
+"Tests that involve Journal pages that are not covered by other tests"
 import pytest
 from spectrum import checks
 

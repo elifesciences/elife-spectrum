@@ -1,3 +1,4 @@
+"Test that involve publishing articles and checking their visibility and correctness throughout different systems"
 from datetime import datetime
 import os
 import random
