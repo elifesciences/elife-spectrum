@@ -75,6 +75,16 @@ def test_article_already_present_version(generate_article, version_article):
     assert re.match(r".*already published article version.*", error['event-message']), ("Error found on the dashboard does not match the expected description: %s" % error)
 
 @pytest.mark.continuum
+def test_article_with_unicode_content(generate_article):
+    article = generate_article(template_id=19532)
+    _ingest(article)
+    _publish(article)
+    checks.DASHBOARD.published(id=article.id(), version=1)
+    journal_page = checks.JOURNAL.article(id=article.id(), volume=5, has_figures=article.has_figures())
+    print journal_page
+    assert "Szymon \xc5\x81\xc4\x99ski" in journal_page
+
+@pytest.mark.continuum
 def test_searching_for_a_new_article(generate_article, modify_article):
     template_id = 15893
     invented_word = _invented_word()
@@ -121,12 +131,12 @@ def _wait_for_published(article):
 def _publish(article):
     run = _wait_for_publishable(article)
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
-    _wait_for_published(article)
 
 
 def _ingest_and_publish(article):
     _ingest(article)
     _publish(article)
+    _wait_for_published(article)
 
 def _invented_word():
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))
