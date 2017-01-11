@@ -12,9 +12,10 @@ from spectrum import logger
 LOGGER = logger.logger(__name__)
 
 def generate_article_id(template_id):
-    # 2^31 = 2147483648 which is the maximum id
-    maximum_prefix = 21474 # covers until template_id reaches 83648
+    # 2^63 - 1 = 9223372036854775807 is the maximum id
+    maximum_prefix = 92233720368546
     prefix = random.randrange(1, maximum_prefix + 1)
+    # good until template_id reaches 100000
     return str(prefix * 100000 + int(template_id))
 
 def article_zip(template_id):
