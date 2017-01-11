@@ -49,12 +49,19 @@ def clean():
             LOGGER.info("Deleted file %s", entry)
 
 def all_stored_articles():
+    """Returns all articles available as test inputs.
+
+    However, excludes some blacklisted articles that we prefer to use with a specific test rather than the standard ingest-and-publish"""
+    blacklist = ['19532']
     articles = []
     for template_directory in glob.glob('spectrum/templates/elife-*'):
         match = re.match(r".*/elife-(\d+)-.+", template_directory)
         assert match is not None
         assert len(match.groups()) == 1
-        articles.append(match.groups()[0])
+        article_id = match.groups()[0]
+        if article_id in blacklist:
+            continue
+        articles.append(article_id)
     return articles
 
 def _choose_template(template_id):
