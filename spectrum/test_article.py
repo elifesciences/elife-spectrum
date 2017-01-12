@@ -77,7 +77,7 @@ def test_article_with_unicode_content(generate_article):
     article = generate_article(template_id=19532)
     _ingest(article)
     _publish(article)
-    checks.DASHBOARD.published(id=article.id(), version=1)
+    checks.API.wait_article(id=article.id())
     journal_page = checks.JOURNAL.article(id=article.id(), volume=5, has_figures=article.has_figures())
     print journal_page
     assert "Szymon \xc5\x81\xc4\x99ski" in journal_page
