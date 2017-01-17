@@ -362,7 +362,7 @@ class ApiCheck:
 
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
-        response = requests.get(url, headers={'Accept': 'application/vnd.elife.%s-list+json' % entity})
+        response = requests.get(url, headers={'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity})
         body = self._ensure_sane_response(response, url)
         return body
 

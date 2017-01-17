@@ -8,7 +8,7 @@ def test_list_based_apis():
     checks.API.subjects()
     checks.API.podcast_episodes()
     checks.API.people()
-    #checks.API.medium_articles()
+    checks.API.medium_articles()
     checks.API.blog_articles()
     checks.API.events()
     checks.API.interviews()
