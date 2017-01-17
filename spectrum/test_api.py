@@ -3,6 +3,7 @@ import pytest
 from spectrum import checks
 
 @pytest.mark.two
+@pytest.mark.medium
 def test_list_based_apis():
     checks.API.labs_experiments()
     checks.API.subjects()
