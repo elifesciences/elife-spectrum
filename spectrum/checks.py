@@ -472,6 +472,12 @@ class JournalCheck:
         response = requests.get(url)
         _assert_status_code(response, 200, url)
 
+    def magazine(self):
+        url = _build_url("/magazine", self._host)
+        LOGGER.info("Loading %s", url)
+        response = requests.get(url)
+        _assert_status_code(response, 200, url)
+
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
 
