@@ -16,6 +16,7 @@ def test_list_based_apis():
     checks.API.collections()
 
 @pytest.mark.two
+@pytest.mark.search
 def test_search():
     body = checks.API.search('inventednonexistentterm')
     assert body['total'] == 0, 'Searching for made up terms should not return results'

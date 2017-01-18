@@ -83,6 +83,7 @@ def test_article_with_unicode_content(generate_article):
     assert "Szymon \xc5\x81\xc4\x99ski" in journal_page
 
 @pytest.mark.continuum
+@pytest.mark.search
 def test_searching_for_a_new_article(generate_article, modify_article):
     template_id = 15893
     invented_word = _invented_word()

@@ -4,6 +4,7 @@ from spectrum import checks
 
 @pytest.mark.two
 @pytest.mark.medium
+@pytest.mark.search
 def test_various_pages():
     checks.JOURNAL.homepage()
     checks.JOURNAL.magazine()
