@@ -51,6 +51,10 @@ def test_article_silent_correction(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
     _ingest_and_publish(article)
+
+    # TODO: for stability, wait until all the publishing workflows have finished
+    checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
+
     silent_correction_start = datetime.now()
     silently_corrected_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _feed_silent_correction(silently_corrected_article)
