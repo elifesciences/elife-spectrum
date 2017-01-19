@@ -457,7 +457,7 @@ class JournalCheck:
         if has_figures:
             assert figures_link is not None, "Cannot find figures link with selector %s" % figures_link_selector
             figures_url = _build_url(figures_link, self._host)
-            LOGGER.info("Loading %s", figures_url)
+            LOGGER.info("Loading %s", figures_url, extra={'id':id})
             response = requests.get(figures_url)
             _assert_status_code(response, 200, figures_url)
             _assert_all_resources_of_page_load(response.content, self._host)
