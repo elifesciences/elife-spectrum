@@ -446,8 +446,10 @@ class JournalCheck:
     def __init__(self, host):
         self._host = host
 
-    def article(self, id, volume, has_figures):
+    def article(self, id, volume, has_figures=False, version=None):
         url = _build_url("/content/%s/e%s" % (volume, id), self._host)
+        if version:
+            url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200, url)
