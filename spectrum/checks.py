@@ -466,16 +466,17 @@ class JournalCheck:
         return response.content
 
     def homepage(self):
-        url = _build_url("/", self._host)
-        LOGGER.info("Loading %s", url)
-        response = requests.get(url)
-        _assert_status_code(response, 200, url)
+        return self.generic("/")
 
     def magazine(self):
-        url = _build_url("/magazine", self._host)
+        return self.generic("/magazine")
+
+    def generic(self, path):
+        url = _build_url(path, self._host)
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200, url)
+        return response.content
 
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
