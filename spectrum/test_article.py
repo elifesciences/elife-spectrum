@@ -40,8 +40,11 @@ def test_article_multiple_versions(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
     _ingest_and_publish(article)
-    new_article = modify_article(article, new_version=2)
-    _ingest_and_publish(new_article)
+    new_article = modify_article(article, new_version=2, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
+    article_from_api = _ingest_and_publish(new_article)
+    version1_content = checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], version=1)
+    assert 'cytomegalovirus' in version1_content
+    assert 'CYTOMEGALOVIRUS' not in version1_content
 
 # this is a silent correction of a 'correction' article, don't be confused
 # we use this article because it's small and fast to process
@@ -130,6 +133,7 @@ def _wait_for_published(article):
     article_from_api = checks.API.article(id=article.id(), version=article.version())
     checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], has_figures=article.has_figures())
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
+    return article_from_api
 
 def _publish(article):
     run = _wait_for_publishable(article)
@@ -139,7 +143,7 @@ def _publish(article):
 def _ingest_and_publish(article):
     _ingest(article)
     _publish(article)
-    _wait_for_published(article)
+    return _wait_for_published(article)
 
 def _invented_word():
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))

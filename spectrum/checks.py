@@ -446,8 +446,10 @@ class JournalCheck:
     def __init__(self, host):
         self._host = host
 
-    def article(self, id, volume, has_figures):
+    def article(self, id, volume, has_figures=False, version=None):
         url = _build_url("/content/%s/e%s" % (volume, id), self._host)
+        if version:
+            url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200, url)
@@ -462,21 +464,19 @@ class JournalCheck:
             _assert_status_code(response, 200, figures_url)
             _assert_all_resources_of_page_load(response.content, self._host)
         return response.content
-        #TODO figures page will also be present if article has any tables, data sets or additional files
-        #else:
-        #    assert figures_link is None, "Found a figure link %s but it should not be there as the article has no figures" % figures_link
 
     def homepage(self):
-        url = _build_url("/", self._host)
-        LOGGER.info("Loading %s", url)
-        response = requests.get(url)
-        _assert_status_code(response, 200, url)
+        return self.generic("/")
 
     def magazine(self):
-        url = _build_url("/magazine", self._host)
+        return self.generic("/magazine")
+
+    def generic(self, path):
+        url = _build_url(path, self._host)
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200, url)
+        return response.content
 
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
