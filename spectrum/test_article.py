@@ -98,6 +98,7 @@ def test_searching_for_a_new_article(generate_article, modify_article):
     _ingest_and_publish(new_article)
     result = checks.API.wait_search(invented_word)
     assert len(result['items']) == 1, "Searching for %s returned too many results: %d" % (invented_word, len(result['items']))
+    checks.JOURNAL.search(invented_word, count=1)
 
 def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
