@@ -466,6 +466,14 @@ class JournalCheck:
             _assert_all_resources_of_page_load(response.content, self._host)
         return response.content
 
+    def search(self, query, count=1):
+        url = _build_url("/search?for=%s" % query, self._host)
+        LOGGER.info("Loading %s", url)
+        response = requests.get(url)
+        _assert_status_code(response, 200, url)
+        _assert_all_resources_of_page_load(response.content, self._host)
+        _assert_count(response.content, class_='teaser__header_text_link', count=count)
+
     def homepage(self):
         return self.generic("/")
 
@@ -583,6 +591,14 @@ def _assert_all_resources_of_page_load(html_content, host):
             _assert_status_code(response, 200, url)
             RESOURCE_CACHE[url] = response.status_code
     return soup
+
+def _assert_count(html_content, class_, count):
+    """Checks how many elements are in the page.
+
+    Returns the BeautifulSoup for reuse"""
+    soup = BeautifulSoup(html_content, "html.parser")
+    resources = len(soup.find_all(True, class_=class_))
+    assert resources == count, ("There are only %d %s elements" % (resources, class_))
 
 def _build_url(path, host):
     if path.startswith("http://") or path.startswith("https://"):
