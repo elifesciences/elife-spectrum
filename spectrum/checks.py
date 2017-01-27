@@ -1,10 +1,10 @@
 import datetime
 from pprint import pformat
+import os
 import re
 from ssl import SSLError
 
 from bs4 import BeautifulSoup
-
 import polling
 import requests
 from requests.exceptions import ConnectionError
@@ -14,7 +14,8 @@ from spectrum import aws, logger
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
 requests.packages.urllib3.disable_warnings()
 
-GLOBAL_TIMEOUT = 300
+
+GLOBAL_TIMEOUT = int(os.environ['SPECTRUM_TIMEOUT']) if 'SPECTRUM_ENVIRONMENT' in os.environ else 300
 LOGGER = logger.logger(__name__)
 
 class TimeoutException(RuntimeError):
