@@ -472,7 +472,7 @@ class JournalCheck:
         response = requests.get(url)
         _assert_status_code(response, 200, url)
         _assert_all_resources_of_page_load(response.content, self._host)
-        _assert_count(response.content, class_='teaser__header_text_link', count=count)
+        _assert_count(response.content, class_='teaser', count=count)
 
     def homepage(self):
         return self.generic("/")
