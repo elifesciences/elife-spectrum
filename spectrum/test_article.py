@@ -86,7 +86,6 @@ def test_article_with_unicode_content(generate_article):
     _publish(article)
     checks.API.wait_article(id=article.id())
     journal_page = checks.JOURNAL.article(id=article.id(), volume=5, has_figures=article.has_figures())
-    print journal_page
     assert "Szymon \xc5\x81\xc4\x99ski" in journal_page
 
 @pytest.mark.continuum
