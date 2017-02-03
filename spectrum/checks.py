@@ -431,6 +431,24 @@ class ApiCheck:
             search_url
         )
 
+    def wait_recommendations(self, id):
+        "Returns as soon as there is one result"
+        recommendations_url = "%s/recommendations/article/%s" % (self._host, id)
+        def _is_ready():
+            response = requests.get(recommendations_url, headers={'Accept': 'application/vnd.elife.recommendations+json; version=1'})
+            body = self._ensure_sane_response(response, recommendations_url)
+            if len(body['items']) == 0:
+                return False
+            LOGGER.info("%s: returning %d results",
+                        recommendations_url,
+                        len(body['items']))
+            return body
+        return _poll(
+            _is_ready,
+            "%s returning at least 1 result",
+            recommendations_url
+        )
+
     def _ensure_sane_response(self, response, url):
         assert response.status_code is 200, \
             "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
