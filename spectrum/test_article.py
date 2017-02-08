@@ -106,6 +106,8 @@ def test_recommendations_for_a_new_article(generate_article):
     _ingest_and_publish(article)
     result = checks.API.wait_recommendations(article.id())
     assert len(result['items']) >= 1
+    article_from_api = checks.API.wait_article(id=article.id())
+    checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'])
 
 def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
