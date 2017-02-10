@@ -100,12 +100,18 @@ def test_searching_for_a_new_article(generate_article, modify_article):
     checks.JOURNAL.search(invented_word, count=1)
 
 @pytest.mark.recommendations
-def test_recommendations_for_a_new_article(generate_article):
+def test_recommendations_for_new_articles(generate_article):
     template_id = 15893
-    article = generate_article(template_id)
-    _ingest_and_publish(article)
-    result = checks.API.wait_recommendations(article.id())
-    assert len(result['items']) >= 1
+    first_article = generate_article(template_id)
+    _ingest_and_publish(first_article)
+    second_article = generate_article(template_id)
+    _ingest_and_publish(second_article)
+
+    for article in [first_article, second_article]:
+        result = checks.API.wait_recommendations(article.id())
+        assert len(result['items']) >= 1
+        article_from_api = checks.API.wait_article(id=article.id())
+        checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'])
 
 def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())

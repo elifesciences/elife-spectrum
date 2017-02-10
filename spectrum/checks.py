@@ -469,7 +469,7 @@ class JournalCheck:
         url = _build_url("/content/%s/e%s" % (volume, id), self._host)
         if version:
             url = "%sv%s" % (url, version)
-        LOGGER.info("Loading %s", url)
+        LOGGER.info("Loading %s", url, extra={'id':id})
         response = requests.get(url)
         _assert_status_code(response, 200, url)
         _assert_all_resources_of_page_load(response.content, self._host)
@@ -481,7 +481,7 @@ class JournalCheck:
             LOGGER.info("Loading %s", figures_url, extra={'id':id})
             response = requests.get(figures_url)
             _assert_status_code(response, 200, figures_url)
-            _assert_all_resources_of_page_load(response.content, self._host)
+            _assert_all_resources_of_page_load(response.content, self._host, id=id)
         return response.content
 
     def search(self, query, count=1):
@@ -565,7 +565,7 @@ def _assert_status_code(response, expected_status_code, url):
 
 RESOURCE_CACHE = {}
 
-def _assert_all_resources_of_page_load(html_content, host):
+def _assert_all_resources_of_page_load(html_content, host, **extra):
     """Checks that all <script>, <link>, <video>, <source>, <srcset> load, by issuing HEAD requests that must give 200 OK.
 
     Returns the BeautifulSoup for reuse"""
@@ -596,15 +596,15 @@ def _assert_all_resources_of_page_load(html_content, host):
         return resources
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
-    LOGGER.info("Found resources %s", pformat(resources))
+    LOGGER.info("Found resources %s", pformat(resources), extra=extra)
     for path in resources:
         if path is None:
             continue
         url = _build_url(path, host)
         if url in RESOURCE_CACHE:
-            LOGGER.info("Cached %s: %s", url, RESOURCE_CACHE[url])
+            LOGGER.info("Cached %s: %s", url, RESOURCE_CACHE[url], extra=extra)
         else:
-            LOGGER.info("Loading %s", url)
+            LOGGER.info("Loading resource %s", url, extra=extra)
             response = requests.head(url)
             _assert_status_code(response, 200, url)
             RESOURCE_CACHE[url] = response.status_code
