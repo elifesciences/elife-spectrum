@@ -6,4 +6,4 @@ if [ "$#" -ne "1" ]; then
     exit 1
 fi
 
-cat $1 | xargs -P 8 -I {} echo ./image-iiif.sh {}
+cat $1 | xargs -P 8 -I {} ./image-iiif.sh {}
