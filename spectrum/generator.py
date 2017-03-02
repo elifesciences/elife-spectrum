@@ -18,14 +18,16 @@ def generate_article_id(template_id):
     # good until template_id reaches 100000
     return str(prefix * 100000 + int(template_id))
 
-def article_zip(template_id):
+def article_zip(template_id, template_variables=None):
+    if template_variables is None:
+        template_variables = {}
     (template, kind) = _choose_template(template_id)
     id = generate_article_id(template_id)
     generated_article_directory = '/tmp/elife-%s-%s-r1' % (id, kind)
     os.mkdir(generated_article_directory)
     generated_files = []
     for file in glob.glob(template + "/*"):
-        generated_file = _generate(file, id, generated_article_directory, template_id)
+        generated_file = _generate(file, id, generated_article_directory, template_id, template_variables)
         generated_files.append(generated_file)
     zip_filename = generated_article_directory + '.zip'
     figure_names = []
@@ -76,7 +78,7 @@ def _choose_template(template_id):
     return (chosen, kind)
 
 
-def _generate(filename, id, generated_article_directory, template_id):
+def _generate(filename, id, generated_article_directory, template_id, template_variables):
     filename_components = path.splitext(filename)
     generated_filename = path.basename(filename).replace(template_id, id)
     target = generated_article_directory + '/' + generated_filename
@@ -86,7 +88,7 @@ def _generate(filename, id, generated_article_directory, template_id):
         with open(filename, 'r') as template_file:
             data = template_file.read().decode('UTF-8')
         template = jinja2.Template(data)
-        content = template.render(article={'id': id})
+        content = template.render(article={'id': id}, **template_variables)
         target = target.replace('.jinja', '')
         with open(target, 'w') as target_file:
             target_file.write(content.encode('utf-8'))
