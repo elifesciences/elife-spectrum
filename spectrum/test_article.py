@@ -10,6 +10,7 @@ from spectrum import input
 from spectrum import checks
 
 @pytest.mark.continuum
+@pytest.mark.article
 @pytest.mark.parametrize("template_id", generator.all_stored_articles())
 def test_article_first_version(template_id, article_id_filter, generate_article):
     if article_id_filter:
