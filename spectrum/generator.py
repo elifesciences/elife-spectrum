@@ -162,8 +162,14 @@ class ArticleZip:
         return self
 
     def clean(self):
-        os.remove(self._filename)
-        LOGGER.info("Deleted file %s", self._filename)
-        shutil.rmtree(self._directory)
-        LOGGER.info("Deleted directory %s", self._directory)
+        if os.path.exists(self._filename):
+            os.remove(self._filename)
+            LOGGER.info("Deleted file %s", self._filename)
+        else:
+            LOGGER.info("Not deleted file %s because it doesn't exist", self._filename)
+        if os.path.exists(self._directory):
+            shutil.rmtree(self._directory)
+            LOGGER.info("Deleted directory %s", self._directory)
+        else:
+            LOGGER.info("Not deleted directory %s because it doesn't exist", self._directory)
 
