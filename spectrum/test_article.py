@@ -106,6 +106,7 @@ def test_recommendations_for_new_articles(generate_article):
     first_article = generate_article(template_id)
     _ingest_and_publish(first_article)
     second_article = generate_article(template_id)
+    # TODO: merge related_articles branch in here
     _ingest_and_publish(second_article)
 
     for article in [first_article, second_article]:
