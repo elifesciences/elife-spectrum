@@ -85,19 +85,17 @@ class JournalCms:
         create_page = self._browser.get(create_url)
         form = create_page.soup.form
         form.find("input", {"name": "title[0][value]"})['value'] = title
-        #add_paragraph = form.find("input", {"name":"field_content_paragraph_add_more"})
-        #wrapped_form = mechanicalsoup.Form(form)
         self._choose_submit(form, 'field_content_paragraph_add_more')
         response = self._browser.submit(form, create_page.url)
-        #, data={'field_content_paragraph_add_more': 'Add Paragraph'})
         form = response.soup.form
         textarea = form.find('textarea', {"name": "field_content[0][subform][field_block_html][0][value]"})
         assert textarea is not None
         textarea.insert(0, text)
         self._choose_submit(form, 'op', value='Save and publish')
         response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
-        print response
-        print response.content
+        # <h1 class="js-quickedit-page-title title page-title"><span data-quickedit-field-id="node/1709/title/en/full" class="field field--name-title field--type-string field--label-hidden">Spectrum blog article: jvsfz4oj9vz9hk239fbpq4fbjc9yoh</span></h1>
+        final_page_title = response.soup.find("h1", {"class": "page-title"}).text.strip()
+        assert final_page_title == title
         #check https://end2end--journal-cms.elifesciences.org/admin/content?status=All&type=All&title=b9djvu04y6v1t4kug4ts8kct5pagf8&langcode=All
         # but in checks module
 
@@ -114,7 +112,6 @@ class JournalCms:
             if inp == chosen_submit:
                 continue
             del inp['name']
-
 
 def invented_word():
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))
