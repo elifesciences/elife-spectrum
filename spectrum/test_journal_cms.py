@@ -2,10 +2,12 @@
 from spectrum import input
 from spectrum import checks
 
+@pytest.mark.journal_cms
 def test_login():
     input.JOURNAL_CMS.login()
 
-# TODO: mark with search and journal_cms
+@pytest.mark.journal_cms
+@pytest.mark.search
 def test_content_type_propagates_to_other_services():
     # TODO: I fear this is too stateful
     input.JOURNAL_CMS.login()

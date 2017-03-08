@@ -3,12 +3,15 @@ import pytest
 from spectrum import checks
 
 @pytest.mark.two
+@pytest.mark.journal_cms
 @pytest.mark.medium
 @pytest.mark.search
 def test_main_pages():
     checks.JOURNAL.homepage()
     checks.JOURNAL.magazine()
 
+@pytest.mark.two
+@pytest.mark.journal_cms
 def test_various_generic_pages():
     checks.JOURNAL.generic("/about")
     checks.JOURNAL.generic("/alerts")
