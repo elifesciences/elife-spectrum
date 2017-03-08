@@ -63,6 +63,7 @@ def all_stored_articles():
         if article_id in blacklist:
             continue
         articles.append(article_id)
+    articles.sort()
     return articles
 
 def _choose_template(template_id):
