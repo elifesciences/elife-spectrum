@@ -71,36 +71,32 @@ class JournalCms:
     def login(self):
         login_url = "%s/user/login" % self._host
         login_page = self._browser.get(login_url)
-        form = login_page.soup.form
-        wrapped_form = mechanicalsoup.Form(form)
-        form.find("input", {"name": "name"})['value'] = self._user
-        form.find("input", {"name": "pass"})['value'] = self._password
+        form = mechanicalsoup.Form(login_page.soup.form)
+        form.input({'name': self._user, 'pass': self._password})
         response = self._browser.submit(form, login_page.url)
-        #<h1 class="js-quickedit-page-title title page-title">alfred</h1>
-        title = response.soup.find("h1", {"class" : "page-title"})
-        assert title.text == self._user
+        assert self._page_title(response.soup) == self._user
 
     def create_blog_article(self, title, text):
         create_url = "%s/node/add/blog_article" % self._host
         create_page = self._browser.get(create_url)
-        form = create_page.soup.form
-        form.find("input", {"name": "title[0][value]"})['value'] = title
+        form = mechanicalsoup.Form(create_page.soup.form)
+        form.input({'title[0][value]': title})
         self._choose_submit(form, 'field_content_paragraph_add_more')
         response = self._browser.submit(form, create_page.url)
-        form = response.soup.form
-        textarea = form.find('textarea', {"name": "field_content[0][subform][field_block_html][0][value]"})
-        assert textarea is not None
-        textarea.insert(0, text)
+        form = mechanicalsoup.Form(response.soup.form)
+        textarea = form.textarea({'field_content[0][subform][field_block_html][0][value]': text})
         self._choose_submit(form, 'op', value='Save and publish')
         response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
-        # <h1 class="js-quickedit-page-title title page-title"><span data-quickedit-field-id="node/1709/title/en/full" class="field field--name-title field--type-string field--label-hidden">Spectrum blog article: jvsfz4oj9vz9hk239fbpq4fbjc9yoh</span></h1>
-        final_page_title = response.soup.find("h1", {"class": "page-title"}).text.strip()
-        assert final_page_title == title
+        assert self._page_title(response.soup) == title
         #check https://end2end--journal-cms.elifesciences.org/admin/content?status=All&type=All&title=b9djvu04y6v1t4kug4ts8kct5pagf8&langcode=All
         # but in checks module
+        # TODO: return id and/or node id
 
-    def _choose_submit(self, form, name, value=None):
+    def _choose_submit(self, wrapped_form, name, value=None):
         "Fixed version of mechanicalsoup.Form.choose_submit()"
+
+        form = wrapped_form.form
+
         criteria = {"name":name}
         if value:
             criteria['value'] = value
@@ -112,6 +108,11 @@ class JournalCms:
             if inp == chosen_submit:
                 continue
             del inp['name']
+
+    def _page_title(self, soup):
+        # <h1 class="js-quickedit-page-title title page-title"><span data-quickedit-field-id="node/1709/title/en/full" class="field field--name-title field--type-string field--label-hidden">Spectrum blog article: jvsfz4oj9vz9hk239fbpq4fbjc9yoh</span></h1>
+        #<h1 class="js-quickedit-page-title title page-title">alfred</h1>
+        return soup.find("h1", {"class": "page-title"}).text.strip()
 
 def invented_word():
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))
