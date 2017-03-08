@@ -93,7 +93,9 @@ class JournalCms:
         # TODO: return id and/or node id
 
     def _choose_submit(self, wrapped_form, name, value=None):
-        "Fixed version of mechanicalsoup.Form.choose_submit()"
+        """Fixed version of mechanicalsoup.Form.choose_submit()
+
+        https://github.com/hickford/MechanicalSoup/issues/61"""
 
         form = wrapped_form.form
 
