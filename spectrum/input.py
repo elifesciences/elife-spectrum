@@ -84,7 +84,7 @@ class JournalCms:
         self._choose_submit(form, 'field_content_paragraph_add_more')
         response = self._browser.submit(form, create_page.url)
         form = mechanicalsoup.Form(response.soup.form)
-        textarea = form.textarea({'field_content[0][subform][field_block_html][0][value]': text})
+        form.textarea({'field_content[0][subform][field_block_html][0][value]': text})
         self._choose_submit(form, 'op', value='Save and publish')
         response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
         assert self._page_title(response.soup) == title

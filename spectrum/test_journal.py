@@ -4,10 +4,15 @@ from spectrum import checks
 
 @pytest.mark.two
 @pytest.mark.journal_cms
+@pytest.mark.search
+def test_homepage():
+    checks.JOURNAL.homepage()
+
+@pytest.mark.two
+@pytest.mark.journal_cms
 @pytest.mark.medium
 @pytest.mark.search
-def test_main_pages():
-    checks.JOURNAL.homepage()
+def test_magazine():
     checks.JOURNAL.magazine()
 
 @pytest.mark.two
