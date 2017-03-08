@@ -37,6 +37,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
 
 @pytest.mark.continuum
+@pytest.mark.metrics
 def test_article_multiple_versions(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
