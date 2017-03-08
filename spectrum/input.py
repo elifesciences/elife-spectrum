@@ -58,6 +58,27 @@ class SilentCorrectionWorkflowStarter:
                 workflow_name='SilentCorrectionsIngest'
             )
 
+import mechanicalsoup
+
+class JournalCms:
+    def __init__(self, host, user, password):
+        self._host = host
+        self._user = user
+        self._password = password
+
+    def login(self):
+        browser = mechanicalsoup.Browser()
+        login_url = "%s/user/login" % self._host
+        login_page = browser.get(login_url)
+        form = login_page.soup.form
+        form.find("input", {"name": "name"})['value'] = self._user
+        form.find("input", {"name": "pass"})['value'] = self._password
+        response = browser.submit(form, login_page.url)
+        response.soup
+        #<h1 class="js-quickedit-page-title title page-title">alfred</h1>
+        title = response.soup.find("h1", { "class" : "page-title" })
+        assert title.text == self._user
+
 PRODUCTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_input)
 SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_silent_corrections)
 DASHBOARD = Dashboard(
@@ -73,4 +94,10 @@ SILENT_CORRECTION = SilentCorrectionWorkflowStarter(
     SILENT_CORRECTION_BUCKET.name(),
     aws.SETTINGS.queue_workflow_starter,
     'SilentCorrectionsIngest'
+)
+
+JOURNAL_CMS = JournalCms(
+    aws.SETTINGS.journal_cms_host,
+    aws.SETTINGS.journal_cms_user,
+    aws.SETTINGS.journal_cms_password
 )
