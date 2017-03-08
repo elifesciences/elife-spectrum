@@ -1,9 +1,7 @@
 "Test that involve publishing articles and checking their visibility and correctness throughout different systems"
 from datetime import datetime
 import os
-import random
 import re
-import string
 import pytest
 from spectrum import generator
 from spectrum import input
@@ -94,7 +92,7 @@ def test_article_with_unicode_content(generate_article):
 @pytest.mark.search
 def test_searching_for_a_new_article(generate_article, modify_article):
     template_id = 15893
-    invented_word = _invented_word()
+    invented_word = input.invented_word()
     new_article = modify_article(generate_article(template_id), replacements={'cytomegalovirus':invented_word})
     _ingest_and_publish(new_article)
     result = checks.API.wait_search(invented_word)
@@ -161,5 +159,3 @@ def _ingest_and_publish(article):
     _publish(article)
     return _wait_for_published(article)
 
-def _invented_word():
-    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))
