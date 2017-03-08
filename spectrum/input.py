@@ -72,6 +72,7 @@ class JournalCms:
         login_url = "%s/user/login" % self._host
         login_page = self._browser.get(login_url)
         form = login_page.soup.form
+        wrapped_form = mechanicalsoup.Form(form)
         form.find("input", {"name": "name"})['value'] = self._user
         form.find("input", {"name": "pass"})['value'] = self._password
         response = self._browser.submit(form, login_page.url)
@@ -84,20 +85,36 @@ class JournalCms:
         create_page = self._browser.get(create_url)
         form = create_page.soup.form
         form.find("input", {"name": "title[0][value]"})['value'] = title
-        add_paragraph = form.find("input", {"name":"field_content_paragraph_add_more"})
-        print add_paragraph
-        print form
-        wrapped_form = mechanicalsoup.Form(form)
-        wrapped_form.choose_submit(add_paragraph)
-        response = self._browser.submit(form, create_page.url, data={'field_content_paragraph_add_more': 'Add Paragraph'})
-        #form.find("input", {"name": "title[0][value]"})['value'] = title
-        #print response.content
+        #add_paragraph = form.find("input", {"name":"field_content_paragraph_add_more"})
+        #wrapped_form = mechanicalsoup.Form(form)
+        self._choose_submit(form, 'field_content_paragraph_add_more')
+        response = self._browser.submit(form, create_page.url)
+        #, data={'field_content_paragraph_add_more': 'Add Paragraph'})
         form = response.soup.form
-        form.find('textarea', {"name": "field_content[0][subform][field_block_html][0][value]"}).insert(0, text)
+        textarea = form.find('textarea', {"name": "field_content[0][subform][field_block_html][0][value]"})
+        assert textarea is not None
+        textarea.insert(0, text)
+        self._choose_submit(form, 'op', value='Save and publish')
         response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
         print response
+        print response.content
         #check https://end2end--journal-cms.elifesciences.org/admin/content?status=All&type=All&title=b9djvu04y6v1t4kug4ts8kct5pagf8&langcode=All
         # but in checks module
+
+    def _choose_submit(self, form, name, value=None):
+        "Fixed version of mechanicalsoup.Form.choose_submit()"
+        criteria = {"name":name}
+        if value:
+            criteria['value'] = value
+        chosen_submit = form.find("input", criteria)
+
+        for inp in form.select("input"):
+            if inp.get('type') != 'submit':
+                continue
+            if inp == chosen_submit:
+                continue
+            del inp['name']
+
 
 def invented_word():
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))
