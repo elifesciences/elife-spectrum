@@ -10,3 +10,5 @@ revision=${1:-master}
 
 git fetch
 git checkout ${revision}
+
+./install.sh
