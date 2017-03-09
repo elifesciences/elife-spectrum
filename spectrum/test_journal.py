@@ -2,6 +2,29 @@
 import pytest
 from spectrum import checks
 
+GENERIC_PATHS = [
+    "/about",
+    "/about/early-career",
+    "/about/innovation",
+    "/about/openness",
+    "/about/peer-review",
+    "/alerts",
+    "/annual-reports",
+    "/archive/2016",
+    "/articles/correction",
+    "/community",
+    "/contact",
+    "/for-the-press",
+    "/resources",
+    "/terms",
+    #/who-we-work-with
+]
+
+LISTING_PATHS = [
+    '/inside-elife',
+    '/labs',
+]
+
 @pytest.mark.two
 @pytest.mark.journal_cms
 @pytest.mark.search
@@ -17,23 +40,9 @@ def test_magazine():
 
 @pytest.mark.two
 @pytest.mark.journal_cms
-def test_various_generic_pages():
-    checks.JOURNAL.generic("/about")
-    checks.JOURNAL.generic("/about/early-career")
-    checks.JOURNAL.generic("/about/innovation")
-    checks.JOURNAL.generic("/about/openness")
-    checks.JOURNAL.generic("/about/peer-review")
-    checks.JOURNAL.generic("/alerts")
-    checks.JOURNAL.generic("/annual-reports")
-    checks.JOURNAL.generic("/archive/2016")
-    checks.JOURNAL.generic("/archive/2016")
-    checks.JOURNAL.generic("/articles/correction")
-    checks.JOURNAL.generic("/community")
-    checks.JOURNAL.generic("/contact")
-    checks.JOURNAL.generic("/for-the-press")
-    checks.JOURNAL.generic("/resources")
-    checks.JOURNAL.generic("/terms")
-    #checks.JOURNAL.generic("/who-we-work-with")
+@pytest.mark.parametrize("path", GENERIC_PATHS)
+def test_various_generic_pages(path):
+    checks.JOURNAL.generic(path)
 
 #    path: /content/{volume}/e{id}.bib
 #    path: /content/{volume}/e{id}.ris
@@ -43,18 +52,14 @@ def test_various_generic_pages():
 
 #path: /about/people/{type}
 
+
 @pytest.mark.two
 @pytest.mark.journal_cms
-def test_listings():
-    # TODO: parameterize from outside, they are independent. Same for static pages
-    listing_pages = [
-        '/inside-elife',
-        '/labs',
-    ]
-    for listing in listing_pages:
-        items = checks.JOURNAL.listing(listing)
-        if len(items):
-            checks.JOURNAL.generic(items[0])
+@pytest.mark.parametrize("path", LISTING_PATHS)
+def test_listings(path):
+    items = checks.JOURNAL.listing(path)
+    if len(items):
+        checks.JOURNAL.generic(items[0])
 #    path: /collections
 # follow 1 link
 #    path: /events/{id}
