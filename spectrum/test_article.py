@@ -106,7 +106,7 @@ def test_recommendations_for_new_articles(generate_article):
     template_id = 15893
     first_article = generate_article(template_id)
     _ingest_and_publish(first_article)
-    second_article = generate_article(template_id)
+    second_article = generate_article(template_id, related_article_id=first_article.id())
     _ingest_and_publish(second_article)
 
     for article in [first_article, second_article]:
