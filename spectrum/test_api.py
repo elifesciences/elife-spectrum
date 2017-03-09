@@ -3,17 +3,20 @@ import pytest
 from spectrum import checks
 
 @pytest.mark.two
-@pytest.mark.medium
-def test_list_based_apis():
+@pytest.mark.journal_cms
+def test_list_based_apis_journal_cms():
     checks.API.labs_experiments()
     checks.API.subjects()
     checks.API.podcast_episodes()
     checks.API.people()
-    checks.API.medium_articles()
     checks.API.blog_articles()
     checks.API.events()
     checks.API.interviews()
     checks.API.collections()
+
+@pytest.mark.medium
+def test_list_based_apis_medium():
+    checks.API.medium_articles()
 
 @pytest.mark.two
 @pytest.mark.search

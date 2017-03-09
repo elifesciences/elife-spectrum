@@ -1,8 +1,11 @@
 from os import path
+import random
+import string
 import requests
 from spectrum import aws, logger
 from econtools import econ_article_feeder
 from pollute import modified_environ
+import mechanicalsoup
 
 LOGGER = logger.logger(__name__)
 
@@ -58,6 +61,71 @@ class SilentCorrectionWorkflowStarter:
                 workflow_name='SilentCorrectionsIngest'
             )
 
+class JournalCms:
+    def __init__(self, host, user, password):
+        self._host = host
+        self._user = user
+        self._password = password
+
+    def login(self):
+        browser = mechanicalsoup.Browser()
+        login_url = "%s/user/login" % self._host
+        login_page = browser.get(login_url)
+        form = mechanicalsoup.Form(login_page.soup.form)
+        form.input({'name': self._user, 'pass': self._password})
+        response = browser.submit(form, login_page.url)
+        assert _journal_cms_page_title(response.soup) == self._user
+        return JournalCmsSession(self._host, browser)
+
+class JournalCmsSession:
+    def __init__(self, host, browser):
+        self._host = host
+        self._browser = browser
+
+    def create_blog_article(self, title, text):
+        create_url = "%s/node/add/blog_article" % self._host
+        create_page = self._browser.get(create_url)
+        form = mechanicalsoup.Form(create_page.soup.form)
+        form.input({'title[0][value]': title})
+        self._choose_submit(form, 'field_content_paragraph_add_more')
+        response = self._browser.submit(form, create_page.url)
+        form = mechanicalsoup.Form(response.soup.form)
+        form.textarea({'field_content[0][subform][field_block_html][0][value]': text})
+        self._choose_submit(form, 'op', value='Save and publish')
+        response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
+        assert _journal_cms_page_title(response.soup) == title
+        #check https://end2end--journal-cms.elifesciences.org/admin/content?status=All&type=All&title=b9djvu04y6v1t4kug4ts8kct5pagf8&langcode=All
+        # but in checks module
+        # TODO: return id and/or node id
+
+    def _choose_submit(self, wrapped_form, name, value=None):
+        """Fixed version of mechanicalsoup.Form.choose_submit()
+
+        https://github.com/hickford/MechanicalSoup/issues/61"""
+
+        form = wrapped_form.form
+
+        criteria = {"name":name}
+        if value:
+            criteria['value'] = value
+        chosen_submit = form.find("input", criteria)
+
+        for inp in form.select("input"):
+            if inp.get('type') != 'submit':
+                continue
+            if inp == chosen_submit:
+                continue
+            del inp['name']
+
+def _journal_cms_page_title(soup):
+    # <h1 class="js-quickedit-page-title title page-title"><span data-quickedit-field-id="node/1709/title/en/full" class="field field--name-title field--type-string field--label-hidden">Spectrum blog article: jvsfz4oj9vz9hk239fbpq4fbjc9yoh</span></h1>
+    #<h1 class="js-quickedit-page-title title page-title">alfred</h1>
+    return soup.find("h1", {"class": "page-title"}).text.strip()
+
+
+def invented_word():
+    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))
+
 PRODUCTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_input)
 SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_silent_corrections)
 DASHBOARD = Dashboard(
@@ -73,4 +141,10 @@ SILENT_CORRECTION = SilentCorrectionWorkflowStarter(
     SILENT_CORRECTION_BUCKET.name(),
     aws.SETTINGS.queue_workflow_starter,
     'SilentCorrectionsIngest'
+)
+
+JOURNAL_CMS = JournalCms(
+    aws.SETTINGS.journal_cms_host,
+    aws.SETTINGS.journal_cms_user,
+    aws.SETTINGS.journal_cms_password
 )
