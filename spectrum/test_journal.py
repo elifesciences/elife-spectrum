@@ -42,6 +42,19 @@ def test_various_generic_pages():
 #path: /download/{uri}/{name}
 
 #path: /about/people/{type}
+
+@pytest.mark.two
+@pytest.mark.journal_cms
+def test_listings():
+    # TODO: parameterize from outside, they are independent. Same for static pages
+    listing_pages = [
+        '/inside-elife',
+        '/labs',
+    ]
+    for listing in listing_pages:
+        items = checks.JOURNAL.listing(listing)
+        if len(items):
+            checks.JOURNAL.generic(items[0])
 #    path: /collections
 # follow 1 link
 #    path: /events/{id}
