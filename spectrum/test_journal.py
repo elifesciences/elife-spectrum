@@ -11,7 +11,6 @@ GENERIC_PATHS = [
     "/alerts",
     "/annual-reports",
     "/archive/2016",
-    #"/articles/correction",
     "/community",
     "/contact",
     "/for-the-press",
@@ -49,14 +48,6 @@ def test_magazine():
 def test_various_generic_pages(path):
     checks.JOURNAL.generic(path)
 
-#    path: /content/{volume}/e{id}.bib
-#    path: /content/{volume}/e{id}.ris
-#    path: /articles/{type}
-
-#path: /download/{uri}/{name}
-
-#path: /about/people/{type}
-
 
 @pytest.mark.two
 @pytest.mark.journal_cms
@@ -66,6 +57,10 @@ def test_listings(path):
     if len(items):
         checks.JOURNAL.generic(items[0])
 
-#    path: /interviews/{id}
-# how do we get the link?
+#path: /interviews/{id}
+# how do we get the link? navigate from /collections
 
+#path: /content/{volume}/e{id}.bib
+#path: /content/{volume}/e{id}.ris
+#path: /download/{uri}/{name}
+#path: /about/people/{type}

@@ -509,7 +509,7 @@ class JournalCheck:
     def listing(self, path):
         body = self.generic(path)
         soup = BeautifulSoup(body, "html.parser")
-	teaser_a_tags = soup.select("div.teaser h4 a")
+        teaser_a_tags = soup.select("div.teaser h4 a")
         teaser_links = [a['href'] for a in teaser_a_tags]
         LOGGER.info("Loaded %s, found links: %s", path, teaser_links)
         return teaser_links
