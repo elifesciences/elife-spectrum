@@ -11,7 +11,7 @@ GENERIC_PATHS = [
     "/alerts",
     "/annual-reports",
     "/archive/2016",
-    "/articles/correction",
+    #"/articles/correction",
     "/community",
     "/contact",
     "/for-the-press",
@@ -21,8 +21,13 @@ GENERIC_PATHS = [
 ]
 
 LISTING_PATHS = [
+    '/articles/correction',
+    '/collections',
+    '/events',
     '/inside-elife',
     '/labs',
+    '/podcast',
+    '/subjects',
 ]
 
 @pytest.mark.two
@@ -60,24 +65,7 @@ def test_listings(path):
     items = checks.JOURNAL.listing(path)
     if len(items):
         checks.JOURNAL.generic(items[0])
-#    path: /collections
-# follow 1 link
-#    path: /events/{id}
-# follow 1 link
-#    path: /inside-elife
-# follow 1 link
-#    path: /labs
-# follow 1 link
-#    path: /podcast
-# follow 1 link
-#    path: /subjects
-# follow 1 link
-#path: /inside-elife
-# follow 1 link
-#path: /articles/{type}
-# follow 1 link
 
 #    path: /interviews/{id}
 # how do we get the link?
 
-#    path: /search
