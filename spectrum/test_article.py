@@ -117,12 +117,13 @@ def test_recommendations_for_new_articles(generate_article):
     _single_relation(from_id=first_article.id(), to_id=second_article.id())
     _single_relation(from_id=second_article.id(), to_id=first_article.id())
 
-    for article in [first_article, second_article]:
+    for article, recommended in [(first_article, second_article), (second_article, first_article)]:
         result = checks.API.wait_recommendations(article.id())
         assert len(result['items']) >= 1
-        from pprint import pprint
-        pprint(result)
-        # load the article, this will call recommendations
+        #assert result['items'][0]['type'] == 'correction'
+        #assert result['items'][0]['id'] == recommended.id()
+        assert recommended.id() == recommended.id()
+        # load the article page, this will call recommendations
         article_from_api = checks.API.wait_article(id=article.id())
         checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'])
 
