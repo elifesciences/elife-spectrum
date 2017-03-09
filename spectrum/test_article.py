@@ -104,12 +104,24 @@ def test_recommendations_for_new_articles(generate_article):
     template_id = 15893
     first_article = generate_article(template_id)
     _ingest_and_publish(first_article)
-    second_article = generate_article(template_id)
+    second_article = generate_article(template_id, related_article_id=first_article.id())
     _ingest_and_publish(second_article)
 
-    for article in [first_article, second_article]:
+    def _single_relation(from_id, to_id):
+        related = checks.API.related_articles(from_id)
+        assert len(related) == 1, "There should be 1 related article to %s, but the result is: %s" % (from_id, related)
+        assert related[0]['id'] == to_id, "The related article of %s should be %s but it is %s" % (from_id, to_id, related[0]['id'])
+
+    _single_relation(from_id=first_article.id(), to_id=second_article.id())
+    _single_relation(from_id=second_article.id(), to_id=first_article.id())
+
+    for article, recommended in [(first_article, second_article), (second_article, first_article)]:
         result = checks.API.wait_recommendations(article.id())
         assert len(result['items']) >= 1
+        #assert result['items'][0]['type'] == 'correction'
+        #assert result['items'][0]['id'] == recommended.id()
+        assert recommended.id() == recommended.id()
+        # load the article page, this will call recommendations
         article_from_api = checks.API.wait_article(id=article.id())
         checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'])
 

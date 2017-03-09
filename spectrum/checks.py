@@ -394,19 +394,27 @@ class ApiCheck:
                 LOGGER.debug("%s: 404", latest_url)
                 return False
             body = self._ensure_sane_response(response, latest_url)
-            for field, value in constraints.iteritems():
-                if body[field] != value:
-                    LOGGER.debug("%s: field `%s` is not `%s` but `%s`",
-                                 latest_url, field, value, body[field])
-                    return False
-            LOGGER.info("%s: conforming to constraints %s",
-                        latest_url, constraints)
+            if constraints:
+                for field, value in constraints.iteritems():
+                    if body[field] != value:
+                        LOGGER.debug("%s: field `%s` is not `%s` but `%s`",
+                                     latest_url, field, value, body[field])
+                        return False
+                LOGGER.info("%s: conforming to constraints %s",
+                            latest_url, constraints)
             return body
         return _poll(
             _is_ready,
             "%s to satisfy constraints %s",
             latest_url, constraints
         )
+
+    def related_articles(self, id):
+        url = "%s/articles/%s/related" % (self._host, id)
+        response = requests.get(url, headers={})
+        assert response.status_code == 200, "%s is not 200 but %s: %s" % (url, response.status_code, response.content)
+        LOGGER.info("Found related articles of %s on api: %s", id, url, extra={'id': id})
+        return response.json()
 
     def search(self, for_input):
         url = "%s/search?for=%s" % (self._host, for_input)
@@ -472,7 +480,7 @@ class JournalCheck:
         LOGGER.info("Loading %s", url, extra={'id':id})
         response = requests.get(url)
         _assert_status_code(response, 200, url)
-        _assert_all_resources_of_page_load(response.content, self._host)
+        _assert_all_resources_of_page_load(response.content, self._host, id=id)
         figures_link_selector = 'view-selector__link--figures'
         figures_link = self._link(response.content, figures_link_selector)
         if has_figures:
