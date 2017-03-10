@@ -2,6 +2,33 @@
 import pytest
 from spectrum import checks
 
+GENERIC_PATHS = [
+    "/about",
+    "/about/early-career",
+    "/about/innovation",
+    "/about/openness",
+    "/about/peer-review",
+    "/alerts",
+    "/annual-reports",
+    "/archive/2016",
+    "/community",
+    "/contact",
+    "/for-the-press",
+    "/resources",
+    "/terms",
+    #/who-we-work-with
+]
+
+LISTING_PATHS = [
+    '/articles/correction',
+    '/collections',
+    '/events',
+    '/inside-elife',
+    '/labs',
+    '/podcast',
+    '/subjects',
+]
+
 @pytest.mark.two
 @pytest.mark.journal_cms
 @pytest.mark.search
@@ -17,34 +44,23 @@ def test_magazine():
 
 @pytest.mark.two
 @pytest.mark.journal_cms
-def test_various_generic_pages():
-    checks.JOURNAL.generic("/about")
-    checks.JOURNAL.generic("/alerts")
-    checks.JOURNAL.generic("/archive/2016")
-    checks.JOURNAL.generic("/community")
-    checks.JOURNAL.generic("/contact")
-    checks.JOURNAL.generic("/for-the-press")
-    checks.JOURNAL.generic("/resources")
-    checks.JOURNAL.generic("/terms")
+@pytest.mark.parametrize("path", GENERIC_PATHS)
+def test_various_generic_pages(path):
+    checks.JOURNAL.generic(path)
 
-#    path: /content/{volume}/e{id}.bib
-#    path: /content/{volume}/e{id}.ris
-#    path: /articles/{type}
 
-#    path: /collections
-# follow 1 link
-#    path: /events/{id}
-# follow 1 link
-#    path: /inside-elife
-# follow 1 link
-#    path: /labs
-# follow 1 link
-#    path: /podcast
-# follow 1 link
-#    path: /subjects
-# follow 1 link
+@pytest.mark.two
+@pytest.mark.journal_cms
+@pytest.mark.parametrize("path", LISTING_PATHS)
+def test_listings(path):
+    items = checks.JOURNAL.listing(path)
+    if len(items):
+        checks.JOURNAL.generic(items[0])
 
-#    path: /interviews/{id}
-# how do we get the link?
+#path: /interviews/{id}
+# how do we get the link? navigate from /collections
 
-#    path: /search
+#path: /content/{volume}/e{id}.bib
+#path: /content/{volume}/e{id}.ris
+#path: /download/{uri}/{name}
+#path: /about/people/{type}

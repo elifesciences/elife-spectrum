@@ -511,7 +511,16 @@ class JournalCheck:
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200, url)
+        _assert_all_resources_of_page_load(response.content, self._host)
         return response.content
+
+    def listing(self, path):
+        body = self.generic(path)
+        soup = BeautifulSoup(body, "html.parser")
+        teaser_a_tags = soup.select("div.teaser .teaser__header_text_link")
+        teaser_links = [a['href'] for a in teaser_a_tags]
+        LOGGER.info("Loaded %s, found links: %s", path, teaser_links)
+        return teaser_links
 
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
