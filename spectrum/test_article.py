@@ -131,7 +131,9 @@ def _ingest(article):
 def _feed_silent_correction(article):
     input.SILENT_CORRECTION_BUCKET.upload(article.filename(), article.id())
 
-def _wait_for_publishable(article):
+def _wait_for_publishable(article, run_after=None):
+    if run_after:
+        checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run_after)
     # fails quite often but is now late in the process, can we make an intermediate check?
     (run, ) = checks.EIF.of(id=article.id(), version=article.version())
     for each in article.figure_names():
@@ -161,13 +163,14 @@ def _wait_for_published(article):
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
     return article_from_api
 
-def _publish(article):
-    run = _wait_for_publishable(article)
+def _publish(article, run_after=None):
+    run = _wait_for_publishable(article, run_after)
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
 
 
 def _ingest_and_publish(article):
+    ingestion_start = datetime.now()
     _ingest(article)
-    _publish(article)
+    _publish(article, run_after=ingestion_start)
     return _wait_for_published(article)
 

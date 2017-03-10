@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from pprint import pformat
 import os
 import re
@@ -22,7 +22,7 @@ LOGGER = logger.logger(__name__)
 class TimeoutException(RuntimeError):
     @staticmethod
     def giving_up_on(what):
-        timestamp = datetime.datetime.today().isoformat()
+        timestamp = datetime.today().isoformat()
         return TimeoutException(
             "Cannot find '%s'; Giving up at %s" \
                     % (what, timestamp)
@@ -193,8 +193,8 @@ class DashboardArticleCheck:
         self._user = user
         self._password = password
 
-    def ready_to_publish(self, id, version, run=None):
-        return self._wait_for_status(id, version, run=run, status="ready to publish")
+    def ready_to_publish(self, id, version, run=None, run_after=None):
+        return self._wait_for_status(id, version, run=run, status="ready to publish", run_after=run_after)
 
     def published(self, id, version, run=None):
         return self._wait_for_status(id, version, run=run, status="published")
@@ -209,23 +209,25 @@ class DashboardArticleCheck:
             version, self._host, id
         )
 
-    def _wait_for_status(self, id, version, run, status):
+    def _wait_for_status(self, id, version, status, run=None, run_after=None):
         return _poll(
-            lambda: self._is_present(id, version, run, status),
+            lambda: self._is_present(id, version, status, run=run, run_after=None),
             "article version %s in status %s on dashboard: %s/api/article/%s",
             version, status, self._host, id
         )
 
-    def _is_present(self, id, version, run, status):
+    def _is_present(self, id, version, status, run=None, run_after=None):
         url = self._article_api(id)
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
+            from pprint import pprint
             if response.status_code != 200:
                 return False
             if response.status_code >= 500:
                 raise UnrecoverableException(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
+            pprint(version_contents)
             if not version:
                 return False
             if version_contents['details']['publication-status'] != status:
@@ -235,7 +237,12 @@ class DashboardArticleCheck:
                 run_contents = self._check_for_run(version_contents, run)
                 if not run_contents:
                     return False
-                run_suffix = " with run %s" % run
+                run_suffix = " with run %s" % run_contents['run_id']
+            if run_after:
+                run_contents = self._check_for_run_after(version_contents, run_after)
+                if not run_contents:
+                    return False
+                run_suffix = " with run %s" % run_contents['run-id']
             LOGGER.info(
                 "Found %s version %s in status %s on dashboard" + run_suffix,
                 url,
@@ -260,6 +267,14 @@ class DashboardArticleCheck:
         matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
         if len(matching_runs) > 1:
             raise RuntimeError("Too many runs matching run-id %s: %s", run, matching_runs)
+        if len(matching_runs) == 0:
+            return False
+        return matching_runs[0]
+
+    def _check_for_run_after(self, version_contents, run_after):
+        matching_runs = [r for _, r in version_contents['runs'].iteritems() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') > run_after.strftime('%s')]
+        if len(matching_runs) > 1:
+            raise RuntimeError("Too many runs after run_after %s: %s", run_after, matching_runs)
         if len(matching_runs) == 0:
             return False
         return matching_runs[0]
