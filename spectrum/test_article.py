@@ -16,7 +16,7 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
             pytest.skip("Filtered out through the article_id_filter")
 
     article = generate_article(template_id)
-    _ingest_and_publish(article)
+    _ingest_and_publish_and_wait_for_published(article)
 
 @pytest.mark.continuum
 def test_article_multiple_ingests_of_the_same_version(generate_article, modify_article):
@@ -28,8 +28,8 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     run2_start = datetime.now()
     modified_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _ingest(modified_article)
+    checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run2_start)
     (run2, ) = checks.EIF.of(id=article.id(), version=article.version(), last_modified_after=run2_start)
-    checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run2)
     assert run2 != run1, "A new run should have been triggered"
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run2)
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
@@ -39,9 +39,9 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
 def test_article_multiple_versions(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
-    _ingest_and_publish(article)
+    _ingest_and_publish_and_wait_for_published(article)
     new_article = modify_article(article, new_version=2, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
-    article_from_api = _ingest_and_publish(new_article)
+    article_from_api = _ingest_and_publish_and_wait_for_published(new_article)
     version1_content = checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], version=1)
     assert 'cytomegalovirus' in version1_content
     assert 'CYTOMEGALOVIRUS' not in version1_content
@@ -53,7 +53,7 @@ def test_article_multiple_versions(generate_article, modify_article):
 def test_article_silent_correction(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
-    _ingest_and_publish(article)
+    _ingest_and_publish_and_wait_for_published(article)
 
     # TODO: for stability, wait until all the publishing workflows have finished
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
@@ -71,7 +71,7 @@ def test_article_silent_correction(generate_article, modify_article):
 def test_article_already_present_version(generate_article, version_article):
     template_id = 15893
     article = generate_article(template_id)
-    _ingest_and_publish(article)
+    _ingest_and_publish_and_wait_for_published(article)
     new_article = version_article(article, new_version=1)
     _ingest(new_article)
     # article stops sometimes in this state, sometimes in 'published'?
@@ -82,8 +82,7 @@ def test_article_already_present_version(generate_article, version_article):
 @pytest.mark.continuum
 def test_article_with_unicode_content(generate_article):
     article = generate_article(template_id=19532)
-    _ingest(article)
-    _publish(article)
+    _ingest_and_publish(article)
     article_from_api = checks.API.wait_article(id=article.id())
     journal_page = checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], has_figures=article.has_figures())
     assert "Szymon \xc5\x81\xc4\x99ski" in journal_page
@@ -94,7 +93,7 @@ def test_searching_for_a_new_article(generate_article, modify_article):
     template_id = 15893
     invented_word = input.invented_word()
     new_article = modify_article(generate_article(template_id), replacements={'cytomegalovirus':invented_word})
-    _ingest_and_publish(new_article)
+    _ingest_and_publish_and_wait_for_published(new_article)
     result = checks.API.wait_search(invented_word)
     assert len(result['items']) == 1, "Searching for %s returned too many results: %d" % (invented_word, len(result['items']))
     checks.JOURNAL.search(invented_word, count=1)
@@ -103,9 +102,9 @@ def test_searching_for_a_new_article(generate_article, modify_article):
 def test_recommendations_for_new_articles(generate_article):
     template_id = 15893
     first_article = generate_article(template_id)
-    _ingest_and_publish(first_article)
+    _ingest_and_publish_and_wait_for_published(first_article)
     second_article = generate_article(template_id, related_article_id=first_article.id())
-    _ingest_and_publish(second_article)
+    _ingest_and_publish_and_wait_for_published(second_article)
 
     def _single_relation(from_id, to_id):
         related = checks.API.related_articles(from_id)
@@ -167,10 +166,11 @@ def _publish(article, run_after=None):
     run = _wait_for_publishable(article, run_after)
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
 
+def _ingest_and_publish_and_wait_for_published(article):
+    _ingest_and_publish(article)
+    return _wait_for_published(article)
 
 def _ingest_and_publish(article):
     ingestion_start = datetime.now()
     _ingest(article)
     _publish(article, run_after=ingestion_start)
-    return _wait_for_published(article)
-

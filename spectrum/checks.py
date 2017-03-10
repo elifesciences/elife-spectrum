@@ -211,7 +211,7 @@ class DashboardArticleCheck:
 
     def _wait_for_status(self, id, version, status, run=None, run_after=None):
         return _poll(
-            lambda: self._is_present(id, version, status, run=run, run_after=None),
+            lambda: self._is_present(id, version, status, run=run, run_after=run_after),
             "article version %s in status %s on dashboard: %s/api/article/%s",
             version, status, self._host, id
         )
@@ -220,29 +220,26 @@ class DashboardArticleCheck:
         url = self._article_api(id)
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
-            from pprint import pprint
             if response.status_code != 200:
                 return False
             if response.status_code >= 500:
                 raise UnrecoverableException(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
-            pprint(version_contents)
             if not version:
                 return False
             if version_contents['details']['publication-status'] != status:
                 return False
-            run_suffix = ''
-            if run:
-                run_contents = self._check_for_run(version_contents, run)
-                if not run_contents:
-                    return False
-                run_suffix = " with run %s" % run_contents['run_id']
-            if run_after:
-                run_contents = self._check_for_run_after(version_contents, run_after)
+            if run or run_after:
+                if run:
+                    run_contents = self._check_for_run(version_contents, run)
+                elif run_after:
+                    run_contents = self._check_for_run_after(version_contents, run_after)
                 if not run_contents:
                     return False
                 run_suffix = " with run %s" % run_contents['run-id']
+            else:
+                run_suffix = ''
             LOGGER.info(
                 "Found %s version %s in status %s on dashboard" + run_suffix,
                 url,
