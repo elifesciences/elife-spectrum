@@ -21,9 +21,10 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
 @pytest.mark.continuum
 def test_article_multiple_ingests_of_the_same_version(generate_article, modify_article):
     template_id = 15893
+    run1_start = datetime.now()
     article = generate_article(template_id)
     _ingest(article)
-    run1 = _wait_for_publishable(article)
+    run1 = _wait_for_publishable(article, run_after=run1_start)
 
     run2_start = datetime.now()
     modified_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
@@ -130,7 +131,7 @@ def _ingest(article):
 def _feed_silent_correction(article):
     input.SILENT_CORRECTION_BUCKET.upload(article.filename(), article.id())
 
-def _wait_for_publishable(article, run_after=None):
+def _wait_for_publishable(article, run_after):
     if run_after:
         checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run_after)
     # fails quite often but is now late in the process, can we make an intermediate check?
@@ -162,7 +163,7 @@ def _wait_for_published(article):
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
     return article_from_api
 
-def _publish(article, run_after=None):
+def _publish(article, run_after):
     run = _wait_for_publishable(article, run_after)
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
 
