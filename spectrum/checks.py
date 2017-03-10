@@ -643,79 +643,79 @@ def _build_url(path, host):
 
 EIF = BucketFileCheck(
     aws.S3,
-    aws.SETTINGS.bucket_eif,
+    aws.SETTINGS['bucket_eif'],
     '{id}.{version}/(?P<run>.*)/elife-{id}-v{version}.json',
     '{id}.{version}/'
 )
 ARCHIVE = BucketFileCheck(
     aws.S3,
-    aws.SETTINGS.bucket_archive,
+    aws.SETTINGS['bucket_archive'],
     # notice {{6}} is the escaping for {6} in the regex,
     # it should not be substituted
     'elife-{id}-(poa|vor)-v{version}-20[0-9]{{12}}.zip',
     'elife-{id}-'
 )
 WEBSITE = WebsiteArticleCheck(
-    host=aws.SETTINGS.website_host,
-    user=aws.SETTINGS.website_user,
-    password=aws.SETTINGS.website_password
+    host=aws.SETTINGS['website_host'],
+    user=aws.SETTINGS['website_user'],
+    password=aws.SETTINGS['website_password']
 )
 IMAGES_BOT_CDN = BucketFileCheck(
     aws.S3,
-    aws.SETTINGS.bucket_cdn,
+    aws.SETTINGS['bucket_cdn'],
     '{id}/elife-{id}-{figure_name}-v{version}.jpg',
     '{id}/elife-{id}-{figure_name}-v{version}.jpg'
 )
 IMAGES_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
-    aws.SETTINGS.bucket_published,
+    aws.SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg',
     'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg'
 )
 XML_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
-    aws.SETTINGS.bucket_published,
+    aws.SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}.xml',
     'articles/{id}/elife-{id}-v{version}.xml'
 )
 XML_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
-    aws.SETTINGS.bucket_published,
+    aws.SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}-download.xml',
     'articles/{id}/elife-{id}-v{version}-download.xml'
 )
 PDF_BOT_CDN = BucketFileCheck(
     aws.S3,
-    aws.SETTINGS.bucket_cdn,
+    aws.SETTINGS['bucket_cdn'],
     '{id}/elife-{id}-v{version}.pdf',
     '{id}/elife-{id}-v{version}.pdf'
 )
 PDF_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
-    aws.SETTINGS.bucket_published,
+    aws.SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}.pdf',
     'articles/{id}/elife-{id}-v{version}.pdf'
 )
 PDF_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
-    aws.SETTINGS.bucket_published,
+    aws.SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}-download.pdf',
     'articles/{id}/elife-{id}-v{version}-download.pdf'
 )
 DASHBOARD = DashboardArticleCheck(
-    host=aws.SETTINGS.dashboard_host,
-    user=aws.SETTINGS.dashboard_user,
-    password=aws.SETTINGS.dashboard_password
+    host=aws.SETTINGS['dashboard_host'],
+    user=aws.SETTINGS['dashboard_user'],
+    password=aws.SETTINGS['dashboard_password']
 )
 LAX = LaxArticleCheck(
-    host=aws.SETTINGS.lax_host
+    host=aws.SETTINGS['lax_host']
 )
 API = ApiCheck(
-    host=aws.SETTINGS.api_gateway_host
+    host=aws.SETTINGS['api_gateway_host']
 )
 JOURNAL = JournalCheck(
-    host=aws.SETTINGS.journal_host
+    host=aws.SETTINGS['journal_host']
 )
 GITHUB_XML = GithubCheck(
-    repo_url=aws.SETTINGS.github_article_xml_repository_url
+    repo_url=aws.SETTINGS['github_article_xml_repository_url']
 )

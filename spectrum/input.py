@@ -126,25 +126,25 @@ def _journal_cms_page_title(soup):
 def invented_word():
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))
 
-PRODUCTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_input)
-SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS.bucket_silent_corrections)
+PRODUCTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS['bucket_input'])
+SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS['bucket_silent_corrections'])
 DASHBOARD = Dashboard(
-    aws.SETTINGS.dashboard_host,
-    aws.SETTINGS.dashboard_user,
-    aws.SETTINGS.dashboard_password
+    aws.SETTINGS['dashboard_host'],
+    aws.SETTINGS['dashboard_user'],
+    aws.SETTINGS['dashboard_password']
 )
 
 SILENT_CORRECTION = SilentCorrectionWorkflowStarter(
-    aws.SETTINGS.aws_access_key_id,
-    aws.SETTINGS.aws_secret_access_key,
-    aws.SETTINGS.region_name,
+    aws.SETTINGS['aws_access_key_id'],
+    aws.SETTINGS['aws_secret_access_key'],
+    aws.SETTINGS['region_name'],
     SILENT_CORRECTION_BUCKET.name(),
-    aws.SETTINGS.queue_workflow_starter,
+    aws.SETTINGS['queue_workflow_starter'],
     'SilentCorrectionsIngest'
 )
 
 JOURNAL_CMS = JournalCms(
-    aws.SETTINGS.journal_cms_host,
-    aws.SETTINGS.journal_cms_user,
-    aws.SETTINGS.journal_cms_password
+    aws.SETTINGS['journal_cms_host'],
+    aws.SETTINGS['journal_cms_user'],
+    aws.SETTINGS['journal_cms_password']
 )
