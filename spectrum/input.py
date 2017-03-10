@@ -3,6 +3,7 @@ import random
 import string
 import requests
 from spectrum import aws, logger
+from spectrum.config import SETTINGS
 from econtools import econ_article_feeder
 from pollute import modified_environ
 import mechanicalsoup
@@ -126,25 +127,25 @@ def _journal_cms_page_title(soup):
 def invented_word():
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(30))
 
-PRODUCTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS['bucket_input'])
-SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, aws.SETTINGS['bucket_silent_corrections'])
+PRODUCTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_input'])
+SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_silent_corrections'])
 DASHBOARD = Dashboard(
-    aws.SETTINGS['dashboard_host'],
-    aws.SETTINGS['dashboard_user'],
-    aws.SETTINGS['dashboard_password']
+    SETTINGS['dashboard_host'],
+    SETTINGS['dashboard_user'],
+    SETTINGS['dashboard_password']
 )
 
 SILENT_CORRECTION = SilentCorrectionWorkflowStarter(
-    aws.SETTINGS['aws_access_key_id'],
-    aws.SETTINGS['aws_secret_access_key'],
-    aws.SETTINGS['region_name'],
+    SETTINGS['aws_access_key_id'],
+    SETTINGS['aws_secret_access_key'],
+    SETTINGS['region_name'],
     SILENT_CORRECTION_BUCKET.name(),
-    aws.SETTINGS['queue_workflow_starter'],
+    SETTINGS['queue_workflow_starter'],
     'SilentCorrectionsIngest'
 )
 
 JOURNAL_CMS = JournalCms(
-    aws.SETTINGS['journal_cms_host'],
-    aws.SETTINGS['journal_cms_user'],
-    aws.SETTINGS['journal_cms_password']
+    SETTINGS['journal_cms_host'],
+    SETTINGS['journal_cms_user'],
+    SETTINGS['journal_cms_password']
 )

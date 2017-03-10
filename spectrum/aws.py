@@ -1,15 +1,11 @@
 import datetime
-import os
 import re
 
 import boto3
-import settings
-from spectrum import config
+from spectrum.config import SETTINGS
 from spectrum import logger
 
 LOGGER = logger.logger(__name__)
-ENV = os.environ['SPECTRUM_ENVIRONMENT'] if 'SPECTRUM_ENVIRONMENT' in os.environ else 'end2end'
-SETTINGS = dict(config.CONFIG.items(ENV))
 S3 = boto3.resource(
     's3',
     aws_access_key_id=SETTINGS['aws_access_key_id'],

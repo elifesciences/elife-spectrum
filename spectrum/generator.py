@@ -8,7 +8,7 @@ import zipfile
 
 import jinja2
 from spectrum import logger
-from spectrum.aws import SETTINGS
+from spectrum.config import COMMON
 
 LOGGER = logger.logger(__name__)
 
@@ -24,7 +24,7 @@ def article_zip(template_id, template_variables=None):
         template_variables = {}
     (template, kind) = _choose_template(template_id)
     id = generate_article_id(template_id)
-    generated_article_directory = '%s/elife-%s-%s-r1' % (SETTINGS['tmp'], id, kind)
+    generated_article_directory = '%s/elife-%s-%s-r1' % (COMMON['tmp'], id, kind)
     os.mkdir(generated_article_directory)
     generated_files = []
     for file in glob.glob(template + "/*"):
@@ -43,7 +43,7 @@ def article_zip(template_id, template_variables=None):
     return ArticleZip(id, zip_filename, generated_article_directory, revision=1, version=1, figure_names=figure_names, has_pdf=has_pdf)
 
 def clean():
-    for entry in glob.glob('%s/elife*' % SETTINGS['tmp']):
+    for entry in glob.glob('%s/elife*' % COMMON['tmp']):
         if path.isdir(entry):
             shutil.rmtree(entry)
             LOGGER.info("Deleted directory %s", entry)
