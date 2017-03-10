@@ -3,7 +3,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-settings.py
+/settings.py
+/app.cfg
 venv
 build/
 /iiif/**/*.jpg

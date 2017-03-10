@@ -1,31 +1,28 @@
 import datetime
-import os
 import re
 
 import boto3
-import settings
+from spectrum.config import SETTINGS
 from spectrum import logger
 
 LOGGER = logger.logger(__name__)
-ENV = os.environ['SPECTRUM_ENVIRONMENT'] if 'SPECTRUM_ENVIRONMENT' in os.environ else 'end2end'
-SETTINGS = settings.get_settings(ENV)
 S3 = boto3.resource(
     's3',
-    aws_access_key_id=SETTINGS.aws_access_key_id,
-    aws_secret_access_key=SETTINGS.aws_secret_access_key,
-    region_name=SETTINGS.region_name
+    aws_access_key_id=SETTINGS['aws_access_key_id'],
+    aws_secret_access_key=SETTINGS['aws_secret_access_key'],
+    region_name=SETTINGS['region_name']
 )
 SWF = boto3.client(
     'swf',
-    aws_access_key_id=SETTINGS.aws_access_key_id,
-    aws_secret_access_key=SETTINGS.aws_secret_access_key,
-    region_name=SETTINGS.region_name
+    aws_access_key_id=SETTINGS['aws_access_key_id'],
+    aws_secret_access_key=SETTINGS['aws_secret_access_key'],
+    region_name=SETTINGS['region_name']
 )
 SQS = boto3.client(
     'sqs',
-    aws_access_key_id=SETTINGS.aws_access_key_id,
-    aws_secret_access_key=SETTINGS.aws_secret_access_key,
-    region_name=SETTINGS.region_name
+    aws_access_key_id=SETTINGS['aws_access_key_id'],
+    aws_secret_access_key=SETTINGS['aws_secret_access_key'],
+    region_name=SETTINGS['region_name']
 )
 
 def clean():
