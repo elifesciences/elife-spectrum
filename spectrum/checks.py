@@ -226,7 +226,7 @@ class DashboardArticleCheck:
                 raise UnrecoverableException(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
-            if not version:
+            if not version_contents:
                 return False
             if version_contents['details']['publication-status'] != status:
                 return False
