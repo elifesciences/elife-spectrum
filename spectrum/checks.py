@@ -212,7 +212,7 @@ class DashboardArticleCheck:
     def _wait_for_status(self, id, version, status, run=None, run_after=None):
         return _poll(
             lambda: self._is_present(id, version, status, run=run, run_after=run_after),
-            "article version %s in status %s on dashboard: %s/api/article/%s",
+            lambda: "article version %s in status %s on dashboard: %s/api/article/%s",
             version, status, self._host, id
         )
 
@@ -229,7 +229,7 @@ class DashboardArticleCheck:
             if not version_contents:
                 return False
             if version_contents['details']['publication-status'] != status:
-                return False
+                return (False, version_contents)
             if run or run_after:
                 if run:
                     run_contents = self._check_for_run(version_contents, run)
@@ -577,14 +577,29 @@ class GithubCheck:
         return False
 
 def _poll(action_fn, error_message, *error_message_args):
+    details = {'last_seen': None}
+    def wrapped_action_fn():
+        possible_result = action_fn()
+        if isinstance(possible_result, tuple):
+            details['last_seen'] = possible_result[1]
+            return possible_result[0]
+        else:
+            return possible_result
     try:
         return polling.poll(
-            action_fn,
+            wrapped_action_fn,
             timeout=GLOBAL_TIMEOUT,
             step=5
         )
     except polling.TimeoutException:
-        raise TimeoutException.giving_up_on(error_message % tuple(error_message_args))
+        if callable(error_message):
+            error_message_template = error_message()
+        else:
+            error_message_template = error_message
+        built_error_message = error_message_template % tuple(error_message_args)
+        if 'last_seen' in details:
+            built_error_message = built_error_message + "\n" + pformat(details['last_seen'])
+        raise TimeoutException.giving_up_on(built_error_message)
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
