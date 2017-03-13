@@ -235,16 +235,17 @@ class DashboardArticleCheck:
                     run_contents = self._check_for_run(version_contents, run)
                 elif run_after:
                     run_contents = self._check_for_run_after(version_contents, run_after)
-                if not run_contents:
-                    return False
-                run_suffix = " with run %s" % run_contents['run-id']
             else:
-                run_suffix = ''
+                run_contents = self._check_for_run(version_contents, run=1)
+            if not run_contents:
+                return False
+            self._check_correctness(run_contents)
             LOGGER.info(
-                "Found %s version %s in status %s on dashboard" + run_suffix,
+                "Found %s version %s in status %s on dashboard with run %s",
                 url,
                 version,
                 status,
+                run_contents['run-id'],
                 extra={'id': id}
             )
             return article
@@ -275,6 +276,11 @@ class DashboardArticleCheck:
         if len(matching_runs) == 0:
             return False
         return matching_runs[0]
+
+    def _check_correctness(self, run_contents):
+        errors = [e for e in run_contents['events'] if e['event-status'] == 'error']
+        if errors:
+            raise UnrecoverableException("At least one error event was reported for the run.\n%s" % pformat(errors))
 
     def _is_last_event_error(self, id, version, run):
         url = self._article_api(id)
