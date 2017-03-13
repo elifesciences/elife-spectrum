@@ -221,13 +221,13 @@ class DashboardArticleCheck:
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
             if response.status_code != 200:
-                return False
+                return (False, "Response code: %s, response.status_code")
             if response.status_code >= 500:
                 raise UnrecoverableException(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
             if not version_contents:
-                return False
+                return False, article
             if version_contents['details']['publication-status'] != status:
                 return (False, version_contents)
             if run or run_after:
