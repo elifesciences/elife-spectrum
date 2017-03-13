@@ -96,7 +96,7 @@ class BucketFileCheck:
                             file.key,
                             extra={'id': id}
                         )
-                        return match.groups()
+                        return (match.groups(), {'key': file.key})
                     else:
                         return True
         except SSLError as e:
@@ -577,10 +577,20 @@ class GithubCheck:
         return False
 
 def _poll(action_fn, error_message, *error_message_args):
+    """
+    Poll until action_fn returns something truthy. After GLOBAL_TIMEOUT throws an exception.
+
+    action_fn may return:
+    - a tuple: first element is a result (truthy or falsy), second element any detail
+    - any other type: truthy or falsy decides whether the polling has been successful or not
+
+    error_message may be:
+    - a string to be formatted with error_message_args
+    - a callable returning such a string"""
     details = {'last_seen': None}
     def wrapped_action_fn():
         possible_result = action_fn()
-        if isinstance(possible_result, tuple):
+        if isinstance(possible_result, tuple) and len(possible_result) == 2:
             details['last_seen'] = possible_result[1]
             return possible_result[0]
         else:
