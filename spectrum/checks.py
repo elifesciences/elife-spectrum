@@ -212,8 +212,13 @@ class DashboardArticleCheck:
     def _wait_for_status(self, id, version, status, run=None, run_after=None):
         return _poll(
             lambda: self._is_present(id, version, status, run=run, run_after=run_after),
-            lambda: "article version %s in status %s on dashboard: %s/api/article/%s",
-            version, status, self._host, id
+            lambda: "article version %s in status %s on dashboard (run filter %s, run_after filter %s): %s/api/article/%s",
+            version,
+            status,
+            run,
+            run_after,
+            self._host,
+            id
         )
 
     def _is_present(self, id, version, status, run=None, run_after=None):
@@ -221,7 +226,7 @@ class DashboardArticleCheck:
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
             if response.status_code != 200:
-                return (False, "Response code: %s, response.status_code")
+                return False, "Response code: %s" % response.status_code
             if response.status_code >= 500:
                 raise UnrecoverableException(response)
             article = response.json()
@@ -229,16 +234,16 @@ class DashboardArticleCheck:
             if not version_contents:
                 return False, article
             if version_contents['details']['publication-status'] != status:
-                return (False, version_contents)
+                return False, version_contents
             if run or run_after:
                 if run:
                     run_contents = self._check_for_run(version_contents, run)
                 elif run_after:
                     run_contents = self._check_for_run_after(version_contents, run_after)
             else:
-                run_contents = self._check_for_run(version_contents, run=1)
+                run_contents = self._check_for_run(version_contents)
             if not run_contents:
-                return False
+                return False, version_contents['runs']
             self._check_correctness(run_contents)
             LOGGER.info(
                 "Found %s version %s in status %s on dashboard with run %s",
@@ -251,7 +256,7 @@ class DashboardArticleCheck:
             return article
         except ConnectionError as e:
             _log_connection_error(e)
-            return False
+            return False, e
 
     def _check_for_version(self, article, version):
         version_key = str(version)
@@ -261,8 +266,11 @@ class DashboardArticleCheck:
             return False
         return article['versions'][version_key]
 
-    def _check_for_run(self, version_contents, run):
-        matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
+    def _check_for_run(self, version_contents, run=None):
+        if run:
+            matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
+        else:
+            matching_runs = version_contents['runs'].values()
         if len(matching_runs) > 1:
             raise RuntimeError("Too many runs matching run-id %s: %s", run, pformat(matching_runs))
         if len(matching_runs) == 0:
