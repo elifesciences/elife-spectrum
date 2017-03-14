@@ -101,10 +101,12 @@ def test_searching_for_a_new_article(generate_article, modify_article):
 
 @pytest.mark.recommendations
 def test_recommendations_for_new_articles(generate_article):
-    template_id = 15893
+    template_id = '06847'
+    related_template_id = '22661'
+
     first_article = generate_article(template_id)
     _ingest_and_publish(first_article)
-    second_article = generate_article(template_id, related_article_id=first_article.id())
+    second_article = generate_article(related_template_id, related_article_id=first_article.id())
     _ingest_and_publish(second_article)
 
     def _single_relation(from_id, to_id):
