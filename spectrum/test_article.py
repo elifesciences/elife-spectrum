@@ -110,7 +110,7 @@ def test_recommendations_for_new_articles(generate_article):
     _ingest_and_publish(second_article)
 
     def _single_relation(from_id, to_id):
-        related = checks.API.related_articles(from_id)
+        related = [a for a in checks.API.related_articles(from_id) if a['type'] != 'external-article']
         assert len(related) == 1, "There should be 1 related article to %s, but the result is: %s" % (from_id, related)
         assert related[0]['id'] == to_id, "The related article of %s should be %s but it is %s" % (from_id, to_id, related[0]['id'])
 
@@ -120,7 +120,6 @@ def test_recommendations_for_new_articles(generate_article):
     for article, recommended in [(first_article, second_article), (second_article, first_article)]:
         result = checks.API.wait_recommendations(article.id())
         assert len(result['items']) >= 1
-        #assert result['items'][0]['type'] == 'correction'
         #assert result['items'][0]['id'] == recommended.id()
         assert recommended.id() == recommended.id()
         # load the article page, this will call recommendations
