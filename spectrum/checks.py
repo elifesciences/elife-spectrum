@@ -29,13 +29,16 @@ class TimeoutException(RuntimeError):
         )
 
 class UnrecoverableException(RuntimeError):
-    def __init__(self, response):
-        super(UnrecoverableException, self).__init__(self, response)
-        self._response = response
+    def __init__(self, details):
+        super(UnrecoverableException, self).__init__(self, details)
+        self._details = details
 
     def __str__(self):
-        return "RESPONSE CODE: %d\nRESPONSE BODY:\n%s\n" \
-                % (self._response.status_code, self._response.text)
+        if isinstance(self._details, requests.Response):
+            return "RESPONSE CODE: %d\nRESPONSE BODY:\n%s\n" \
+                    % (self._details.status_code, self._details.text)
+        else:
+            return "DETAILS: %s" % pformat(self._details)
 
 
 class BucketFileCheck:
