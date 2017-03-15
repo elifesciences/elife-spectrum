@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from pprint import pformat
 import os
 import re
@@ -22,20 +22,23 @@ LOGGER = logger.logger(__name__)
 class TimeoutException(RuntimeError):
     @staticmethod
     def giving_up_on(what):
-        timestamp = datetime.datetime.today().isoformat()
+        timestamp = datetime.today().isoformat()
         return TimeoutException(
             "Cannot find '%s'; Giving up at %s" \
                     % (what, timestamp)
         )
 
 class UnrecoverableException(RuntimeError):
-    def __init__(self, response):
-        super(UnrecoverableException, self).__init__(self, response)
-        self._response = response
+    def __init__(self, details):
+        super(UnrecoverableException, self).__init__(self, details)
+        self._details = details
 
     def __str__(self):
-        return "RESPONSE CODE: %d\nRESPONSE BODY:\n%s\n" \
-                % (self._response.status_code, self._response.text)
+        if isinstance(self._details, requests.Response):
+            return "RESPONSE CODE: %d\nRESPONSE BODY:\n%s\n" \
+                    % (self._details.status_code, self._details.text)
+        else:
+            return "DETAILS: %s" % pformat(self._details)
 
 
 class BucketFileCheck:
@@ -96,7 +99,7 @@ class BucketFileCheck:
                             file.key,
                             extra={'id': id}
                         )
-                        return match.groups()
+                        return (match.groups(), {'key': file.key})
                     else:
                         return True
         except SSLError as e:
@@ -193,8 +196,8 @@ class DashboardArticleCheck:
         self._user = user
         self._password = password
 
-    def ready_to_publish(self, id, version, run=None):
-        return self._wait_for_status(id, version, run=run, status="ready to publish")
+    def ready_to_publish(self, id, version, run=None, run_after=None):
+        return self._wait_for_status(id, version, run=run, status="ready to publish", run_after=run_after)
 
     def published(self, id, version, run=None):
         return self._wait_for_status(id, version, run=run, status="published")
@@ -209,44 +212,54 @@ class DashboardArticleCheck:
             version, self._host, id
         )
 
-    def _wait_for_status(self, id, version, run, status):
+    def _wait_for_status(self, id, version, status, run=None, run_after=None):
         return _poll(
-            lambda: self._is_present(id, version, run, status),
-            "article version %s in status %s on dashboard: %s/api/article/%s",
-            version, status, self._host, id
+            lambda: self._is_present(id, version, status, run=run, run_after=run_after),
+            lambda: "article version %s in status %s on dashboard (run filter %s, run_after filter %s): %s/api/article/%s",
+            version,
+            status,
+            run,
+            run_after,
+            self._host,
+            id
         )
 
-    def _is_present(self, id, version, run, status):
+    def _is_present(self, id, version, status, run=None, run_after=None):
         url = self._article_api(id)
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
             if response.status_code != 200:
-                return False
+                return False, "Response code: %s" % response.status_code
             if response.status_code >= 500:
                 raise UnrecoverableException(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
-            if not version:
-                return False
+            if not version_contents:
+                return False, article
             if version_contents['details']['publication-status'] != status:
-                return False
-            run_suffix = ''
-            if run:
-                run_contents = self._check_for_run(version_contents, run)
-                if not run_contents:
-                    return False
-                run_suffix = " with run %s" % run
+                return False, version_contents
+            if run or run_after:
+                if run:
+                    run_contents = self._check_for_run(version_contents, run)
+                elif run_after:
+                    run_contents = self._check_for_run_after(version_contents, run_after)
+            else:
+                run_contents = self._check_for_run(version_contents)
+            if not run_contents:
+                return False, version_contents['runs']
+            self._check_correctness(run_contents)
             LOGGER.info(
-                "Found %s version %s in status %s on dashboard" + run_suffix,
+                "Found %s version %s in status %s on dashboard with run %s",
                 url,
                 version,
                 status,
+                run_contents['run-id'],
                 extra={'id': id}
             )
             return article
         except ConnectionError as e:
             _log_connection_error(e)
-            return False
+            return False, e
 
     def _check_for_version(self, article, version):
         version_key = str(version)
@@ -256,13 +269,29 @@ class DashboardArticleCheck:
             return False
         return article['versions'][version_key]
 
-    def _check_for_run(self, version_contents, run):
-        matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
+    def _check_for_run(self, version_contents, run=None):
+        if run:
+            matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
+        else:
+            matching_runs = version_contents['runs'].values()
         if len(matching_runs) > 1:
-            raise RuntimeError("Too many runs matching run-id %s: %s", run, matching_runs)
+            raise RuntimeError("Too many runs matching run-id %s: %s", run, pformat(matching_runs))
         if len(matching_runs) == 0:
             return False
         return matching_runs[0]
+
+    def _check_for_run_after(self, version_contents, run_after):
+        matching_runs = [r for _, r in version_contents['runs'].iteritems() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') > run_after.strftime('%s')]
+        if len(matching_runs) > 1:
+            raise RuntimeError("Too many runs after run_after %s: %s", run_after, matching_runs)
+        if len(matching_runs) == 0:
+            return False
+        return matching_runs[0]
+
+    def _check_correctness(self, run_contents):
+        errors = [e for e in run_contents['events'] if e['event-status'] == 'error']
+        if errors:
+            raise UnrecoverableException("At least one error event was reported for the run.\n%s" % pformat(errors))
 
     def _is_last_event_error(self, id, version, run):
         url = self._article_api(id)
@@ -574,14 +603,39 @@ class GithubCheck:
         return False
 
 def _poll(action_fn, error_message, *error_message_args):
+    """
+    Poll until action_fn returns something truthy. After GLOBAL_TIMEOUT throws an exception.
+
+    action_fn may return:
+    - a tuple: first element is a result (truthy or falsy), second element any detail
+    - any other type: truthy or falsy decides whether the polling has been successful or not
+
+    error_message may be:
+    - a string to be formatted with error_message_args
+    - a callable returning such a string"""
+    details = {'last_seen': None}
+    def wrapped_action_fn():
+        possible_result = action_fn()
+        if isinstance(possible_result, tuple) and len(possible_result) == 2:
+            details['last_seen'] = possible_result[1]
+            return possible_result[0]
+        else:
+            return possible_result
     try:
         return polling.poll(
-            action_fn,
+            wrapped_action_fn,
             timeout=GLOBAL_TIMEOUT,
             step=5
         )
     except polling.TimeoutException:
-        raise TimeoutException.giving_up_on(error_message % tuple(error_message_args))
+        if callable(error_message):
+            error_message_template = error_message()
+        else:
+            error_message_template = error_message
+        built_error_message = error_message_template % tuple(error_message_args)
+        if 'last_seen' in details:
+            built_error_message = built_error_message + "\n" + pformat(details['last_seen'])
+        raise TimeoutException.giving_up_on(built_error_message)
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
