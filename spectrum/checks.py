@@ -353,6 +353,9 @@ class ApiCheck:
     def blog_articles(self):
         self._list_api('/blog-articles', 'blog-article')
 
+    def blog_article(self, id):
+        return self._item_api('/blog-articles/%s' % id, 'blog-article')
+
     def events(self):
         self._list_api('/events', 'event')
 
@@ -365,8 +368,14 @@ class ApiCheck:
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
         response = requests.get(url, headers={'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity})
-        body = self._ensure_sane_response(response, url)
-        return body
+        LOGGER.info("Found %s: %s", url, response.status_code)
+        return self._ensure_sane_response(response, url)
+
+    def _item_api(self, path, entity):
+        url = "%s%s" % (self._host, path)
+        response = requests.get(url, headers={'Accept': 'application/vnd.elife.%s+json; version=1' % entity})
+        LOGGER.info("Found %s: %s", url, response.status_code)
+        return self._ensure_sane_response(response, url)
 
     def article(self, id, version=1):
         versioned_url = "%s/articles/%s/versions/%s" % (self._host, id, version)
