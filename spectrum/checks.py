@@ -16,7 +16,7 @@ from spectrum.config import SETTINGS
 requests.packages.urllib3.disable_warnings()
 
 
-GLOBAL_TIMEOUT = int(os.environ['SPECTRUM_TIMEOUT']) if 'SPECTRUM_TIMEOUT' in os.environ else 300
+GLOBAL_TIMEOUT = int(os.environ['SPECTRUM_TIMEOUT']) if 'SPECTRUM_TIMEOUT' in os.environ else 600
 LOGGER = logger.logger(__name__)
 
 class TimeoutException(RuntimeError):
