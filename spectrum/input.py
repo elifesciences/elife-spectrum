@@ -83,7 +83,7 @@ class JournalCmsSession:
         self._host = host
         self._browser = browser
 
-    def create_blog_article(self, title, text):
+    def create_blog_article(self, title, text='Lorem ipsum', image=None):
         create_url = "%s/node/add/blog_article" % self._host
         create_page = self._browser.get(create_url)
         form = mechanicalsoup.Form(create_page.soup.form)
@@ -92,6 +92,10 @@ class JournalCmsSession:
         response = self._browser.submit(form, create_page.url)
         form = mechanicalsoup.Form(response.soup.form)
         form.textarea({'field_content[0][subform][field_block_html][0][value]': text})
+        if image:
+            form.attach({'files[field_image_0]': image})
+            self._choose_submit(form, 'op', value='Upload')
+
         self._choose_submit(form, 'op', value='Save and publish')
         response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
         assert _journal_cms_page_title(response.soup) == title
