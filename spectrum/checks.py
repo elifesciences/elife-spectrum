@@ -683,9 +683,9 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
             continue
         url = _build_url(path, host)
         if url in RESOURCE_CACHE:
-            LOGGER.info("Cached %s: %s", url, RESOURCE_CACHE[url], extra=extra)
+            LOGGER.debug("Cached %s: %s", url, RESOURCE_CACHE[url], extra=extra)
         else:
-            LOGGER.info("Loading resource %s", url, extra=extra)
+            LOGGER.debug("Loading resource %s", url, extra=extra)
             response = requests.head(url)
             _assert_status_code(response, 200, url)
             RESOURCE_CACHE[url] = response.status_code
