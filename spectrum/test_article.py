@@ -146,6 +146,7 @@ def _wait_for_publishable(article, run_after):
         checks.PDF_BOT_CDN.of(id=article.id(), version=article.version())
         checks.PDF_PUBLISHED_CDN.of(id=article.id(), version=article.version())
         checks.PDF_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
+    checks.API_PREVIEW.article(id=article.id(), version=article.version())
     checks.WEBSITE.unpublished(id=article.id(), version=article.version())
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run)
     return run
