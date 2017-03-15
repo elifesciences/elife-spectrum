@@ -6,6 +6,6 @@ elifePipeline {
     }
 
     stage 'End2end tests run', {
-        elifeEnd2endTest(null, null, 'end2end', 6, commit)
+        elifeEnd2endTest(null, null, 'end2end', 15, commit)
     }
 }
