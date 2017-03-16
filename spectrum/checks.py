@@ -359,8 +359,9 @@ class LaxArticleCheck:
             return False
 
 class ApiCheck:
-    def __init__(self, host):
+    def __init__(self, host, authorization=None):
         self._host = host
+        self._authorization = authorization
 
     def labs_experiments(self):
         body = self._list_api('/labs-experiments', 'labs-experiment')
@@ -396,13 +397,13 @@ class ApiCheck:
 
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
-        response = requests.get(url, headers={'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity})
+        response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity}))
         LOGGER.info("Found %s: %s", url, response.status_code)
         return self._ensure_sane_response(response, url)
 
     def _item_api(self, path, entity):
         url = "%s%s" % (self._host, path)
-        response = requests.get(url, headers={'Accept': 'application/vnd.elife.%s+json; version=1' % entity})
+        response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s+json; version=1' % entity}))
         LOGGER.info("Found %s: %s", url, response.status_code)
         return self._ensure_sane_response(response, url)
 
@@ -410,14 +411,14 @@ class ApiCheck:
         versioned_url = "%s/articles/%s/versions/%s" % (self._host, id, version)
         # we should pass 'Accept': 'application/vnd.elife.article-poa+json,application/vnd.elife.article-vor+json'
         # if that works... requests does not support a multidict, it seems
-        response = requests.get(versioned_url, headers={})
+        response = requests.get(versioned_url, headers=self._base_headers())
         body = self._ensure_sane_response(response, versioned_url)
         assert body['version'] == version, \
             ("Version in body %s not consistent with requested version %s" % (body['version'], version))
         LOGGER.info("Found article version %s on api: %s", body['version'], versioned_url, extra={'id': id})
 
         latest_url = "%s/articles/%s" % (self._host, id)
-        response = requests.get(latest_url, headers={})
+        response = requests.get(latest_url, headers=self._base_headers())
         body = self._ensure_sane_response(response, latest_url)
         assert body['version'] == version, \
             ("We were expecting /article/%s to be at version %s now" % (id, version))
@@ -428,7 +429,7 @@ class ApiCheck:
         "Article must be immediately present with this version, but will poll until the constraints (fields with certain values) are satisfied"
         latest_url = "%s/articles/%s" % (self._host, id)
         def _is_ready():
-            response = requests.get(latest_url, headers={})
+            response = requests.get(latest_url, headers=self._base_headers())
             if response.status_code == 404:
                 LOGGER.debug("%s: 404", latest_url)
                 return False
@@ -450,21 +451,21 @@ class ApiCheck:
 
     def related_articles(self, id):
         url = "%s/articles/%s/related" % (self._host, id)
-        response = requests.get(url, headers={})
+        response = requests.get(url, headers=self._base_headers())
         assert response.status_code == 200, "%s is not 200 but %s: %s" % (url, response.status_code, response.content)
         LOGGER.info("Found related articles of %s on api: %s", id, url, extra={'id': id})
         return response.json()
 
     def search(self, for_input):
         url = "%s/search?for=%s" % (self._host, for_input)
-        response = requests.get(url)
+        response = requests.get(url, headers=self._base_headers())
         return self._ensure_sane_response(response, url)
 
     def wait_search(self, word):
         "Returns as soon as there is one result"
         search_url = "%s/search?for=%s" % (self._host, word)
         def _is_ready():
-            response = requests.get(search_url, headers={})
+            response = requests.get(search_url, headers=self._base_headers())
             body = self._ensure_sane_response(response, search_url)
             if len(body['items']) == 0:
                 return False
@@ -482,7 +483,7 @@ class ApiCheck:
         "Returns as soon as there is one result"
         recommendations_url = "%s/recommendations/article/%s" % (self._host, id)
         def _is_ready():
-            response = requests.get(recommendations_url, headers={'Accept': 'application/vnd.elife.recommendations+json; version=1'})
+            response = requests.get(recommendations_url, headers=self._base_headers({'Accept': 'application/vnd.elife.recommendations+json; version=1'}))
             body = self._ensure_sane_response(response, recommendations_url)
             if len(body['items']) == 0:
                 return False
@@ -507,6 +508,14 @@ class ApiCheck:
     def _ensure_list_has_at_least_1_element(self, body):
         assert body['total'] >= 1, \
                 ("We were expecting the body of the list to have some content, but the total is not >= 1: %s" % body)
+
+    def _base_headers(self, headers=None):
+        final_headers = {}
+        if self._authorization:
+            final_headers['Authorization'] = self._authorization
+        if headers:
+            final_headers.update(headers)
+        return final_headers
 
 class JournalCheck:
     def __init__(self, host):
@@ -776,6 +785,10 @@ LAX = LaxArticleCheck(
 )
 API = ApiCheck(
     host=SETTINGS['api_gateway_host']
+)
+API_PREVIEW = ApiCheck(
+    host=SETTINGS['api_gateway_host'],
+    authorization=SETTINGS['api_gateway_authorization']
 )
 JOURNAL = JournalCheck(
     host=SETTINGS['journal_host']
