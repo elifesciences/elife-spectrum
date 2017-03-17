@@ -364,12 +364,12 @@ class ApiCheck:
         self._authorization = authorization
 
     def labs_experiments(self):
-        #body = 
+        #body =
         self._list_api('/labs-experiments', 'labs-experiment')
         #self._ensure_list_has_at_least_1_element(body)
 
     def subjects(self):
-        #body = 
+        #body =
         self._list_api('/subjects', 'subject')
         #self._ensure_list_has_at_least_1_element(body)
 
