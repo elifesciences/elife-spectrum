@@ -565,7 +565,7 @@ class JournalCheck:
         response = requests.get(url)
         # intended behavior at the moment: if the page is too slow to load,
         # timeouts will cut it (a CDN may serve a stale version if it has it)
-        if response.status_code == 500:
+        if response.status_code == 504:
             response = requests.get(url)
         return response
 
