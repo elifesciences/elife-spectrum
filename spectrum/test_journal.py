@@ -22,7 +22,6 @@ GENERIC_PATHS = [
 LISTING_PATHS = [
     '/articles/correction',
     '/collections',
-    '/events',
     '/inside-elife',
     '/labs',
     '/podcast',
@@ -54,6 +53,13 @@ def test_various_generic_pages(path):
 @pytest.mark.parametrize("path", LISTING_PATHS)
 def test_listings(path):
     items = checks.JOURNAL.listing(path)
+    if len(items):
+        checks.JOURNAL.generic(items[0])
+
+@pytest.mark.two
+@pytest.mark.journal_cms
+def test_events():
+    items = checks.JOURNAL.listing('/events')
     if len(items):
         checks.JOURNAL.generic(items[0])
 
