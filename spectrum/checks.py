@@ -528,7 +528,11 @@ class JournalCheck:
         if version:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
-        response = requests.get(url)
+        response = self._persistently_get(url)
+        # intended behavior at the moment: if the page is too slow to load,
+        # timeouts will cut it (a CDN may serve a stale version if it has it)
+        if response.status_code == 500:
+            response = requests.get(url)
         _assert_status_code(response, 200, url)
         _assert_all_resources_of_page_load(response.content, self._host, id=id)
         figures_link_selector = 'view-selector__link--figures'
@@ -537,7 +541,7 @@ class JournalCheck:
             assert figures_link is not None, "Cannot find figures link with selector %s" % figures_link_selector
             figures_url = _build_url(figures_link, self._host)
             LOGGER.info("Loading %s", figures_url, extra={'id':id})
-            response = requests.get(figures_url)
+            response = self._persistently_get(figures_url)
             _assert_status_code(response, 200, figures_url)
             _assert_all_resources_of_page_load(response.content, self._host, id=id)
         return response.content
@@ -573,6 +577,14 @@ class JournalCheck:
         teaser_links = [a['href'] for a in teaser_a_tags]
         LOGGER.info("Loaded %s, found links: %s", path, teaser_links)
         return teaser_links
+
+    def _persistently_get(self, url):
+        response = requests.get(url)
+        # intended behavior at the moment: if the page is too slow to load,
+        # timeouts will cut it (a CDN may serve a stale version if it has it)
+        if response.status_code == 500:
+            response = requests.get(url)
+        return response
 
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
