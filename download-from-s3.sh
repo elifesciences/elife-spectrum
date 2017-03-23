@@ -13,5 +13,6 @@ bucket="${2:-ct-elife-production-final}"
 latest_revision=$(aws s3 ls "s3://${bucket}/elife-${id}-" | awk '{print $4}' | sed -e 's/^.*-r\([0-9]*\)\.zip/\1/g' | sort -n | tail -n 1)
 filename="elife-${id}-vor-r${latest_revision}.zip"
 canonical_filename="elife-${id}-vor-r1.zip"
-aws s3 cp "s3://${bucket}/${filename}" .
+aws s3 cp "s3://${bucket}/${filename}" . 1>&2
 mv "${filename}" "${canonical_filename}"
+echo "${filename}"
