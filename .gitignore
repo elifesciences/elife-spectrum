@@ -9,3 +9,4 @@ venv
 build/
 /iiif/**/*.jpg
 /iiif/*.log
+/*.zip

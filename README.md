@@ -34,3 +34,4 @@ publishes and tests everything marked with `continuum` or other labels.
 
 - `SPECTRUM_PROCESSES` how many parallel processes to use to run tests.
 - `SPECTRUM_TIMEOUT` how much polling has to wait for a life sign before giving up with an exception.
+- `SPECTRUM_ENVIRONMENT` which environment to run tests in e.g. `end2end` (default) or `continuumtest'.
