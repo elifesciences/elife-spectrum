@@ -1,5 +1,5 @@
+def updateSummary;
 elifeUpdatePipeline(
-    def updateSummary
     { commit ->
         lock('end2end') {
             sh "cd ${env.SPECTRUM_PREFIX}; sudo -H -u elife ${env.SPECTRUM_PREFIX}checkout.sh master"
