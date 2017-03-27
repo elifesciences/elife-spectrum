@@ -56,6 +56,8 @@ def all_stored_articles():
 
     However, excludes some blacklisted articles that we prefer to use with a specific test rather than the standard ingest-and-publish"""
     blacklist = ['19532', '06847', '22661']
+    # we are unsure if the format is right, let's skip it for now
+    blacklist.append('03318')
     articles = []
     for template_directory in glob.glob('spectrum/templates/elife-*'):
         match = re.match(r".*/elife-(\d+)-.+", template_directory)
