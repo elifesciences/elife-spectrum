@@ -97,11 +97,51 @@ class JournalCmsSession:
             self._choose_submit(form, 'op', value='Upload')
 
         self._choose_submit(form, 'op', value='Save and publish')
+        # not sure why, but `data` here is necessary
         response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
         assert _journal_cms_page_title(response.soup) == title
         #check https://end2end--journal-cms.elifesciences.org/admin/content?status=All&type=All&title=b9djvu04y6v1t4kug4ts8kct5pagf8&langcode=All
         # but in checks module
         # TODO: return id and/or node id
+
+    def create_article_fragment(self, id, image):
+        create_url = "%s/admin/structure/article_fragment/add" % self._host
+        create_page = self._browser.get(create_url)
+        form = mechanicalsoup.Form(create_page.soup.form)
+        form.input({'name[0][value]': id})
+        form.attach({'files[image_0]': image})
+        LOGGER.info(
+            "Submitting thumbnail %s",
+            image,
+            extra={'id': id}
+        )
+        self._choose_submit(form, 'image_0_upload_button', value='Upload')
+        response = self._browser.submit(form, create_page.url)
+        form = mechanicalsoup.Form(response.soup.form)
+
+
+        form.attach({'files[banner_image_0]': image})
+
+        LOGGER.info(
+            "Submitting banner %s",
+            image,
+            extra={'id': id}
+        )
+        self._choose_submit(form, 'banner_image_0_upload_button', value='Upload')
+        response = self._browser.submit(form, create_page.url)
+        form = mechanicalsoup.Form(response.soup.form)
+        LOGGER.info(
+            "Submitting form",
+            extra={'id': id}
+        )
+        response = self._browser.submit(form, create_page.url, data={'op': 'Save'})
+        img = response.soup.select_one(".field--name-banner-image img")
+        assert "king_county" in img.get('src')
+        LOGGER.info(
+            "Tag: %s",
+            img,
+            extra={'id': id}
+        )
 
     def _choose_submit(self, wrapped_form, name, value=None):
         """Fixed version of mechanicalsoup.Form.choose_submit()
