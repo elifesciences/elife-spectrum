@@ -88,14 +88,17 @@ class JournalCmsSession:
         create_page = self._browser.get(create_url)
         form = mechanicalsoup.Form(create_page.soup.form)
         form.input({'title[0][value]': title})
+        LOGGER.info("Adding paragraph")
         self._choose_submit(form, 'field_content_paragraph_add_more')
         response = self._browser.submit(form, create_page.url)
         form = mechanicalsoup.Form(response.soup.form)
         form.textarea({'field_content[0][subform][field_block_html][0][value]': text})
         if image:
             form.attach({'files[field_image_0]': image})
+            LOGGER.info("Adding image")
             self._choose_submit(form, 'op', value='Upload')
 
+        LOGGER.info("Saving form")
         self._choose_submit(form, 'op', value='Save and publish')
         # not sure why, but `data` here is necessary
         response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
@@ -131,7 +134,7 @@ class JournalCmsSession:
         response = self._browser.submit(form, create_page.url)
         form = mechanicalsoup.Form(response.soup.form)
         LOGGER.info(
-            "Submitting form",
+            "Saving form",
             extra={'id': id}
         )
         response = self._browser.submit(form, create_page.url, data={'op': 'Save'})
