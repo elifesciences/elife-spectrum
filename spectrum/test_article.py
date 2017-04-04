@@ -45,6 +45,7 @@ def test_article_multiple_versions(generate_article, modify_article):
     new_article = modify_article(article, new_version=2, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     article_from_api = _ingest_and_publish_and_wait_for_published(new_article)
     version1_content = checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], version=1)
+    #version1_content = checks.JOURNAL_CDN.article(id=article.id(), volume=article_from_api['volume'], version=1)
     assert 'cytomegalovirus' in version1_content
     assert 'CYTOMEGALOVIRUS' not in version1_content
 
@@ -99,6 +100,7 @@ def test_searching_for_a_new_article(generate_article, modify_article):
     result = checks.API.wait_search(invented_word)
     assert len(result['items']) == 1, "Searching for %s returned too many results: %d" % (invented_word, len(result['items']))
     checks.JOURNAL.search(invented_word, count=1)
+    checks.JOURNAL_CDN.search(invented_word, count=1)
 
 @pytest.mark.recommendations
 def test_recommendations_for_new_articles(generate_article):
@@ -126,6 +128,7 @@ def test_recommendations_for_new_articles(generate_article):
         # load the article page, this will call recommendations
         article_from_api = checks.API.wait_article(id=article.id())
         checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'])
+        #checks.JOURNAL_CDN.article(id=article.id(), volume=article_from_api['volume'])
 
 @pytest.mark.journal_cms
 @pytest.mark.continuum
@@ -182,6 +185,7 @@ def _wait_for_published(article):
     checks.ARCHIVE.of(id=article.id(), version=article.version())
     article_from_api = checks.API.article(id=article.id(), version=article.version())
     checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], has_figures=article.has_figures())
+    checks.JOURNAL_CDN.article(id=article.id(), volume=article_from_api['volume'], has_figures=article.has_figures())
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
     return article_from_api
 
