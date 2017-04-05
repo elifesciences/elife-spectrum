@@ -45,9 +45,11 @@ def test_article_multiple_versions(generate_article, modify_article):
     new_article = modify_article(article, new_version=2, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     article_from_api = _ingest_and_publish_and_wait_for_published(new_article)
     version1_content = checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], version=1)
-    #version1_content = checks.JOURNAL_CDN.article(id=article.id(), volume=article_from_api['volume'], version=1)
     assert 'cytomegalovirus' in version1_content
     assert 'CYTOMEGALOVIRUS' not in version1_content
+    version2_content_cdn = checks.JOURNAL_CDN.article(id=article.id(), volume=article_from_api['volume'], version=2)
+    assert 'CYTOMEGALOVIRUS' in version2_content_cdn
+    assert 'cytomegalovirus' not in version2_content_cdn
 
 # this is a silent correction of a 'correction' article, don't be confused
 # we use this article because it's small and fast to process
