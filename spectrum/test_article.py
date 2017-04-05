@@ -130,7 +130,8 @@ def test_recommendations_for_new_articles(generate_article):
         # load the article page, this will call recommendations
         article_from_api = checks.API.wait_article(id=article.id())
         checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'])
-        #checks.JOURNAL_CDN.article(id=article.id(), volume=article_from_api['volume'])
+        # see if it propagates through CDN?
+        checks.JOURNAL_CDN.article(id=article.id(), volume=article_from_api['volume'])
 
 @pytest.mark.journal_cms
 @pytest.mark.continuum
