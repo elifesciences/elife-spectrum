@@ -805,6 +805,9 @@ API_PREVIEW = ApiCheck(
 JOURNAL = JournalCheck(
     host=SETTINGS['journal_host']
 )
+JOURNAL_CDN = JournalCheck(
+    host=SETTINGS['journal_cdn_host']
+)
 GITHUB_XML = GithubCheck(
     repo_url=SETTINGS['github_article_xml_repository_url']
 )
