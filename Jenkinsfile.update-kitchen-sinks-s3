@@ -4,6 +4,7 @@ elifeUpdatePipeline(
         lock('end2end') {
             sh "cd ${env.SPECTRUM_PREFIX}; sudo -H -u elife ${env.SPECTRUM_PREFIX}checkout.sh master"
             updateSummary = sh(script: "cd ${env.SPECTRUM_PREFIX}; sudo -H -u elife ${env.SPECTRUM_PREFIX}update-kitchen-sinks-from-s3.sh", returnStdout: true).trim().tr("\n", ", ")
+            sh "git add spectrum/templates/"
         }
     },
     {
