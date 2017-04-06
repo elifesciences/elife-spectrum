@@ -1,0 +1,13 @@
+def updateSummary;
+elifeUpdatePipeline(
+    { commit ->
+        lock('end2end') {
+            sh "cd ${env.SPECTRUM_PREFIX}; sudo -H -u elife ${env.SPECTRUM_PREFIX}checkout.sh master"
+            updateSummary = sh(script: "cd ${env.SPECTRUM_PREFIX}; sudo -H -u elife ${env.SPECTRUM_PREFIX}update-kitchen-sinks-from-github.sh", returnStdout: true).trim().tr("\n", ", ")
+        }
+    },
+    {
+        return "Updated kitchen sinks from Github to ${updateSummary}"
+    },
+    'update_kitchen_sinks_github_'
+)
