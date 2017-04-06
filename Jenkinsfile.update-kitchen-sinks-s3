@@ -10,5 +10,7 @@ elifeUpdatePipeline(
     {
         return "Updated kitchen sinks to ${updateSummary}"
     },
-    'update_kitchen_sinks_'
+    'update_kitchen_sinks_',
+    false,
+    'master'
 )

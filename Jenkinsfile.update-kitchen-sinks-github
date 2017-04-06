@@ -10,5 +10,7 @@ elifeUpdatePipeline(
     {
         return "Updated kitchen sinks from Github to ${updateSummary}"
     },
-    'update_kitchen_sinks_github_'
+    'update_kitchen_sinks_github_',
+    false,
+    'master'
 )
