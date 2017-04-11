@@ -8,5 +8,3 @@ do
     ./download-from-github.sh $id $commit
     ./import-xml.sh $id elife-$id.xml
 done
-
-git add spectrum/templates
