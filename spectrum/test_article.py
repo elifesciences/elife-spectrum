@@ -135,7 +135,7 @@ def test_recommendations_for_new_articles(generate_article):
 
 @pytest.mark.journal_cms
 @pytest.mark.continuum
-def test_adding_article_fragment(generate_article):
+def _test_adding_article_fragment(generate_article):
     # TODO: publish a new article
     journal_cms_session = input.JOURNAL_CMS.login()
     template_id = 15893
