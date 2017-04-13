@@ -146,7 +146,7 @@ def test_adding_article_fragment(generate_article):
     # TODO: caching problems
     article = checks.API.article(article.id())
     # TODO: transition to IIIF and use a IiifCheck object
-    image_url = article['image']['banner']['sizes']['2:1']['1800']
+    image_url = article['image']['banner']['source']['uri']
     response = requests.head(image_url)
     checks.LOGGER.info("Found %s: %s", image_url, response.status_code)
     assert response.status_code == 200, "Image %s is not loading" % image_url
