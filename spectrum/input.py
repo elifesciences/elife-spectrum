@@ -110,6 +110,7 @@ class JournalCmsSession:
     def create_article_fragment(self, id, image):
         create_url = "%s/admin/structure/article_fragment/add" % self._host
         create_page = self._browser.get(create_url)
+        assert create_page.status_code == 200, "Response status of %s was: %s\nBody: %s" % (create_url, create_page.status_code, create_page.content)
         form = mechanicalsoup.Form(create_page.soup.form)
         form.input({'name[0][value]': id})
         form.attach({'files[image_0]': image})
