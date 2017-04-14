@@ -108,37 +108,35 @@ class JournalCmsSession:
         # TODO: return id and/or node id
 
     def create_article_fragment(self, id, image):
-        create_url = "%s/admin/structure/article_fragment/add" % self._host
-        create_page = self._browser.get(create_url)
-        form = mechanicalsoup.Form(create_page.soup.form)
-        form.input({'name[0][value]': id})
-        form.attach({'files[image_0]': image})
+        filtered_content_url = "%s/admin/content?status=All&type=article&title=%s" % (self._host, id)
+        filtered_content_page = self._browser.get(filtered_content_url)
+        view_path = filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, text=id)['href']
+        view_url = "%s/%s" % (self._host, view_path)
+        edit_path = filtered_content_page.soup.find('td', 'views-field-operations').find('li', 'edit').find('a', href=True, text='Edit')['href']
+        edit_url = "%s/%s" % (self._host, edit_path)
+        edit_page = self._browser.get(edit_url)
+
+        form = mechanicalsoup.Form(edit_page.soup.form)
+        form.attach({'files[field_image_0]': image})
         LOGGER.info(
             "Submitting thumbnail %s",
             image,
             extra={'id': id}
         )
-        self._choose_submit(form, 'image_0_upload_button', value='Upload')
+        self._choose_submit(form, 'field_image_0_upload_button', value='Upload')
         response = self._browser.submit(form, create_page.url)
         form = mechanicalsoup.Form(response.soup.form)
 
-
-        form.attach({'files[banner_image_0]': image})
-
-        LOGGER.info(
-            "Submitting banner %s",
-            image,
-            extra={'id': id}
-        )
-        self._choose_submit(form, 'banner_image_0_upload_button', value='Upload')
-        response = self._browser.submit(form, create_page.url)
-        form = mechanicalsoup.Form(response.soup.form)
         LOGGER.info(
             "Saving form",
             extra={'id': id}
         )
-        response = self._browser.submit(form, create_page.url, data={'op': 'Save'})
-        img = response.soup.select_one(".field--name-banner-image img")
+
+        # Button text will be 'Save and keep published' or 'Save and keep unpublished'
+        button_text = edit_page.soup.find('div', {'id': 'edit-actions'}).find('input', 'form-submit')['value']
+        response = self._browser.submit(form, edit_page.url, data={'op': button_text})
+        view_page = self._browser.get(view_url)
+        img = view_page.soup.select_one(".field--name-field-image img")
         assert "king_county" in img.get('src')
         LOGGER.info(
             "Tag: %s",
