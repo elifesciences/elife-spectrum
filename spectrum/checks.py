@@ -672,11 +672,12 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
 
     Returns the BeautifulSoup for reuse"""
     def _srcset_values(srcset):
-        values = []
-        for candidate_string in [s.strip() for s in srcset.split(" ")]:
-            if candidate_string.startswith("/") or candidate_string.startswith("https://") or candidate_string.startswith("http://"):
-                values.append(candidate_string)
-            return values
+        return []
+        #values = []
+        #for candidate_string in [s.strip() for s in srcset.split(" ")]:
+        #    if candidate_string.startswith("/") or candidate_string.startswith("https://") or candidate_string.startswith("http://"):
+        #        values.append(candidate_string)
+        #    return values
     def _resources_from(soup):
         resources = []
         for img in soup.find_all("img"):
