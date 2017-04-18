@@ -672,6 +672,7 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
 
     Returns the BeautifulSoup for reuse"""
     def _srcset_values(srcset):
+        LOGGER.info("srcset: %s", srcset)
         return []
         #values = []
         #for candidate_string in [s.strip() for s in srcset.split(" ")]:
