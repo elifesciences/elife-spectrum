@@ -1,3 +1,4 @@
+from random import randint
 from spectrum import logger, input, checks
 
 LOGGER = logger.logger(__name__)
@@ -39,18 +40,35 @@ class JournalPage():
 
 class AllOf():
     def __init__(self, actions):
-        self._actions = actions
+        self._intervals = []
+        start = 0
+        for action, weight in actions:
+            end = start + weight - 1
+            self._intervals.append((start, end, action))
+            start = end + 1
+        self._total = end
 
     def run(self):
-        # TODO: probability to weight actions
-        for action in self._actions:
-            action.run()
+        choice = randint(0, self._total)
+        action = None
+        for (start, end, action) in self._intervals:
+            if choice >= start and choice <= end:
+                break
+        if not action:
+            raise RuntimeError("No action could be selected with choice %s: %s" % (choice, self._intervals))
+        LOGGER.info("Selecting action %s", action)
+        action.run()
 
-JOURNAL_SEARCH = JournalSearch(checks.JOURNAL)
 JOURNAL_LISTINGS = [
-    JournalListing(checks.JOURNAL, '/subjects/neuroscience')
+    (JournalListing(checks.JOURNAL, '/subjects/neuroscience'), 2)
 ]
 JOURNAL_PAGES = [
-    JournalPage(checks.JOURNAL, '/about')
+    (JournalPage(checks.JOURNAL, '/about'), 1)
 ]
-JOURNAL_ALL = AllOf([JOURNAL_SEARCH]+JOURNAL_LISTINGS+[JOURNAL_PAGES])
+JOURNAL_ALL = AllOf(
+    [
+        (JournalSearch(checks.JOURNAL), 4)
+    ]
+    +JOURNAL_LISTINGS
+    +JOURNAL_PAGES
+)
