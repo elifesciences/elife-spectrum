@@ -14,15 +14,17 @@ class JournalSearch():
 class JournalListing():
     def __init__(self, journal, path):
         self._journal = journal
-        self._path = path
+        self._queue = [path]
 
     def run(self):
-        LOGGER.info("Loading %s", self._path)
-        items = self._journal.listing(self._path)
+        path = self._queue.pop()
+        LOGGER.info("Loading listing %s", path)
+        items, links = self._journal.listing(path)
         for item in items:
             LOGGER.info("Loading %s", item)
             self._journal.generic(item)
-        # TODO: next page
+        for link in links:
+            self._queue.insert(0, link)
 
 class AllOf():
     def __init__(self, actions):
