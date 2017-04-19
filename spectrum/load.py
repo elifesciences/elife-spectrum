@@ -19,9 +19,9 @@ class JournalListing():
     def run(self):
         LOGGER.info("Loading %s", self._path)
         items = self._journal.listing(self._path)
-        for i in items:
-            LOGGER.info("Loading %s", i)
-            self._journal.generic(i)
+        for item in items:
+            LOGGER.info("Loading %s", item)
+            self._journal.generic(item)
         # TODO: next page
 
 class AllOf():
@@ -30,9 +30,9 @@ class AllOf():
 
     def run(self):
         # TODO: probability to weight actions
-        for a in self._actions:
-            a.run()
-        
+        for action in self._actions:
+            action.run()
+
 JOURNAL_SEARCH = JournalSearch(checks.JOURNAL)
 JOURNAL_LISTINGS = [
     JournalListing(checks.JOURNAL, '/subjects/neuroscience')
