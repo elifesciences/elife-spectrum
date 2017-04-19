@@ -2,32 +2,6 @@
 import pytest
 from spectrum import checks
 
-GENERIC_PATHS = [
-    "/about",
-    "/about/early-career",
-    "/about/innovation",
-    "/about/openness",
-    "/about/peer-review",
-    "/alerts",
-    "/annual-reports",
-    "/archive/2016",
-    "/community",
-    "/contact",
-    "/for-the-press",
-    "/resources",
-    "/terms",
-    #/who-we-work-with
-]
-
-LISTING_PATHS = [
-    '/articles/correction',
-    '/collections',
-    '/inside-elife',
-    '/labs',
-    '/podcast',
-    '/subjects',
-]
-
 @pytest.mark.two
 @pytest.mark.journal_cms
 @pytest.mark.search
@@ -43,14 +17,14 @@ def test_magazine():
 
 @pytest.mark.two
 @pytest.mark.journal_cms
-@pytest.mark.parametrize("path", GENERIC_PATHS)
+@pytest.mark.parametrize("path", checks.JOURNAL_GENERIC_PATHS)
 def test_various_generic_pages(path):
     checks.JOURNAL.generic(path)
 
 
 @pytest.mark.two
 @pytest.mark.journal_cms
-@pytest.mark.parametrize("path", LISTING_PATHS)
+@pytest.mark.parametrize("path", checks.JOURNAL_LISTING_PATHS)
 def test_listings(path):
     items, _ = checks.JOURNAL.listing(path)
     if len(items):
