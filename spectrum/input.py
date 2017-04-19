@@ -116,7 +116,7 @@ class JournalCmsSession:
             view_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, text=id).get('href'))
             edit_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-operations').find('li', 'edit').find('a', href=True, text='Edit').get('href'))
         except (AttributeError, TypeError):
-            raise AssertionError('View and edit link not found for article: %s' % id)
+            raise AssertionError('View and edit link not found for article %s when loading URL %s' % (id, filtered_content_url))
 
         LOGGER.info(
             "Access edit form",
@@ -129,12 +129,12 @@ class JournalCmsSession:
 
         if edit_page.soup.find('input', {'name': 'field_image_0_remove_button'}):
             self._choose_submit(form, 'field_image_0_remove_button', value='Remove')
-            response = self._browser.submit(form, edit_page.url)
-            form = mechanicalsoup.Form(response.soup.form)
             LOGGER.info(
                 "Removing existing thumbnail",
                 extra={'id': id}
             )
+            response = self._browser.submit(form, edit_page.url)
+            form = mechanicalsoup.Form(response.soup.form)
 
         form.attach({'files[field_image_0]': image})
         LOGGER.info(
