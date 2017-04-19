@@ -11,10 +11,9 @@ SPECTRUM_PROCESSES=${SPECTRUM_PROCESSES:-4}
 # clean up possible previous builds
 rm -f build/junit.xml
 rm -f build/test.log
-rm -rf /tmp/elife-*
 
 # sanity check
 ./pylint.sh
 
 # bulk of the tests
-venv/bin/py.test -v --junitxml build/junit.xml -s -n $SPECTRUM_PROCESSES spectrum --assert=plain $*
+exec venv/bin/py.test -v --junitxml build/junit.xml -s -n $SPECTRUM_PROCESSES spectrum --assert=plain $*

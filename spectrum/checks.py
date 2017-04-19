@@ -668,15 +668,17 @@ def _assert_status_code(response, expected_status_code, url):
 RESOURCE_CACHE = {}
 
 def _assert_all_resources_of_page_load(html_content, host, **extra):
-    """Checks that all <script>, <link>, <video>, <source>, <srcset> load, by issuing HEAD requests that must give 200 OK.
+    """Checks that all <script>, <link>, <video>, <source>, srcset="" load, by issuing HEAD requests that must give 200 OK.
 
     Returns the BeautifulSoup for reuse"""
     def _srcset_values(srcset):
-        values = []
-        for candidate_string in [s.strip() for s in srcset.split(",")]:
-            url_and_maybe_descriptors = candidate_string.split(" ")
-            values.append(url_and_maybe_descriptors[0])
-            return values
+        LOGGER.info("srcset: %s", srcset)
+        return []
+        #values = []
+        #for candidate_string in [s.strip() for s in srcset.split(" ")]:
+        #    if candidate_string.startswith("/") or candidate_string.startswith("https://") or candidate_string.startswith("http://"):
+        #        values.append(candidate_string)
+        #    return values
     def _resources_from(soup):
         resources = []
         for img in soup.find_all("img"):
