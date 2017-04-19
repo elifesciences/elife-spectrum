@@ -136,21 +136,18 @@ def test_recommendations_for_new_articles(generate_article):
 @pytest.mark.journal_cms
 @pytest.mark.continuum
 def test_adding_article_fragment(generate_article):
-    # TODO: publish a new article
     journal_cms_session = input.JOURNAL_CMS.login()
     template_id = 15893
     article = generate_article(template_id)
     _ingest_and_publish_and_wait_for_published(article)
 
     journal_cms_session.create_article_fragment(id=article.id(), image='./spectrum/fixtures/king_county.jpg')
-    # TODO: caching problems
     article = checks.API.article(article.id())
     # TODO: transition to IIIF and use a IiifCheck object
     image_url = article['image']['thumbnail']['source']['uri']
     response = requests.head(image_url)
     checks.LOGGER.info("Found %s: %s", image_url, response.status_code)
     assert response.status_code == 200, "Image %s is not loading" % image_url
-
 
 def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
