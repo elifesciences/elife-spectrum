@@ -678,6 +678,7 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
             values.append(candidate_string.strip())
         LOGGER.info("srcset values: %s", values)
         return []
+        #return values
     def _resources_from(soup):
         resources = []
         for img in soup.find_all("img"):
