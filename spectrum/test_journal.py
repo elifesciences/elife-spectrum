@@ -52,14 +52,14 @@ def test_various_generic_pages(path):
 @pytest.mark.journal_cms
 @pytest.mark.parametrize("path", LISTING_PATHS)
 def test_listings(path):
-    items, links = checks.JOURNAL.listing(path)
+    items, _ = checks.JOURNAL.listing(path)
     if len(items):
         checks.JOURNAL.generic(items[0])
 
 @pytest.mark.two
 @pytest.mark.journal_cms
 def test_events():
-    items, links = checks.JOURNAL.listing('/events')
+    items, _ = checks.JOURNAL.listing('/events')
     if len(items):
         checks.JOURNAL.generic(items[0])
 
