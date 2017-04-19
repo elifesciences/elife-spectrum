@@ -108,38 +108,54 @@ class JournalCmsSession:
         # TODO: return id and/or node id
 
     def create_article_fragment(self, id, image):
-        create_url = "%s/admin/structure/article_fragment/add" % self._host
-        create_page = self._browser.get(create_url)
-        assert create_page.status_code == 200, "Response status of %s was: %s\nBody: %s" % (create_url, create_page.status_code, create_page.content)
-        form = mechanicalsoup.Form(create_page.soup.form)
-        form.input({'name[0][value]': id})
-        form.attach({'files[image_0]': image})
+        filtered_content_url = "%s/admin/content?status=All&type=article&title=%s" % (self._host, id)
+        filtered_content_page = self._browser.get(filtered_content_url)
+        assert filtered_content_page.status_code == 200, "Response status of %s was: %s\nBody: %s" % (filtered_content_url, filtered_content_page.status_code, filtered_content_page.content)
+
+        try:
+            view_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, text=id).get('href'))
+            edit_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-operations').find('li', 'edit').find('a', href=True, text='Edit').get('href'))
+        except (AttributeError, TypeError):
+            raise AssertionError('View and edit link not found for article %s when loading URL %s' % (id, filtered_content_url))
+
+        LOGGER.info(
+            "Access edit form",
+            extra={'id': id}
+        )
+
+        edit_page = self._browser.get(edit_url)
+
+        form = mechanicalsoup.Form(edit_page.soup.form)
+
+        if edit_page.soup.find('input', {'name': 'field_image_0_remove_button'}):
+            self._choose_submit(form, 'field_image_0_remove_button', value='Remove')
+            LOGGER.info(
+                "Removing existing thumbnail",
+                extra={'id': id}
+            )
+            response = self._browser.submit(form, edit_page.url)
+            form = mechanicalsoup.Form(response.soup.form)
+
+        form.attach({'files[field_image_0]': image})
         LOGGER.info(
             "Submitting thumbnail %s",
             image,
             extra={'id': id}
         )
-        self._choose_submit(form, 'image_0_upload_button', value='Upload')
-        response = self._browser.submit(form, create_page.url)
+        self._choose_submit(form, 'field_image_0_upload_button', value='Upload')
+        response = self._browser.submit(form, edit_page.url)
         form = mechanicalsoup.Form(response.soup.form)
 
-
-        form.attach({'files[banner_image_0]': image})
-
-        LOGGER.info(
-            "Submitting banner %s",
-            image,
-            extra={'id': id}
-        )
-        self._choose_submit(form, 'banner_image_0_upload_button', value='Upload')
-        response = self._browser.submit(form, create_page.url)
-        form = mechanicalsoup.Form(response.soup.form)
         LOGGER.info(
             "Saving form",
             extra={'id': id}
         )
-        response = self._browser.submit(form, create_page.url, data={'op': 'Save'})
-        img = response.soup.select_one(".field--name-banner-image img")
+
+        # Button text will be 'Save and keep published' or 'Save and keep unpublished'
+        button_text = edit_page.soup.find('div', {'id': 'edit-actions'}).find('input', 'form-submit').get('value')
+        response = self._browser.submit(form, edit_page.url, data={'op': button_text})
+        view_page = self._browser.get(view_url)
+        img = view_page.soup.select_one(".field--name-field-image img")
         assert "king_county" in img.get('src')
         LOGGER.info(
             "Tag: %s",
