@@ -71,14 +71,15 @@ class AllOf():
         action.run()
 
 JOURNAL_LISTINGS = [
-    (JournalListing(checks.JOURNAL, '/subjects/neuroscience'), 2)
+    (JournalListing(checks.JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_PATHS
 ]
 JOURNAL_PAGES = [
-    (JournalPage(checks.JOURNAL, '/about'), 1)
+    (JournalPage(checks.JOURNAL, p), 1)
+    for p in checks.JOURNAL_GENERIC_PATHS
 ]
 JOURNAL_ALL = AllOf(
     [
-        (JournalSearch(checks.JOURNAL), 4)
+        (JournalSearch(checks.JOURNAL), 8)
     ]
     +JOURNAL_LISTINGS
     +JOURNAL_PAGES
