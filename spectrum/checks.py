@@ -813,6 +813,32 @@ JOURNAL = JournalCheck(
 JOURNAL_CDN = JournalCheck(
     host=SETTINGS['journal_cdn_host']
 )
+JOURNAL_GENERIC_PATHS = [
+    "/about",
+    "/about/early-career",
+    "/about/innovation",
+    "/about/openness",
+    "/about/peer-review",
+    "/alerts",
+    "/annual-reports",
+    "/archive/2016",
+    "/community",
+    "/contact",
+    "/for-the-press",
+    "/resources",
+    "/terms",
+    #/who-we-work-with
+]
+JOURNAL_LISTING_PATHS = [
+    '/articles/correction',
+    '/collections',
+    '/inside-elife',
+    '/labs',
+    '/podcast',
+    '/subjects',
+]
+
+
 GITHUB_XML = GithubCheck(
     repo_url=SETTINGS['github_article_xml_repository_url']
 )
