@@ -4,17 +4,22 @@ from spectrum import logger, input, checks
 LOGGER = logger.logger(__name__)
 
 class JournalSearch():
-    def __init__(self, journal):
+    def __init__(self, journal, length=3):
         self._journal = journal
+        self._length = length
 
     def run(self):
-        word = input.invented_word(3)
+        word = input.invented_word(self._length)
         LOGGER.info("Searching for %s", word)
         self._journal.search(word, count=None)
+
+    def __str__(self):
+        return "JournalSearch(length=%s)" % self._length
 
 class JournalListing():
     def __init__(self, journal, path):
         self._journal = journal
+        self._path = path
         self._queue = [path]
 
     def run(self):
@@ -27,6 +32,9 @@ class JournalListing():
         for link in links:
             self._queue.insert(0, link)
 
+    def __str__(self):
+        return "JournalListing(%s, queue length %s)" % self._path, len(self._queue)
+
 class JournalPage():
     def __init__(self, journal, path):
         self._journal = journal
@@ -35,6 +43,9 @@ class JournalPage():
     def run(self):
         LOGGER.info("Loading fixed page %s", self._path)
         self._journal.generic(self._path)
+
+    def __str__(self):
+        return "JournalPage(%s)" % self._path
 
 # TODO: JournalHomepage
 
