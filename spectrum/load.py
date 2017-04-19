@@ -26,6 +26,17 @@ class JournalListing():
         for link in links:
             self._queue.insert(0, link)
 
+class JournalPage():
+    def __init__(self, journal, path):
+        self._journal = journal
+        self._path = path
+
+    def run(self):
+        LOGGER.info("Loading fixed page %s", self._path)
+        self._journal.generic(self._path)
+
+# TODO: JournalHomepage
+
 class AllOf():
     def __init__(self, actions):
         self._actions = actions
@@ -39,4 +50,7 @@ JOURNAL_SEARCH = JournalSearch(checks.JOURNAL)
 JOURNAL_LISTINGS = [
     JournalListing(checks.JOURNAL, '/subjects/neuroscience')
 ]
-JOURNAL_ALL = AllOf([JOURNAL_SEARCH]+JOURNAL_LISTINGS)
+JOURNAL_PAGES = [
+    JournalPage(checks.JOURNAL, '/about')
+]
+JOURNAL_ALL = AllOf([JOURNAL_SEARCH]+JOURNAL_LISTINGS+[JOURNAL_PAGES])
