@@ -673,8 +673,8 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
     Returns the BeautifulSoup for reuse"""
     def _srcset_values(srcset):
         values = []
-        without_descriptors = re.sub(" \\d+[wx],", " ", srcset)
-        for candidate_string in without_descriptors.split(" "):
+        without_descriptors = re.sub(" \\d+[wx],?", " ", srcset)
+        for candidate_string in without_descriptors.strip().split(" "):
             values.append(candidate_string.strip())
         LOGGER.info("srcset values: %s", values)
         return []
