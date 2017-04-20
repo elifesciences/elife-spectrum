@@ -49,6 +49,22 @@ class JournalListing():
     def __str__(self):
         return "JournalListing(%s, queue length %s)" % (self._path, len(self._queue))
 
+class JournalListingOfListing():
+    def __init__(self, journal, path):
+        self._journal = journal
+        self._path = path
+
+    def run(self):
+        LOGGER.info("Loading listing of listing %s", self._path)
+        listings = AllOf([
+            (JournalListing(self._journal, item), 1)
+            for item in self._journal.listing_of_listing(self._path)
+        ])
+        listings.run()
+
+    def __str__(self):
+        return "JournalListingOfListing(%s)" % self._path
+
 class JournalPage():
     def __init__(self, journal, path):
         self._journal = journal
@@ -65,8 +81,10 @@ class JournalPage():
 
 class AllOf():
     def __init__(self, actions):
+        "every element of actions is a tuple (action, weight) where action has a run() method"
         self._intervals = []
         start = 0
+        assert len(actions) > 0, "Cannot create AllOf with an empty list of actions"
         for action, weight in actions:
             end = start + weight - 1
             self._intervals.append((start, end, action))
@@ -85,7 +103,10 @@ class AllOf():
         action.run()
 
 JOURNAL_LISTINGS = [
-    (JournalListing(checks.JOURNAL, p), 200) for p in checks.JOURNAL_LISTING_PATHS
+    (JournalListing(checks.JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_PATHS
+]
+JOURNAL_LISTINGS_OF_LISTINGS = [
+    (JournalListingOfListing(checks.JOURNAL, p), 200) for p in checks.JOURNAL_LISTING_OF_LISTING_PATHS
 ]
 JOURNAL_PAGES = [
     (JournalPage(checks.JOURNAL, p), 1)
@@ -96,5 +117,6 @@ JOURNAL_ALL = AllOf(
         (JournalSearch(checks.JOURNAL), 8)
     ]
     +JOURNAL_LISTINGS
+    +JOURNAL_LISTINGS_OF_LISTINGS
     +JOURNAL_PAGES
 )
