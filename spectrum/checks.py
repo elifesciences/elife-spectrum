@@ -565,7 +565,7 @@ class JournalCheck:
     def generic(self, path):
         url = _build_url(path, self._host)
         LOGGER.info("Loading %s", url)
-        response = requests.get(url)
+        response = self._persistently_get(url)
         _assert_status_code(response, 200, url)
         match = re.match("^"+self._host, response.url)
         if match:
