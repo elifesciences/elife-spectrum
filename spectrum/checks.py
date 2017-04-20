@@ -570,12 +570,21 @@ class JournalCheck:
     def listing(self, path):
         body = self.generic(path)
         soup = BeautifulSoup(body, "html.parser")
+        # TODO: drop div
         teaser_a_tags = soup.select("div.teaser .teaser__header_text_link")
         teaser_links = [a['href'] for a in teaser_a_tags]
-        LOGGER.info("Loaded %s, found links: %s", path, teaser_links)
+        LOGGER.info("Loaded listing %s, found links: %s", path, teaser_links)
         pager_a_tags = soup.select(".pager a")
         pager_links = [a['href'] for a in pager_a_tags]
         return teaser_links, pager_links
+
+    def listing_of_listing(self, path):
+        body = self.generic(path)
+        soup = BeautifulSoup(body, "html.parser")
+        a_tags = soup.select(".block_link .block-link__link")
+        links = [a['href'] for a in a_tags]
+        LOGGER.info("Loaded listing of listing %s, found links: %s", path, links)
+        return links
 
     def _persistently_get(self, url):
         response = requests.get(url)
@@ -814,30 +823,31 @@ JOURNAL_CDN = JournalCheck(
     host=SETTINGS['journal_cdn_host']
 )
 JOURNAL_GENERIC_PATHS = [
-    "/about",
-    "/about/early-career",
-    "/about/innovation",
-    "/about/openness",
-    "/about/peer-review",
-    "/alerts",
-    "/archive/2016",
-    "/contact",
-    "/for-the-press",
-    "/resources",
-    "/terms",
-    "/who-we-work-with",
+    '/about',
+    '/about/early-career',
+    '/about/innovation',
+    '/about/openness',
+    '/about/peer-review',
+    '/alerts',
+    '/contact',
+    '/for-the-press',
+    '/resources',
+    '/terms',
+    '/who-we-work-with',
 ]
 JOURNAL_LISTING_PATHS = [
-    "/annual-reports",
+    '/annual-reports',
     '/articles/correction',
     '/collections',
     "/community",
     '/inside-elife',
     '/labs',
     '/podcast',
+]
+JOURNAL_LISTING_OF_LISTING_PATHS = [
+    '/archive/2016',
     '/subjects',
 ]
-
 
 GITHUB_XML = GithubCheck(
     repo_url=SETTINGS['github_article_xml_repository_url']

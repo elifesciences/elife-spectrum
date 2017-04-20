@@ -31,6 +31,14 @@ def test_listings(path):
 
 @pytest.mark.two
 @pytest.mark.journal_cms
+@pytest.mark.parametrize("path", checks.JOURNAL_LISTING_OF_LISTING_PATHS)
+def test_listings_of_listings(path):
+    items = checks.JOURNAL.listing_of_listing(path)
+    if len(items):
+        checks.JOURNAL.generic(items[0])
+
+@pytest.mark.two
+@pytest.mark.journal_cms
 def test_events():
     items, _ = checks.JOURNAL.listing('/events')
     if len(items):
