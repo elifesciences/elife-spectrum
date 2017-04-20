@@ -3,10 +3,10 @@ from spectrum import logger, input, checks
 
 LOGGER = logger.logger(__name__)
 
-class LinkQueue():
-    def __init__(self, seed):
-        self._contents = [seed]
-        self._seed = seed
+class Queue():
+    def __init__(self, contents = None):
+        self._contents = contents if contents else []
+        self._seed = self._contents
 
     def dequeue(self):
         path = self._contents.pop()
@@ -19,7 +19,10 @@ class LinkQueue():
 
     def restart_if_empty(self):
         if len(self._contents) == 0:
-            self._contents.insert(0, self._seed)
+            self._contents = self._seed
+
+    def __len__(self):
+        return len(self._contents)
 
 class JournalSearch():
     def __init__(self, journal, length=3):
@@ -38,21 +41,26 @@ class JournalListing():
     def __init__(self, journal, path):
         self._journal = journal
         self._path = path
-        self._queue = LinkQueue(path)
+        self._pages = Queue([path])
+        self._items = Queue()
 
     def run(self):
-        path = self._queue.dequeue()
-        LOGGER.info("Loading listing %s", path)
-        items, links = self._journal.listing(path)
-        for item in items:
-            LOGGER.info("Loading item %s", item)
+        if len(self._items):
+            item = self._items.dequeue()
+            LOGGER.info("Loading listing item %s", item)
             self._journal.generic(item)
-        for link in links:
-            self._queue.enqueue(link)
-        self._queue.restart_if_empty()
+        else:
+            path = self._pages.dequeue()
+            LOGGER.info("Loading listing page %s", path)
+            items, links = self._journal.listing(path)
+            for item in items:
+                self._items.enqueue(item)
+            for link in links:
+                self._pages.enqueue(link)
+        self._pages.restart_if_empty()
 
     def __str__(self):
-        return "JournalListing(%s, queue length %s)" % (self._path, len(self._queue))
+        return "JournalListing(%s, pages queue length %s, items queue length %s)" % (self._path, len(self._pages), len(self._items))
 
 class JournalListingOfListing():
     def __init__(self, journal, path):
@@ -124,7 +132,7 @@ JOURNAL_LISTINGS = [
     (JournalListing(JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_PATHS
 ]
 JOURNAL_LISTINGS_OF_LISTINGS = [
-    #(JournalListingOfListing(JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_OF_LISTING_PATHS
+    (JournalListingOfListing(JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_OF_LISTING_PATHS
 ]
 JOURNAL_PAGES = [
     (JournalPage(JOURNAL, p), 1)
@@ -132,10 +140,10 @@ JOURNAL_PAGES = [
 ]
 JOURNAL_ALL = AllOf(
     [
-        (JournalSearch(JOURNAL), 8),
+        #(JournalSearch(JOURNAL), 8),
         #(JournalHomepage(JOURNAL), 8),
     ]
     +JOURNAL_LISTINGS
-    +JOURNAL_LISTINGS_OF_LISTINGS
-    +JOURNAL_PAGES
+    #+JOURNAL_LISTINGS_OF_LISTINGS
+    #+JOURNAL_PAGES
 )
