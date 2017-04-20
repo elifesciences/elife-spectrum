@@ -674,8 +674,9 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
     def _srcset_values(srcset):
         values = []
         without_descriptors = re.sub(" \\d+[wx],?", " ", srcset)
-        for candidate_string in without_descriptors.strip().split(" "):
-            values.append(candidate_string.strip())
+        for candidate_string in [cs.strip() for cs in without_descriptors.strip().split(" ")]:
+            if candidate_string:
+                values.append(candidate_string)
         LOGGER.info("srcset values: %s", values)
         return values
     def _resources_from(soup):
