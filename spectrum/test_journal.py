@@ -21,7 +21,6 @@ def test_magazine():
 def test_various_generic_pages(path):
     checks.JOURNAL.generic(path)
 
-
 @pytest.mark.two
 @pytest.mark.journal_cms
 @pytest.mark.parametrize("path", checks.JOURNAL_LISTING_PATHS)
