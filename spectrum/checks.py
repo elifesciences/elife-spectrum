@@ -820,9 +820,7 @@ JOURNAL_GENERIC_PATHS = [
     "/about/openness",
     "/about/peer-review",
     "/alerts",
-    "/annual-reports",
     "/archive/2016",
-    "/community",
     "/contact",
     "/for-the-press",
     "/resources",
@@ -830,8 +828,10 @@ JOURNAL_GENERIC_PATHS = [
     "/who-we-work-with",
 ]
 JOURNAL_LISTING_PATHS = [
+    "/annual-reports",
     '/articles/correction',
     '/collections',
+    "/community",
     '/inside-elife',
     '/labs',
     '/podcast',
