@@ -621,8 +621,6 @@ class JournalCheck:
     def _download_links(self, body):
         soup = BeautifulSoup(body, "html.parser")
         figure_download_links = [a.get('href') for a in soup.select(".asset-viewer-inline__download_all_link")]
-        # TODO: filter to get only the downloads we want
-        pdf_download_links = []
         pdf_download_links = [a.get('href') for a in soup.select("#downloads a") if a.text in ['Article PDF', 'Figures PDF']]
         return figure_download_links + pdf_download_links
 
