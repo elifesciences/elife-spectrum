@@ -696,8 +696,13 @@ def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
 
 def _assert_status_code(response, expected_status_code, url):
-    assert response.status_code == expected_status_code, \
-        "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
+    try:
+        assert response.status_code == expected_status_code, \
+            "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
+    except UnicodeDecodeError:
+        LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
+        print response.content
+        raise RuntimeError("Could not decode response from %s (status code %s)" % (url, response.status_code))
 
 RESOURCE_CACHE = {}
 
