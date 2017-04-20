@@ -57,6 +57,7 @@ class JournalListing():
                 self._items.enqueue(item)
             for link in links:
                 self._pages.enqueue(link)
+        # TODO: really necessary?
         self._pages.restart_if_empty()
 
     def __str__(self):
@@ -96,16 +97,21 @@ class JournalPage():
 class JournalHomepage():
     def __init__(self, journal):
         self._journal = journal
+        self._links = Queue()
 
     def run(self):
-        LOGGER.info("Loading homepage /")
-        links = self._journal.homepage()
-        for link in links:
+        if len(self._links):
+            link = self._links.dequeue()
             LOGGER.info("Loading link %s", link)
             self._journal.generic(link)
+        else:
+            LOGGER.info("Loading homepage /")
+            links = self._journal.homepage()
+            for link in links:
+                self._links.enqueue(link)
 
     def __str__(self):
-        return "JournalHomepage()"
+        return "JournalHomepage(links queue length %s)" % len(self._links)
 
 class AllOf():
     def __init__(self, actions):
@@ -144,9 +150,9 @@ JOURNAL_PAGES = [
 JOURNAL_ALL = AllOf(
     [
         #(JournalSearch(JOURNAL), 8),
-        #(JournalHomepage(JOURNAL), 8),
+        (JournalHomepage(JOURNAL), 8),
     ]
     #+JOURNAL_LISTINGS
-    +JOURNAL_LISTINGS_OF_LISTINGS
+    #+JOURNAL_LISTINGS_OF_LISTINGS
     #+JOURNAL_PAGES
 )
