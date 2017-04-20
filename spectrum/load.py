@@ -28,11 +28,20 @@ class JournalSearch():
     def __init__(self, journal, length=3):
         self._journal = journal
         self._length = length
+        self._results = Queue()
 
     def run(self):
-        word = input.invented_word(self._length)
-        LOGGER.info("Searching for %s", word)
-        self._journal.search(word, count=None)
+        if len(self._results):
+            result = self._results.dequeue()
+            LOGGER.info("Loading search result %s", result)
+            self._journal.generic(result)
+        else:
+            word = input.invented_word(self._length)
+            LOGGER.info("Searching for %s", word)
+            results = self._journal.search(word, count=None)
+            # TODO: Queue.enqueue_all
+            for result in results:
+                self._results.enqueue(result)
 
     def __str__(self):
         return "JournalSearch(length=%s)" % self._length
@@ -149,8 +158,8 @@ JOURNAL_PAGES = [
 ]
 JOURNAL_ALL = AllOf(
     [
-        #(JournalSearch(JOURNAL), 8),
-        (JournalHomepage(JOURNAL), 8),
+        (JournalSearch(JOURNAL), 8),
+        #(JournalHomepage(JOURNAL), 8),
     ]
     #+JOURNAL_LISTINGS
     #+JOURNAL_LISTINGS_OF_LISTINGS
