@@ -66,17 +66,20 @@ class JournalListingOfListing():
     def __init__(self, journal, path):
         self._journal = journal
         self._path = path
+        self._listings = Queue()
 
     def run(self):
-        LOGGER.info("Loading listing of listing %s", self._path)
-        listings = AllOf([
-            (JournalListing(self._journal, item), 1)
-            for item in self._journal.listing_of_listing(self._path)
-        ])
-        listings.run()
+        if len(self._listings):
+            listing = self._listings.dequeue()
+            listing.run()
+            self._listings.enqueue(listing)
+        else:
+            LOGGER.info("Loading listing of listing %s", self._path)
+            for listing in self._journal.listing_of_listing(self._path):
+                self._listings.enqueue(JournalListing(self._journal, listing))
 
     def __str__(self):
-        return "JournalListingOfListing(%s)" % self._path
+        return "JournalListingOfListing(%s, listings queue length %s)" % (self._path, len(self._listings))
 
 class JournalPage():
     def __init__(self, journal, path):
@@ -143,7 +146,7 @@ JOURNAL_ALL = AllOf(
         #(JournalSearch(JOURNAL), 8),
         #(JournalHomepage(JOURNAL), 8),
     ]
-    +JOURNAL_LISTINGS
-    #+JOURNAL_LISTINGS_OF_LISTINGS
+    #+JOURNAL_LISTINGS
+    +JOURNAL_LISTINGS_OF_LISTINGS
     #+JOURNAL_PAGES
 )
