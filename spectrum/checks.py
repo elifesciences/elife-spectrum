@@ -751,7 +751,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
 def _assert_all_load(resources, host, resource_checking_method='head', **extra):
     for path in resources:
         if path is None:
-            # TODO; warning?
+            LOGGER.warning("empty path in resources: %s", resources)
             continue
         url = _build_url(path, host)
         if url in RESOURCE_CACHE and resource_checking_method == 'head':
