@@ -18,6 +18,10 @@ class Queue():
         LOGGER.debug("Enqueuing %s", path_to_visit)
         self._contents.insert(0, path_to_visit)
 
+    def enqueue_all(self, paths):
+        for path in paths:
+            self.enqueue(path)
+
     def restart_if_empty(self):
         if len(self._contents) == 0:
             LOGGER.warning("Need to refill queue with %s", self._seed)
@@ -42,9 +46,7 @@ class JournalSearch():
             word = input.invented_word(self._length, self._characters)
             LOGGER.info("Searching for %s", word)
             results = self._journal.search(word, count=None)
-            # TODO: Queue.enqueue_all
-            for result in results:
-                self._results.enqueue(result)
+            self._results.enqueue_all(results)
 
     def __str__(self):
         return "JournalSearch(length=%s)" % self._length
@@ -65,10 +67,8 @@ class JournalListing():
             path = self._pages.dequeue()
             LOGGER.info("Loading listing page %s", path)
             items, links = self._journal.listing(path)
-            for item in items:
-                self._items.enqueue(item)
-            for link in links:
-                self._pages.enqueue(link)
+            self._items.enqueue_all(items)
+            self._pages.enqueue_all(links)
         self._pages.restart_if_empty()
 
     def __str__(self):
@@ -118,8 +118,7 @@ class JournalHomepage():
         else:
             LOGGER.info("Loading homepage /")
             links = self._journal.homepage()
-            for link in links:
-                self._links.enqueue(link)
+            self._links.enqueue_all(links)
 
     def __str__(self):
         return "JournalHomepage(links queue length %s)" % len(self._links)
