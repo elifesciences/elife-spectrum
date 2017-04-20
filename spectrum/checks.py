@@ -532,24 +532,19 @@ class JournalCheck:
         if version:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
-        response = self._persistently_get(url)
-        _assert_status_code(response, 200, url)
-        self._assert_all_resources_of_page_load(response.content, id=id)
+        body = self.generic(url)
         download_links = []
-        download_links.extend(self._download_links(response.content))
+        download_links.extend(self._download_links(body))
         figures_link_selector = 'view-selector__link--figures'
-        figures_link = self._link(response.content, figures_link_selector)
+        figures_link = self._link(body, figures_link_selector)
         if has_figures:
             assert figures_link is not None, "Cannot find figures link with selector %s" % figures_link_selector
             figures_url = _build_url(figures_link, self._host)
             LOGGER.info("Loading %s", figures_url, extra={'id':id})
-            response = self._persistently_get(figures_url)
-            _assert_status_code(response, 200, figures_url)
-            self._assert_all_resources_of_page_load(response.content, id=id)
-            download_links.extend(self._download_links(response.content))
+            download_links.extend(self._download_links(body))
         LOGGER.info("Found download links: %s", pformat(download_links))
         self._assert_all_load(download_links)
-        return response.content
+        return body
 
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
@@ -627,7 +622,7 @@ class JournalCheck:
         soup = BeautifulSoup(body, "html.parser")
         figure_download_links = [a.get('href') for a in soup.select(".asset-viewer-inline__download_all_link")]
         # TODO: filter to get only the downloads we want
-        #pdf_download_links = [a.get('href') for a in soup.select("#downloads a")]
+        #pdf_download_links = [a.get('href') for a in soup.select("#downloads a") if a.text in ['Article PDF', 'Figures PDF']]
         pdf_download_links = []
         return figure_download_links + pdf_download_links
 
