@@ -701,7 +701,8 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
             if script.get("src"):
                 resources.append(script.get("src"))
         for link in soup.find_all("link"):
-            resources.append(link.get("href"))
+            if "canonical" not in link.get("rel"):
+                resources.append(link.get("href"))
         for video in soup.find_all("video"):
             resources.append(video.get("poster"))
         for media_source in soup.find_all("source"):
@@ -711,7 +712,6 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
         return resources
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
-    # TODO: resources seems to contain a link to its own page as the last element?
     LOGGER.info("Found resources %s", pformat(resources), extra=extra)
     for path in resources:
         if path is None:
