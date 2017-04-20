@@ -535,6 +535,8 @@ class JournalCheck:
         response = self._persistently_get(url)
         _assert_status_code(response, 200, url)
         self._assert_all_resources_of_page_load(response.content, id=id)
+        download_links = []
+        download_links.extend(self._download_links(response.content))
         figures_link_selector = 'view-selector__link--figures'
         figures_link = self._link(response.content, figures_link_selector)
         if has_figures:
@@ -544,6 +546,9 @@ class JournalCheck:
             response = self._persistently_get(figures_url)
             _assert_status_code(response, 200, figures_url)
             self._assert_all_resources_of_page_load(response.content, id=id)
+            download_links.extend(self._download_links(response.content))
+        LOGGER.info("Found download links: %s", pformat(download_links))
+        self._assert_all_load(download_links)
         return response.content
 
     def search(self, query, count=1):
@@ -610,6 +615,14 @@ class JournalCheck:
     def _assert_all_resources_of_page_load(self, body, **extra):
         return _assert_all_resources_of_page_load(body, self._host, resource_checking_method=self._resource_checking_method, **extra)
 
+    def _assert_all_load(self, links, **extra):
+        return _assert_all_load(links, self._host, resource_checking_method=self._resource_checking_method, **extra)
+
+    def _download_links(self, body):
+        soup = BeautifulSoup(body, "html.parser")
+        figure_download_links = [a.get('href') for a in soup.select(".asset-viewer-inline__download_all_link")]
+        pdf_download_links = [a.get('href') for a in soup.select("#downloads a")]
+        return figure_download_links + pdf_download_links
 
 
 class GithubCheck:
@@ -721,6 +734,10 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
     LOGGER.info("Found resources %s", pformat(resources), extra=extra)
+    _assert_all_load(resources, host, resource_checking_method, **extra)
+    return soup
+
+def _assert_all_load(resources, host, resource_checking_method='head', **extra):
     for path in resources:
         if path is None:
             continue
@@ -737,7 +754,6 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
                 raise RuntimeError("Unsupported resource checking method: %s" % resource_checking_method)
             _assert_status_code(response, 200, url)
             RESOURCE_CACHE[url] = response.status_code
-    return soup
 
 def _assert_count(html_content, class_, count):
     """Checks how many elements are in the page.
