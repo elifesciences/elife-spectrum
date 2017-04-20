@@ -1,8 +1,6 @@
-from spectrum import load, logger
-
-LOGGER = logger.logger(__name__)
+from spectrum import load
 
 if __name__ == '__main__':
     while True:
-        LOGGER.info("New run")
+        load.LOGGER.error("New run")
         load.JOURNAL_ALL.run()

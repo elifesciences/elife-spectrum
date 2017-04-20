@@ -3,6 +3,24 @@ from spectrum import logger, input, checks
 
 LOGGER = logger.logger(__name__)
 
+class LinkQueue():
+    def __init__(self, seed):
+        self._contents = [seed]
+        self._seed = seed
+
+    def dequeue(self):
+        path = self._contents.pop()
+        LOGGER.debug("Dequeuing %s", path)
+        return path
+
+    def enqueue(self, path_to_visit):
+        LOGGER.debug("Enqueuing %s", path_to_visit)
+        self._contents.insert(0, path_to_visit)
+
+    def restart_if_empty(self):
+        if len(self._contents) == 0:
+            self._contents.insert(0, self._seed)
+
 class JournalSearch():
     def __init__(self, journal, length=3):
         self._journal = journal
@@ -20,31 +38,18 @@ class JournalListing():
     def __init__(self, journal, path):
         self._journal = journal
         self._path = path
-        self._queue = [path]
+        self._queue = LinkQueue(path)
 
     def run(self):
-        path = self._dequeue()
+        path = self._queue.dequeue()
         LOGGER.info("Loading listing %s", path)
         items, links = self._journal.listing(path)
         for item in items:
             LOGGER.info("Loading item %s", item)
             self._journal.generic(item)
         for link in links:
-            self._enqueue(link)
-        self._restart_if_empty()
-
-    def _dequeue(self):
-        path = self._queue.pop()
-        LOGGER.debug("Dequeuing %s", path)
-        return path
-
-    def _enqueue(self, path_to_visit):
-        LOGGER.debug("Enqueuing %s", path_to_visit)
-        self._queue.insert(0, path_to_visit)
-
-    def _restart_if_empty(self):
-        if len(self._queue) == 0:
-            self._queue.insert(0, self._path)
+            self._queue.enqueue(link)
+        self._queue.restart_if_empty()
 
     def __str__(self):
         return "JournalListing(%s, queue length %s)" % (self._path, len(self._queue))
@@ -119,7 +124,7 @@ JOURNAL_LISTINGS = [
     (JournalListing(JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_PATHS
 ]
 JOURNAL_LISTINGS_OF_LISTINGS = [
-    (JournalListingOfListing(JOURNAL, p), 200) for p in checks.JOURNAL_LISTING_OF_LISTING_PATHS
+    #(JournalListingOfListing(JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_OF_LISTING_PATHS
 ]
 JOURNAL_PAGES = [
     (JournalPage(JOURNAL, p), 1)
@@ -128,7 +133,7 @@ JOURNAL_PAGES = [
 JOURNAL_ALL = AllOf(
     [
         (JournalSearch(JOURNAL), 8),
-        (JournalHomepage(JOURNAL), 800),
+        #(JournalHomepage(JOURNAL), 8),
     ]
     +JOURNAL_LISTINGS
     +JOURNAL_LISTINGS_OF_LISTINGS
