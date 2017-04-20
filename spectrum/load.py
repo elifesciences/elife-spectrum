@@ -20,6 +20,7 @@ class Queue():
 
     def restart_if_empty(self):
         if len(self._contents) == 0:
+            LOGGER.warning("Need to refill queue with %s", self._seed)
             self._contents = self._seed
 
     def __len__(self):
@@ -68,7 +69,6 @@ class JournalListing():
                 self._items.enqueue(item)
             for link in links:
                 self._pages.enqueue(link)
-        # TODO: really necessary?
         self._pages.restart_if_empty()
 
     def __str__(self):
