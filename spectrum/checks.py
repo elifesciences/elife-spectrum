@@ -545,8 +545,12 @@ class JournalCheck:
         url = _build_url("/search?for=%s" % query, self._host)
         LOGGER.info("Loading %s", url)
         body = self.generic(url)
+        soup = BeautifulSoup(body, "html.parser")
+        # TODO: duplication of teaser_links logic
+        teaser_links = [a['href'] for a in soup.select('.teaser__header_text_link')]
         if count is not None:
-            _assert_count(body, class_='teaser', count=count)
+            assert len(teaser_links) == count, "There are only %d search results" % len(teaser_links)
+        return teaser_links
 
     def homepage(self):
         body = self.generic("/")
@@ -750,14 +754,6 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
         response = method(url)
         _assert_status_code(response, 200, url)
         RESOURCE_CACHE[url] = response.status_code
-
-def _assert_count(html_content, class_, count):
-    """Checks how many elements are in the page.
-
-    Returns the BeautifulSoup for reuse"""
-    soup = BeautifulSoup(html_content, "html.parser")
-    resources = len(soup.find_all(True, class_=class_))
-    assert resources == count, ("There are only %d %s elements" % (resources, class_))
 
 def _build_url(path, host):
     if path.startswith("http://") or path.startswith("https://"):
