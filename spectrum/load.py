@@ -1,3 +1,4 @@
+import string
 from random import randint
 from spectrum import logger, input, checks
 
@@ -25,9 +26,10 @@ class Queue():
         return len(self._contents)
 
 class JournalSearch():
-    def __init__(self, journal, length=3):
+    def __init__(self, journal, length=3, characters=string.ascii_lowercase):
         self._journal = journal
         self._length = length
+        self._characters = characters
         self._results = Queue()
 
     def run(self):
@@ -36,7 +38,7 @@ class JournalSearch():
             LOGGER.info("Loading search result %s", result)
             self._journal.generic(result)
         else:
-            word = input.invented_word(self._length)
+            word = input.invented_word(self._length, self._characters)
             LOGGER.info("Searching for %s", word)
             results = self._journal.search(word, count=None)
             # TODO: Queue.enqueue_all

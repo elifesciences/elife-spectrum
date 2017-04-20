@@ -187,8 +187,10 @@ def _journal_cms_page_title(soup):
     #<h1 class="js-quickedit-page-title title page-title">alfred</h1>
     return soup.find("h1", {"class": "page-title"}).text.strip()
 
-def invented_word(length=30):
-    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(length))
+def invented_word(length=30, characters=None):
+    if not characters:
+        characters = string.ascii_lowercase + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
 
 PRODUCTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_input'])
 SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_silent_corrections'])
