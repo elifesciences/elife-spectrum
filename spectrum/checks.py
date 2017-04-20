@@ -827,7 +827,7 @@ JOURNAL_GENERIC_PATHS = [
     "/for-the-press",
     "/resources",
     "/terms",
-    #/who-we-work-with
+    "/who-we-work-with",
 ]
 JOURNAL_LISTING_PATHS = [
     '/articles/correction',
