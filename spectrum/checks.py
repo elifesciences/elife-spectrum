@@ -581,7 +581,7 @@ class JournalCheck:
     def listing_of_listing(self, path):
         body = self.generic(path)
         soup = BeautifulSoup(body, "html.parser")
-        a_tags = soup.select(".block_link .block-link__link")
+        a_tags = soup.select(".block-link .block-link__link")
         links = [a['href'] for a in a_tags]
         LOGGER.info("Loaded listing of listing %s, found links: %s", path, links)
         return links
@@ -712,6 +712,7 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
         return resources
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
+    # TODO: resources seems to contain a link to its own page as the last element?
     LOGGER.info("Found resources %s", pformat(resources), extra=extra)
     for path in resources:
         if path is None:
