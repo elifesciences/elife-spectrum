@@ -161,9 +161,9 @@ JOURNAL_PAGES = [
 JOURNAL_ALL = AllOf(
     [
         (JournalSearch(JOURNAL), 8),
-        #(JournalHomepage(JOURNAL), 8),
+        (JournalHomepage(JOURNAL), 8),
     ]
-    #+JOURNAL_LISTINGS
-    #+JOURNAL_LISTINGS_OF_LISTINGS
-    #+JOURNAL_PAGES
+    +JOURNAL_LISTINGS
+    +JOURNAL_LISTINGS_OF_LISTINGS
+    +JOURNAL_PAGES
 )
