@@ -721,6 +721,7 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
             LOGGER.debug("Cached %s: %s", url, RESOURCE_CACHE[url], extra=extra)
         else:
             LOGGER.debug("Loading resource %s", url, extra=extra)
+            # TODO: support GET when needed
             response = requests.head(url)
             _assert_status_code(response, 200, url)
             RESOURCE_CACHE[url] = response.status_code

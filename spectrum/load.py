@@ -23,17 +23,31 @@ class JournalListing():
         self._queue = [path]
 
     def run(self):
-        path = self._queue.pop()
+        path = self._dequeue()
         LOGGER.info("Loading listing %s", path)
         items, links = self._journal.listing(path)
         for item in items:
-            LOGGER.info("Loading %s", item)
+            LOGGER.info("Loading item %s", item)
             self._journal.generic(item)
         for link in links:
-            self._queue.insert(0, link)
+            self._enqueue(link)
+        self._restart_if_empty()
+
+    def _dequeue(self):
+        path = self._queue.pop()
+        LOGGER.debug("Dequeuing %s", path)
+        return path
+
+    def _enqueue(self, path_to_visit):
+        LOGGER.debug("Enqueuing %s", path_to_visit)
+        self._queue.insert(0, path_to_visit)
+
+    def _restart_if_empty(self):
+        if len(self._queue) == 0:
+            self._queue.insert(0, self._path)
 
     def __str__(self):
-        return "JournalListing(%s, queue length %s)" % self._path, len(self._queue)
+        return "JournalListing(%s, queue length %s)" % (self._path, len(self._queue))
 
 class JournalPage():
     def __init__(self, journal, path):
@@ -71,7 +85,7 @@ class AllOf():
         action.run()
 
 JOURNAL_LISTINGS = [
-    (JournalListing(checks.JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_PATHS
+    (JournalListing(checks.JOURNAL, p), 200) for p in checks.JOURNAL_LISTING_PATHS
 ]
 JOURNAL_PAGES = [
     (JournalPage(checks.JOURNAL, p), 1)
