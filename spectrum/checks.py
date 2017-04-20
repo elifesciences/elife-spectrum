@@ -520,6 +520,14 @@ class ApiCheck:
         return final_headers
 
 class JournalCheck:
+    CSS_FIGURES_LINK = 'view-selector__link--figures'
+    CSS_TEASER_LINK = '.teaser__header_text_link'
+    CSS_CAROUSEL_LINK = '.carousel-item__title_link'
+    CSS_BLOCK_LINK = '.block-link .block-link__link'
+    CSS_PAGER_LINK = '.pager a'
+    CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
+    CSS_DOWNLOAD_LINK = '#downloads a'
+
     def __init__(self, host, resource_checking_method='head'):
         self._host = host
         self._resource_checking_method = resource_checking_method
@@ -533,10 +541,9 @@ class JournalCheck:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
         body = self.generic(url)
-        figures_link_selector = 'view-selector__link--figures'
-        figures_link = self._link(body, figures_link_selector)
+        figures_link = self._link(body, self.CSS_FIGURES_LINK)
         if has_figures:
-            assert figures_link is not None, "Cannot find figures link with selector %s" % figures_link_selector
+            assert figures_link is not None, "Cannot find figures link with selector %s" % self.CSS_FIGURES_LINK
             figures_url = _build_url(figures_link, self._host)
             LOGGER.info("Loading %s", figures_url, extra={'id':id})
         return body
@@ -546,8 +553,7 @@ class JournalCheck:
         LOGGER.info("Loading %s", url)
         body = self.generic(url)
         soup = BeautifulSoup(body, "html.parser")
-        # TODO: duplication of teaser_links logic
-        teaser_links = [a['href'] for a in soup.select('.teaser__header_text_link')]
+        teaser_links = [a['href'] for a in soup.select(self.CSS_TEASER_LINK)]
         if count is not None:
             assert len(teaser_links) == count, "There are only %d search results" % len(teaser_links)
         return teaser_links
@@ -555,8 +561,8 @@ class JournalCheck:
     def homepage(self):
         body = self.generic("/")
         soup = BeautifulSoup(body, "html.parser")
-        carousel_links = [a['href'] for a in soup.select('.carousel-item__title_link')]
-        teaser_links = [a['href'] for a in soup.select('.teaser__header_text_link')]
+        carousel_links = [a['href'] for a in soup.select(self.CSS_CAROUSEL_LINK)]
+        teaser_links = [a['href'] for a in soup.select(self.CSS_TEASER_LINK)]
         links = carousel_links + teaser_links
         return links
 
@@ -579,17 +585,17 @@ class JournalCheck:
     def listing(self, path):
         body = self.generic(path)
         soup = BeautifulSoup(body, "html.parser")
-        teaser_a_tags = soup.select(".teaser .teaser__header_text_link")
+        teaser_a_tags = soup.select(self.CSS_TEASER_LINK)
         teaser_links = [a['href'] for a in teaser_a_tags]
         LOGGER.info("Loaded listing %s, found links: %s", path, teaser_links)
-        pager_a_tags = soup.select(".pager a")
+        pager_a_tags = soup.select(self.CSS_PAGER_LINK)
         pager_links = [a['href'] for a in pager_a_tags]
         return teaser_links, pager_links
 
     def listing_of_listing(self, path):
         body = self.generic(path)
         soup = BeautifulSoup(body, "html.parser")
-        a_tags = soup.select(".block-link .block-link__link")
+        a_tags = soup.select(self.CSS_BLOCK_LINK)
         links = [a['href'] for a in a_tags]
         LOGGER.info("Loaded listing of listing %s, found links: %s", path, links)
         return links
@@ -620,8 +626,8 @@ class JournalCheck:
 
     def _download_links(self, body):
         soup = BeautifulSoup(body, "html.parser")
-        figure_download_links = [a.get('href') for a in soup.select(".asset-viewer-inline__download_all_link")]
-        pdf_download_links = [a.get('href') for a in soup.select("#downloads a") if a.text in ['Article PDF', 'Figures PDF']]
+        figure_download_links = [a.get('href') for a in soup.select(self.CSS_ASSET_VIEWER_DOWNLOAD_LINK)]
+        pdf_download_links = [a.get('href') for a in soup.select(self.CSS_DOWNLOAD_LINK) if a.text in ['Article PDF', 'Figures PDF']]
         return figure_download_links + pdf_download_links
 
 

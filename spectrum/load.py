@@ -5,7 +5,7 @@ from spectrum import logger, input, checks
 LOGGER = logger.logger(__name__)
 
 class Queue():
-    def __init__(self, contents = None):
+    def __init__(self, contents=None):
         self._contents = contents if contents else []
         self._seed = self._contents
 
