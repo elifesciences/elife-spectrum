@@ -728,7 +728,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
             srcset = media_source.get("srcset")
             if srcset:
                 resources.extend(_srcset_values(srcset))
-        return resources
+        return list(set(resources))
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
     LOGGER.info("Found resources %s", pformat(resources), extra=extra)
