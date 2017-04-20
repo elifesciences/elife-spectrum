@@ -544,12 +544,9 @@ class JournalCheck:
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
         LOGGER.info("Loading %s", url)
-        # TODO: use self.generic here and wherever else is needed
-        response = requests.get(url)
-        _assert_status_code(response, 200, url)
-        self._assert_all_resources_of_page_load(response.content)
+        body = self.generic(url)
         if count is not None:
-            _assert_count(response.content, class_='teaser', count=count)
+            _assert_count(body, class_='teaser', count=count)
 
     def homepage(self):
         body = self.generic("/")
