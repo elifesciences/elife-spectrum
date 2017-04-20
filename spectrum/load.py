@@ -77,7 +77,19 @@ class JournalPage():
     def __str__(self):
         return "JournalPage(%s)" % self._path
 
-# TODO: JournalHomepage
+class JournalHomepage():
+    def __init__(self, journal):
+        self._journal = journal
+
+    def run(self):
+        LOGGER.info("Loading homepage /")
+        links = self._journal.homepage()
+        for link in links:
+            LOGGER.info("Loading link %s", link)
+            self._journal.generic(link)
+
+    def __str__(self):
+        return "JournalHomepage()"
 
 class AllOf():
     def __init__(self, actions):
@@ -115,7 +127,8 @@ JOURNAL_PAGES = [
 ]
 JOURNAL_ALL = AllOf(
     [
-        (JournalSearch(JOURNAL), 8)
+        (JournalSearch(JOURNAL), 8),
+        (JournalHomepage(JOURNAL), 800),
     ]
     +JOURNAL_LISTINGS
     +JOURNAL_LISTINGS_OF_LISTINGS

@@ -6,7 +6,9 @@ from spectrum import checks
 @pytest.mark.journal_cms
 @pytest.mark.search
 def test_homepage():
-    checks.JOURNAL.homepage()
+    links = checks.JOURNAL.homepage()
+    if len(links):
+        checks.JOURNAL.generic(links[0])
 
 @pytest.mark.two
 @pytest.mark.journal_cms

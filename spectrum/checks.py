@@ -561,7 +561,12 @@ class JournalCheck:
             _assert_count(response.content, class_='teaser', count=count)
 
     def homepage(self):
-        return self.generic("/")
+        body = self.generic("/")
+        soup = BeautifulSoup(body, "html.parser")
+        carousel_links = [a['href'] for a in soup.select('.carousel-item__title_link')]
+        teaser_links = [a['href'] for a in soup.select('.teaser__header_text_link')]
+        links = carousel_links + teaser_links
+        return links
 
     def magazine(self):
         return self.generic("/magazine")
