@@ -102,19 +102,20 @@ class AllOf():
         LOGGER.info("Selecting action %s", action)
         action.run()
 
+JOURNAL = checks.JOURNAL.with_resource_checking_method('get')
 JOURNAL_LISTINGS = [
-    (JournalListing(checks.JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_PATHS
+    (JournalListing(JOURNAL, p), 2) for p in checks.JOURNAL_LISTING_PATHS
 ]
 JOURNAL_LISTINGS_OF_LISTINGS = [
-    (JournalListingOfListing(checks.JOURNAL, p), 200) for p in checks.JOURNAL_LISTING_OF_LISTING_PATHS
+    (JournalListingOfListing(JOURNAL, p), 200) for p in checks.JOURNAL_LISTING_OF_LISTING_PATHS
 ]
 JOURNAL_PAGES = [
-    (JournalPage(checks.JOURNAL, p), 1)
+    (JournalPage(JOURNAL, p), 1)
     for p in checks.JOURNAL_GENERIC_PATHS
 ]
 JOURNAL_ALL = AllOf(
     [
-        (JournalSearch(checks.JOURNAL), 8)
+        (JournalSearch(JOURNAL), 8)
     ]
     +JOURNAL_LISTINGS
     +JOURNAL_LISTINGS_OF_LISTINGS

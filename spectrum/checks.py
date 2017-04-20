@@ -520,8 +520,12 @@ class ApiCheck:
         return final_headers
 
 class JournalCheck:
-    def __init__(self, host):
+    def __init__(self, host, resource_checking_method='head'):
         self._host = host
+        self._resource_checking_method = resource_checking_method
+
+    def with_resource_checking_method(self, method):
+        return JournalCheck(self._host, method)
 
     def article(self, id, volume, has_figures=False, version=None):
         url = _build_url("/content/%s/e%s" % (volume, id), self._host)
@@ -530,7 +534,7 @@ class JournalCheck:
         LOGGER.info("Loading %s", url, extra={'id':id})
         response = self._persistently_get(url)
         _assert_status_code(response, 200, url)
-        _assert_all_resources_of_page_load(response.content, self._host, id=id)
+        self._assert_all_resources_of_page_load(response.content, id=id)
         figures_link_selector = 'view-selector__link--figures'
         figures_link = self._link(response.content, figures_link_selector)
         if has_figures:
@@ -539,7 +543,7 @@ class JournalCheck:
             LOGGER.info("Loading %s", figures_url, extra={'id':id})
             response = self._persistently_get(figures_url)
             _assert_status_code(response, 200, figures_url)
-            _assert_all_resources_of_page_load(response.content, self._host, id=id)
+            self._assert_all_resources_of_page_load(response.content, id=id)
         return response.content
 
     def search(self, query, count=1):
@@ -547,7 +551,7 @@ class JournalCheck:
         LOGGER.info("Loading %s", url)
         response = requests.get(url)
         _assert_status_code(response, 200, url)
-        _assert_all_resources_of_page_load(response.content, self._host)
+        self._assert_all_resources_of_page_load(response.content)
         if count is not None:
             _assert_count(response.content, class_='teaser', count=count)
 
@@ -564,7 +568,7 @@ class JournalCheck:
         _assert_status_code(response, 200, url)
         match = re.match("^"+self._host, response.url)
         if match:
-            _assert_all_resources_of_page_load(response.content, self._host)
+            self._assert_all_resources_of_page_load(response.content)
         return response.content
 
     def listing(self, path):
@@ -602,6 +606,10 @@ class JournalCheck:
         assert len(links) <= 1, \
                ("Found too many links for the class name %s: %s" % (class_name, links))
         return links[0]['href'] if len(links) == 1 else None
+
+    def _assert_all_resources_of_page_load(self, body, **extra):
+        return _assert_all_resources_of_page_load(body, self._host, resource_checking_method=self._resource_checking_method, **extra)
+
 
 
 class GithubCheck:
@@ -678,7 +686,7 @@ def _assert_status_code(response, expected_status_code, url):
 
 RESOURCE_CACHE = {}
 
-def _assert_all_resources_of_page_load(html_content, host, **extra):
+def _assert_all_resources_of_page_load(html_content, host, resource_checking_method='head', **extra):
     """Checks that all <script>, <link>, <video>, <source>, srcset="" load, by issuing HEAD requests that must give 200 OK.
 
     Returns the BeautifulSoup for reuse"""
@@ -721,8 +729,12 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
             LOGGER.debug("Cached %s: %s", url, RESOURCE_CACHE[url], extra=extra)
         else:
             LOGGER.debug("Loading resource %s", url, extra=extra)
-            # TODO: support GET when needed
-            response = requests.head(url)
+            if resource_checking_method == 'head':
+                response = requests.head(url)
+            elif resource_checking_method == 'get':
+                response = requests.get(url)
+            else:
+                raise RuntimeError("Unsupported resource checking method: %s" % resource_checking_method)
             _assert_status_code(response, 200, url)
             RESOURCE_CACHE[url] = response.status_code
     return soup
