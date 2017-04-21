@@ -706,7 +706,7 @@ def _assert_status_code(response, expected_status_code, url):
     except UnicodeDecodeError:
         LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
         print response.content
-        raise RuntimeError("Could not decode response from %s (status code %s)" % (url, response.status_code))
+        raise RuntimeError("Could not decode response from %s (status code %s, headers %s)" % (url, response.status_code, response.headers))
 
 RESOURCE_CACHE = {}
 
