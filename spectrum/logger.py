@@ -1,4 +1,5 @@
 import logging
+import os
 
 class OptionalArticleIdFilter(logging.Filter):
     def filter(self, record):
@@ -27,3 +28,9 @@ def logger(name):
 def set_logging_level(level):
     "e.g. logging.INFO"
     logging.getLogger().setLevel(level)
+
+# pytest does not allow to read a cli argument globally, but
+# only from a test or a fixture afaik
+# so, workaround "trying hard to be an extensible tool and failing at it"
+LOG_LEVEL = os.environ.get('SPECTRUM_LOG_LEVEL', 'INFO')
+set_logging_level(getattr(logging, LOG_LEVEL))

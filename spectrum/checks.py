@@ -520,38 +520,51 @@ class ApiCheck:
         return final_headers
 
 class JournalCheck:
-    def __init__(self, host):
+    CSS_FIGURES_LINK = 'view-selector__link--figures'
+    CSS_TEASER_LINK = '.teaser__header_text_link'
+    CSS_CAROUSEL_LINK = '.carousel-item__title_link'
+    CSS_BLOCK_LINK = '.block-link .block-link__link'
+    CSS_PAGER_LINK = '.pager a'
+    CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
+    CSS_DOWNLOAD_LINK = '#downloads a'
+
+    def __init__(self, host, resource_checking_method='head'):
         self._host = host
+        self._resource_checking_method = resource_checking_method
+
+    def with_resource_checking_method(self, method):
+        return JournalCheck(self._host, method)
 
     def article(self, id, volume, has_figures=False, version=None):
         url = _build_url("/content/%s/e%s" % (volume, id), self._host)
         if version:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
-        response = self._persistently_get(url)
-        _assert_status_code(response, 200, url)
-        _assert_all_resources_of_page_load(response.content, self._host, id=id)
-        figures_link_selector = 'view-selector__link--figures'
-        figures_link = self._link(response.content, figures_link_selector)
+        body = self.generic(url)
+        figures_link = self._link(body, self.CSS_FIGURES_LINK)
         if has_figures:
-            assert figures_link is not None, "Cannot find figures link with selector %s" % figures_link_selector
+            assert figures_link is not None, "Cannot find figures link with selector %s" % self.CSS_FIGURES_LINK
             figures_url = _build_url(figures_link, self._host)
             LOGGER.info("Loading %s", figures_url, extra={'id':id})
-            response = self._persistently_get(figures_url)
-            _assert_status_code(response, 200, figures_url)
-            _assert_all_resources_of_page_load(response.content, self._host, id=id)
-        return response.content
+        return body
 
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
         LOGGER.info("Loading %s", url)
-        response = requests.get(url)
-        _assert_status_code(response, 200, url)
-        _assert_all_resources_of_page_load(response.content, self._host)
-        _assert_count(response.content, class_='teaser', count=count)
+        body = self.generic(url)
+        soup = BeautifulSoup(body, "html.parser")
+        teaser_links = [a['href'] for a in soup.select(self.CSS_TEASER_LINK)]
+        if count is not None:
+            assert len(teaser_links) == count, "There are only %d search results" % len(teaser_links)
+        return teaser_links
 
     def homepage(self):
-        return self.generic("/")
+        body = self.generic("/")
+        soup = BeautifulSoup(body, "html.parser")
+        carousel_links = [a['href'] for a in soup.select(self.CSS_CAROUSEL_LINK)]
+        teaser_links = [a['href'] for a in soup.select(self.CSS_TEASER_LINK)]
+        links = carousel_links + teaser_links
+        return links
 
     def magazine(self):
         return self.generic("/magazine")
@@ -559,20 +572,33 @@ class JournalCheck:
     def generic(self, path):
         url = _build_url(path, self._host)
         LOGGER.info("Loading %s", url)
-        response = requests.get(url)
+        response = self._persistently_get(url)
         _assert_status_code(response, 200, url)
         match = re.match("^"+self._host, response.url)
         if match:
-            _assert_all_resources_of_page_load(response.content, self._host)
+            self._assert_all_resources_of_page_load(response.content)
+        download_links = self._download_links(response.content)
+        LOGGER.info("Found download links: %s", pformat(download_links))
+        self._assert_all_load(download_links)
         return response.content
 
     def listing(self, path):
         body = self.generic(path)
         soup = BeautifulSoup(body, "html.parser")
-        teaser_a_tags = soup.select("div.teaser .teaser__header_text_link")
+        teaser_a_tags = soup.select(self.CSS_TEASER_LINK)
         teaser_links = [a['href'] for a in teaser_a_tags]
-        LOGGER.info("Loaded %s, found links: %s", path, teaser_links)
-        return teaser_links
+        LOGGER.info("Loaded listing %s, found links: %s", path, teaser_links)
+        pager_a_tags = soup.select(self.CSS_PAGER_LINK)
+        pager_links = [a['href'] for a in pager_a_tags]
+        return teaser_links, pager_links
+
+    def listing_of_listing(self, path):
+        body = self.generic(path)
+        soup = BeautifulSoup(body, "html.parser")
+        a_tags = soup.select(self.CSS_BLOCK_LINK)
+        links = [a['href'] for a in a_tags]
+        LOGGER.info("Loaded listing of listing %s, found links: %s", path, links)
+        return links
 
     def _persistently_get(self, url):
         response = requests.get(url)
@@ -591,6 +617,18 @@ class JournalCheck:
         assert len(links) <= 1, \
                ("Found too many links for the class name %s: %s" % (class_name, links))
         return links[0]['href'] if len(links) == 1 else None
+
+    def _assert_all_resources_of_page_load(self, body, **extra):
+        return _assert_all_resources_of_page_load(body, self._host, resource_checking_method=self._resource_checking_method, **extra)
+
+    def _assert_all_load(self, links, **extra):
+        return _assert_all_load(links, self._host, resource_checking_method=self._resource_checking_method, **extra)
+
+    def _download_links(self, body):
+        soup = BeautifulSoup(body, "html.parser")
+        figure_download_links = [a.get('href') for a in soup.select(self.CSS_ASSET_VIEWER_DOWNLOAD_LINK)]
+        pdf_download_links = [a.get('href') for a in soup.select(self.CSS_DOWNLOAD_LINK) if a.text in ['Article PDF', 'Figures PDF']]
+        return figure_download_links + pdf_download_links
 
 
 class GithubCheck:
@@ -662,12 +700,17 @@ def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
 
 def _assert_status_code(response, expected_status_code, url):
-    assert response.status_code == expected_status_code, \
-        "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
+    try:
+        assert response.status_code == expected_status_code, \
+            "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
+    except UnicodeDecodeError:
+        LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
+        print response.content
+        raise RuntimeError("Could not decode response from %s (status code %s)" % (url, response.status_code))
 
 RESOURCE_CACHE = {}
 
-def _assert_all_resources_of_page_load(html_content, host, **extra):
+def _assert_all_resources_of_page_load(html_content, host, resource_checking_method='head', **extra):
     """Checks that all <script>, <link>, <video>, <source>, srcset="" load, by issuing HEAD requests that must give 200 OK.
 
     Returns the BeautifulSoup for reuse"""
@@ -690,37 +733,36 @@ def _assert_all_resources_of_page_load(html_content, host, **extra):
             if script.get("src"):
                 resources.append(script.get("src"))
         for link in soup.find_all("link"):
-            resources.append(link.get("href"))
+            if "canonical" not in link.get("rel"):
+                resources.append(link.get("href"))
         for video in soup.find_all("video"):
             resources.append(video.get("poster"))
         for media_source in soup.find_all("source"):
             srcset = media_source.get("srcset")
             if srcset:
                 resources.extend(_srcset_values(srcset))
-        return resources
+        return list(set(resources))
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
     LOGGER.info("Found resources %s", pformat(resources), extra=extra)
-    for path in resources:
-        if path is None:
-            continue
-        url = _build_url(path, host)
-        if url in RESOURCE_CACHE:
-            LOGGER.debug("Cached %s: %s", url, RESOURCE_CACHE[url], extra=extra)
-        else:
-            LOGGER.debug("Loading resource %s", url, extra=extra)
-            response = requests.head(url)
-            _assert_status_code(response, 200, url)
-            RESOURCE_CACHE[url] = response.status_code
+    _assert_all_load(resources, host, resource_checking_method, **extra)
     return soup
 
-def _assert_count(html_content, class_, count):
-    """Checks how many elements are in the page.
+def _assert_all_load(resources, host, resource_checking_method='head', **extra):
+    for path in resources:
+        if path is None:
+            LOGGER.warning("empty path in resources: %s", resources)
+            continue
+        url = _build_url(path, host)
+        if url in RESOURCE_CACHE and resource_checking_method == 'head':
+            LOGGER.debug("Cached HEAD %s: %s", url, RESOURCE_CACHE[url], extra=extra)
+            return
 
-    Returns the BeautifulSoup for reuse"""
-    soup = BeautifulSoup(html_content, "html.parser")
-    resources = len(soup.find_all(True, class_=class_))
-    assert resources == count, ("There are only %d %s elements" % (resources, class_))
+        LOGGER.debug("Loading (%s) resource %s", resource_checking_method, url, extra=extra)
+        method = getattr(requests, resource_checking_method)
+        response = method(url)
+        _assert_status_code(response, 200, url)
+        RESOURCE_CACHE[url] = response.status_code
 
 def _build_url(path, host):
     if path.startswith("http://") or path.startswith("https://"):
@@ -810,6 +852,33 @@ JOURNAL = JournalCheck(
 JOURNAL_CDN = JournalCheck(
     host=SETTINGS['journal_cdn_host']
 )
+JOURNAL_GENERIC_PATHS = [
+    '/about',
+    '/about/early-career',
+    '/about/innovation',
+    '/about/openness',
+    '/about/peer-review',
+    '/alerts',
+    '/contact',
+    '/for-the-press',
+    '/resources',
+    '/terms',
+    '/who-we-work-with',
+]
+JOURNAL_LISTING_PATHS = [
+    '/annual-reports',
+    '/articles/correction',
+    '/collections',
+    "/community",
+    '/inside-elife',
+    '/labs',
+    '/podcast',
+]
+JOURNAL_LISTING_OF_LISTING_PATHS = [
+    '/archive/2016',
+    '/subjects',
+]
+
 GITHUB_XML = GithubCheck(
     repo_url=SETTINGS['github_article_xml_repository_url']
 )
