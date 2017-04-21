@@ -1,10 +1,7 @@
-import logging
-import os
 import sys
 
 import pytest
 from spectrum import generator
-from spectrum import logger
 # so that other processes run by xdist can still print
 # http://stackoverflow.com/questions/27006884/pytest-xdist-without-capturing-output
 # https://github.com/pytest-dev/pytest/issues/680
@@ -56,8 +53,3 @@ def _clean_all(created_articles):
     for article in created_articles:
         article.clean()
 
-# pytest does not allow to read a cli argument globally, but
-# only from a test or a fixture afaik
-# so, workaround "trying hard to be an extensible tool and failing at it"
-LOG_LEVEL = os.environ.get('SPECTRUM_LOG_LEVEL', 'INFO')
-logger.set_logging_level(getattr(logging, LOG_LEVEL))
