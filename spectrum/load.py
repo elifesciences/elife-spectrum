@@ -63,13 +63,14 @@ class JournalListing():
             item = self._items.dequeue()
             LOGGER.info("Loading listing item %s", item)
             self._journal.generic(item)
-        else:
-            path = self._pages.dequeue()
-            LOGGER.info("Loading listing page %s", path)
-            items, links = self._journal.listing(path)
-            self._items.enqueue_all(items)
-            self._pages.enqueue_all(links)
-        self._pages.restart_if_empty()
+            return
+        if not len(self._pages):
+            self._pages.restart_if_empty()
+        path = self._pages.dequeue()
+        LOGGER.info("Loading listing page %s", path)
+        items, links = self._journal.listing(path)
+        self._items.enqueue_all(items)
+        self._pages.enqueue_all(links)
 
     def __str__(self):
         return "JournalListing(%s, pages queue length %s, items queue length %s)" % (self._path, len(self._pages), len(self._items))
