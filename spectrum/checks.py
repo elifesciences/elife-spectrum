@@ -19,18 +19,18 @@ requests.packages.urllib3.disable_warnings()
 GLOBAL_TIMEOUT = int(os.environ['SPECTRUM_TIMEOUT']) if 'SPECTRUM_TIMEOUT' in os.environ else 600
 LOGGER = logger.logger(__name__)
 
-class TimeoutException(RuntimeError):
+class TimeoutError(RuntimeError):
     @staticmethod
     def giving_up_on(what):
         timestamp = datetime.today().isoformat()
-        return TimeoutException(
+        return TimeoutError(
             "Cannot find '%s'; Giving up at %s" \
                     % (what, timestamp)
         )
 
-class UnrecoverableException(RuntimeError):
+class UnrecoverableError(RuntimeError):
     def __init__(self, details):
-        super(UnrecoverableException, self).__init__(self, details)
+        super(UnrecoverableError, self).__init__(self, details)
         self._details = details
 
     def __str__(self):
@@ -182,7 +182,7 @@ class WebsiteArticleCheck:
         try:
             response = requests.get(url)
             if response.status_code >= 500:
-                raise UnrecoverableException(response)
+                raise UnrecoverableError(response)
             if response.status_code == 200:
                 LOGGER.info("Found %s visible on website", url, extra=extra)
                 return True
@@ -231,7 +231,7 @@ class DashboardArticleCheck:
             if response.status_code != 200:
                 return False, "Response code: %s" % response.status_code
             if response.status_code >= 500:
-                raise UnrecoverableException(response)
+                raise UnrecoverableError(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
             if not version_contents:
@@ -291,7 +291,7 @@ class DashboardArticleCheck:
     def _check_correctness(self, run_contents):
         errors = [e for e in run_contents['events'] if e['event-status'] == 'error']
         if errors:
-            raise UnrecoverableException("At least one error event was reported for the run.\n%s" % pformat(errors))
+            raise UnrecoverableError("At least one error event was reported for the run.\n%s" % pformat(errors))
 
     def _is_last_event_error(self, id, version, run):
         url = self._article_api(id)
@@ -299,7 +299,7 @@ class DashboardArticleCheck:
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
             if response.status_code >= 500:
-                raise UnrecoverableException(response)
+                raise UnrecoverableError(response)
             article = response.json()
             version_runs = article['versions'][version_key]['runs']
             run_key = str(run)
@@ -348,7 +348,7 @@ class LaxArticleCheck:
             if response.status_code != 200:
                 return False
             if response.status_code >= 500:
-                raise UnrecoverableException(response)
+                raise UnrecoverableError(response)
             article_versions = response.json()
             if version_key not in article_versions:
                 return False
@@ -694,7 +694,7 @@ def _poll(action_fn, error_message, *error_message_args):
         built_error_message = error_message_template % tuple(error_message_args)
         if 'last_seen' in details:
             built_error_message = built_error_message + "\n" + pformat(details['last_seen'])
-        raise TimeoutException.giving_up_on(built_error_message)
+        raise TimeoutError.giving_up_on(built_error_message)
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
@@ -706,7 +706,7 @@ def _assert_status_code(response, expected_status_code, url):
     except UnicodeDecodeError:
         LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
         print response.content
-        raise RuntimeError("Could not decode response from %s (status code %s)" % (url, response.status_code))
+        raise RuntimeError("Could not decode response from %s (status code %s, headers %s)" % (url, response.status_code, response.headers))
 
 RESOURCE_CACHE = {}
 
