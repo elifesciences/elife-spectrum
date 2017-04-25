@@ -749,6 +749,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
     return soup
 
 def _assert_all_load(resources, host, resource_checking_method='head', **extra):
+    urls = []
     for path in resources:
         if path is None:
             LOGGER.warning("empty path in resources: %s", resources)
@@ -758,10 +759,17 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
         if url in RESOURCE_CACHE and resource_checking_method == 'head':
             LOGGER.debug("Cached HEAD %s: %s", url, RESOURCE_CACHE[url], extra=extra)
             continue
+        urls.append(url)
 
+    def exception_handler(request, exception):
+        raise exception
+
+    import grequests
+    reqs = (grequests.get(u) for u in urls)
+    responses = grequests.map(reqs, exception_handler=exception_handler)
+
+    for url, response in zip(urls, responses):
         LOGGER.debug("Loading (%s) resource %s", resource_checking_method, url, extra=extra)
-        method = getattr(requests, resource_checking_method)
-        response = method(url)
         _assert_status_code(response, 200, url)
         RESOURCE_CACHE[url] = response.status_code
 
