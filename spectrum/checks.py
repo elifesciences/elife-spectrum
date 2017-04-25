@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import polling
 import requests
 from requests.exceptions import ConnectionError
+import grequests
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
 
@@ -761,10 +762,9 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
             continue
         urls.append(url)
 
-    def exception_handler(request, exception):
+    def exception_handler(_, exception):
         raise exception
 
-    import grequests
     reqs = (grequests.get(u) for u in urls)
     responses = grequests.map(reqs, exception_handler=exception_handler)
 
