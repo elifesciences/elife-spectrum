@@ -753,10 +753,11 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
         if path is None:
             LOGGER.warning("empty path in resources: %s", resources)
             continue
+
         url = _build_url(path, host)
         if url in RESOURCE_CACHE and resource_checking_method == 'head':
             LOGGER.debug("Cached HEAD %s: %s", url, RESOURCE_CACHE[url], extra=extra)
-            return
+            continue
 
         LOGGER.debug("Loading (%s) resource %s", resource_checking_method, url, extra=extra)
         method = getattr(requests, resource_checking_method)
