@@ -26,7 +26,8 @@ class Queue():
     def restart_if_empty(self):
         if len(self._contents) == 0:
             LOGGER.warning("Need to refill queue with %s", self._seed)
-            self._contents = self._seed
+            # cloning again to avoid modifying self._seed
+            self._contents = list(self._seed)
 
     def __len__(self):
         return len(self._contents)
