@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 import polling
 import requests
 from requests.exceptions import ConnectionError
+from concurrent.futures import ThreadPoolExecutor, wait
+from requests_futures.sessions import FuturesSession
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
 
@@ -17,6 +19,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 GLOBAL_TIMEOUT = int(os.environ['SPECTRUM_TIMEOUT']) if 'SPECTRUM_TIMEOUT' in os.environ else 600
+HTTP_TIMEOUT = 30
 LOGGER = logger.logger(__name__)
 
 class TimeoutError(RuntimeError):
@@ -749,18 +752,26 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
     return soup
 
 def _assert_all_load(resources, host, resource_checking_method='head', **extra):
+    urls = []
+    futures = []
+    session = FuturesSession(executor=ThreadPoolExecutor(max_workers=2))
     for path in resources:
         if path is None:
             LOGGER.warning("empty path in resources: %s", resources)
             continue
+
         url = _build_url(path, host)
         if url in RESOURCE_CACHE and resource_checking_method == 'head':
             LOGGER.debug("Cached HEAD %s: %s", url, RESOURCE_CACHE[url], extra=extra)
-            return
+            continue
+        urls.append(url)
+        futures.append(getattr(session, resource_checking_method)(url))
 
+    wait(futures, HTTP_TIMEOUT)
+
+    for url, future in zip(urls, futures):
+        response = future.result()
         LOGGER.debug("Loading (%s) resource %s", resource_checking_method, url, extra=extra)
-        method = getattr(requests, resource_checking_method)
-        response = method(url)
         _assert_status_code(response, 200, url)
         RESOURCE_CACHE[url] = response.status_code
 
