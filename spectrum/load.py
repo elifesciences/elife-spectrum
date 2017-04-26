@@ -6,8 +6,8 @@ LOGGER = logger.logger(__name__)
 
 class Queue():
     def __init__(self, contents=None):
-        self._contents = contents if contents else []
-        # cloning
+        # cloning since these are mutable data structures
+        self._contents = list(contents) if contents else []
         self._seed = list(self._contents)
 
     def dequeue(self):
