@@ -18,7 +18,7 @@ if __name__ == '__main__':
         load.LOGGER.info("New iteration")
         try:
             load.JOURNAL_ALL.run()
-        except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError):
-            load.LOGGER.exception("Error in loading a journal page")
+        except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError) as e:
+            load.LOGGER.exception("Error in loading a journal page", e.message)
         iterations = iterations + 1
 
