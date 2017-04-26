@@ -7,7 +7,8 @@ LOGGER = logger.logger(__name__)
 class Queue():
     def __init__(self, contents=None):
         self._contents = contents if contents else []
-        self._seed = self._contents
+        # cloning
+        self._seed = list(self._contents)
 
     def dequeue(self):
         path = self._contents.pop()
@@ -64,8 +65,7 @@ class JournalListing():
             LOGGER.info("Loading listing item %s", item)
             self._journal.generic(item)
             return
-        if not len(self._pages):
-            self._pages.restart_if_empty()
+        self._pages.restart_if_empty()
         path = self._pages.dequeue()
         LOGGER.info("Loading listing page %s", path)
         items, links = self._journal.listing(path)
