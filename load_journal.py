@@ -1,5 +1,6 @@
 from spectrum import load, checks
 from sys import argv
+import requests
 
 if __name__ == '__main__':
     if len(argv) >= 2:
@@ -18,7 +19,7 @@ if __name__ == '__main__':
         load.LOGGER.info("New iteration")
         try:
             load.JOURNAL_ALL.run()
-        except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError) as e:
+        except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError, requests.exceptions.ConnectionError) as e:
             load.LOGGER.exception("Error in loading a journal page", e.message)
         iterations = iterations + 1
 
