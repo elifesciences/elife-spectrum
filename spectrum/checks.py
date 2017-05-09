@@ -705,7 +705,8 @@ def _log_connection_error(e):
 def _assert_status_code(response, expected_status_code, url):
     try:
         assert response.status_code == expected_status_code, \
-            "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
+            "Response from %s had status %d" % (url, response.status_code)
+            #"Response from %s had status %d, body %s" % (url, response.status_code, response.content)
     except UnicodeDecodeError:
         LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
         LOGGER.error("(%s): type of content %s", url, type(response.content))
@@ -714,7 +715,6 @@ def _assert_status_code(response, expected_status_code, url):
             dump.write(response.content)
         LOGGER.error("(%s): written response.content to /tmp")
         LOGGER.error("(%s): headers %s)", url, response.headers)
-        LOGGER.error(u"(%s): content %s)", url, response.content)
         raise RuntimeError("Could not decode response from %s (status code %s, headers %s)" % (url, response.status_code, response.headers))
 
 RESOURCE_CACHE = {}
