@@ -713,6 +713,7 @@ def _assert_status_code(response, expected_status_code, url):
         with open("/tmp/response_content.txt", "w") as dump:
             dump.write(response.content)
         LOGGER.error("(%s): written response.content to /tmp")
+        LOGGER.error("(%s): headers %s)", url, response.headers)
         raise RuntimeError("Could not decode response from %s (status code %s, headers %s)" % (url, response.status_code, response.headers))
 
 RESOURCE_CACHE = {}
