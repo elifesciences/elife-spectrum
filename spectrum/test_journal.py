@@ -46,6 +46,14 @@ def test_events():
     if len(items):
         checks.JOURNAL.generic(items[0])
 
+@pytest.mark.two
+@pytest.mark.observer
+def test_rss_feeds():
+    recent_response = checks.JOURNAL.just_load('/rss/recent.xml')
+    print recent_response.content
+    ahead_response = checks.JOURNAL.just_load('/rss/ahead.xml')
+    print ahead_response.content
+
 #path: /interviews/{id}
 # how do we get the link? navigate from /collections
 
