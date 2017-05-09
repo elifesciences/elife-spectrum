@@ -573,10 +573,7 @@ class JournalCheck:
         return self.generic("/magazine")
 
     def generic(self, path):
-        url = _build_url(path, self._host)
-        LOGGER.info("Loading %s", url)
-        response = self._persistently_get(url)
-        _assert_status_code(response, 200, url)
+        response = self.just_load(path)
         match = re.match("^"+self._host, response.url)
         if match:
             self._assert_all_resources_of_page_load(response.content)
@@ -584,6 +581,13 @@ class JournalCheck:
         LOGGER.info("Found download links: %s", pformat(download_links))
         self._assert_all_load(download_links)
         return response.content
+
+    def just_load(self, path):
+        url = _build_url(path, self._host)
+        LOGGER.info("Loading %s", url)
+        response = self._persistently_get(url)
+        _assert_status_code(response, 200, url)
+        return response
 
     def listing(self, path):
         body = self.generic(path)
