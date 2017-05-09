@@ -20,6 +20,6 @@ if __name__ == '__main__':
         try:
             load.JOURNAL_ALL.run()
         except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError, requests.exceptions.ConnectionError) as e:
-            load.LOGGER.exception("Error in loading a journal page", e.message)
+            load.LOGGER.exception("Error in loading a journal page (%s)", e.message)
         iterations = iterations + 1
 
