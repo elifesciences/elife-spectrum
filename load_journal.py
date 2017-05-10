@@ -8,7 +8,7 @@ if __name__ == '__main__':
         load.LOGGER.info("Setting iterations limit %s", limit)
     else:
         limit = None
-        load.LOGGER.info("No limit set", limit)
+        load.LOGGER.info("No limit set")
 
     iterations = 0
     while True:
