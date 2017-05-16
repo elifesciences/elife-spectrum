@@ -733,7 +733,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
         for candidate_string in [cs.strip() for cs in without_descriptors.strip().split(" ")]:
             if candidate_string:
                 values.append(candidate_string)
-        LOGGER.info("srcset values: %s", values)
+        LOGGER.debug("srcset values: %s", values)
         return values
     def _resources_from(soup):
         resources = []
@@ -810,12 +810,6 @@ WEBSITE = WebsiteArticleCheck(
     user=SETTINGS['website_user'],
     password=SETTINGS['website_password']
 )
-IMAGES_BOT_CDN = BucketFileCheck(
-    aws.S3,
-    SETTINGS['bucket_cdn'],
-    'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg',
-    'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg'
-)
 IMAGES_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_published'],
@@ -833,12 +827,6 @@ XML_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
     SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}-download.xml',
     'articles/{id}/elife-{id}-v{version}-download.xml'
-)
-PDF_BOT_CDN = BucketFileCheck(
-    aws.S3,
-    SETTINGS['bucket_cdn'],
-    'articles/{id}/elife-{id}-v{version}.pdf',
-    'articles/{id}/elife-{id}-v{version}.pdf'
 )
 PDF_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
