@@ -9,5 +9,6 @@ fi
 
 id="$1"
 source_filename="$2"
+set -o pipefail
 xmllint -format "$source_filename" | sed -e "s/$id/{{ article['id'] }}/g" > "spectrum/templates/elife-$id-vor-r1/elife-$id.xml.jinja"
 
