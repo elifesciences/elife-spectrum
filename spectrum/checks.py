@@ -770,6 +770,10 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
             LOGGER.warning("empty path in resources: %s", resources)
             continue
 
+        if path.startswith("data:"):
+            LOGGER.debug("Skipping `data:` resource '%s'", path)
+            continue
+
         url = _build_url(path, host)
         if url in RESOURCE_CACHE and resource_checking_method == 'head':
             LOGGER.debug("Cached HEAD %s: %s", url, RESOURCE_CACHE[url], extra=extra)
