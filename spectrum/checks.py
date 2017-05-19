@@ -545,6 +545,7 @@ class JournalCheck:
         LOGGER.info("Loading %s", url, extra={'id':id})
         body = self.generic(url)
         figures_link = self._link(body, self.CSS_FIGURES_LINK)
+        LOGGER.info("Temporarily skipping: %s %s", figures_link, has_figures)
         #if has_figures:
         #    assert figures_link is not None, "Cannot find figures link with selector %s" % self.CSS_FIGURES_LINK
         #    figures_url = _build_url(figures_link, self._host)
