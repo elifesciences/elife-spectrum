@@ -466,23 +466,43 @@ class ApiCheck:
         response = requests.get(url, headers=self._base_headers())
         return self._ensure_sane_response(response, url)
 
-    def wait_search(self, word):
-        "Returns as soon as there is one result"
+    def wait_search(self, word, item_check=None):
+        """Returns as soon as there is one result.
+
+        item_check can be used to verify the only result satisfies a condition"""
         search_url = "%s/search?for=%s" % (self._host, word)
         def _is_ready():
             response = requests.get(search_url, headers=self._base_headers())
             body = self._ensure_sane_response(response, search_url)
+            LOGGER.debug("Search result: %s", body)
             if len(body['items']) == 0:
                 return False
-            LOGGER.info("%s: returning %d results",
+            item_check_presence = ''
+            if item_check:
+                if not item_check(body['items'][0]):
+                    return False
+                else:
+                    item_check_presence = " and satisfying check %s" % item_check
+            LOGGER.info("%s: returning %d results%s",
                         search_url,
-                        len(body['items']))
+                        len(body['items']),
+                        item_check_presence)
             return body
         return _poll(
             _is_ready,
             "%s returning at least 1 result",
             search_url
         )
+
+    def search_item_check_image(self, uri):
+        class SearchItemCheckImage():
+            def __init__(self, uri):
+                self._uri = uri
+            def __call__(self, search_item):
+                return search_item['image']['thumbnail']['source']['uri'] == self._uri
+            def __str__(self):
+                return "SearchItemCheckImage(%s)" % self._uri
+        return SearchItemCheckImage(uri)
 
     def wait_recommendations(self, id):
         "Returns as soon as there is one result"
