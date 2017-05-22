@@ -135,19 +135,21 @@ def test_recommendations_for_new_articles(generate_article):
 
 @pytest.mark.journal_cms
 @pytest.mark.continuum
-def test_adding_article_fragment(generate_article):
+def test_adding_article_fragment(generate_article, modify_article):
     journal_cms_session = input.JOURNAL_CMS.login()
     template_id = 15893
-    article = generate_article(template_id)
+    invented_word = input.invented_word()
+    article = modify_article(generate_article(template_id), replacements={'cytomegalovirus':invented_word})
     _ingest_and_publish_and_wait_for_published(article)
 
     journal_cms_session.create_article_fragment(id=article.id(), image='./spectrum/fixtures/king_county.jpg')
     article = checks.API.article(article.id())
     # TODO: transition to IIIF and use a IiifCheck object
-    image_url = article['image']['thumbnail']['source']['uri']
-    response = requests.head(image_url)
-    checks.LOGGER.info("Found %s: %s", image_url, response.status_code)
-    assert response.status_code == 200, "Image %s is not loading" % image_url
+    image_uri = article['image']['thumbnail']['source']['uri']
+    response = requests.head(image_uri)
+    checks.LOGGER.info("Found %s: %s", image_uri, response.status_code)
+    assert response.status_code == 200, "Image %s is not loading" % image_uri
+    checks.API.wait_search(invented_word, item_check=checks.API.search_item_check_image(image_uri))
 
 def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())

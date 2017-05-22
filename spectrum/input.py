@@ -156,6 +156,7 @@ class JournalCmsSession:
         response = self._browser.submit(form, edit_page.url, data={'op': button_text})
         view_page = self._browser.get(view_url)
         img = view_page.soup.select_one(".field--name-field-image img")
+        assert img, ("Cannot find `.field--name-field-image img` in %s" % view_url)
         assert "king_county" in img.get('src')
         LOGGER.info(
             "Tag: %s",
