@@ -5,7 +5,7 @@ from spectrum import checks
 @pytest.mark.two
 @pytest.mark.journal_cms
 def test_list_based_apis_journal_cms():
-    checks.API.labs_experiments()
+    checks.API.labs_posts()
     checks.API.subjects()
     checks.API.podcast_episodes()
     checks.API.people()
