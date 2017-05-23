@@ -366,9 +366,9 @@ class ApiCheck:
         self._host = host
         self._authorization = authorization
 
-    def labs_experiments(self):
+    def labs_posts(self):
         #body =
-        self._list_api('/labs-experiments', 'labs-experiment')
+        self._list_api('/labs-posts', 'labs-post')
         #self._ensure_list_has_at_least_1_element(body)
 
     def subjects(self):
