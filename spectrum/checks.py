@@ -710,7 +710,7 @@ def _log_connection_error(e):
 def _assert_status_code(response, expected_status_code, url):
     try:
         assert response.status_code == expected_status_code, \
-            "Response from %s had status %d" % (url, response.status_code)
+                "Response from %s had status %d\nHeaders: %s\nAssertion, not request, performed at %s" % (url, response.status_code, pformat(response.headers), datetime.now().isoformat())
             #"Response from %s had status %d, body %s" % (url, response.status_code, response.content)
     except UnicodeDecodeError:
         LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
