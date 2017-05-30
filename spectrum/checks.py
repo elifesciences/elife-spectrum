@@ -885,7 +885,7 @@ JOURNAL_LISTING_PATHS = [
     '/collections',
     "/community",
     '/inside-elife',
-    '/labs',
+    #'/labs',
     '/podcast',
 ]
 JOURNAL_LISTING_OF_LISTING_PATHS = [
