@@ -155,7 +155,9 @@ class JournalCmsSession:
         button_text = edit_page.soup.find('div', {'id': 'edit-actions'}).find('input', 'form-submit').get('value')
         response = self._browser.submit(form, edit_page.url, data={'op': button_text})
         view_page = self._browser.get(view_url)
-        img = view_page.soup.select_one(".field--name-field-image img")
+        img_selector = ".field--name-field-image img"
+        img = view_page.soup.select_one(img_selector)
+        assert img is not None, ("Cannot find %s in %s response\n%s" % img_selector, view_page.status_code, view_page.content)
         assert "king_county" in img.get('src')
         LOGGER.info(
             "Tag: %s",
