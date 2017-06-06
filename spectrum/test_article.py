@@ -125,8 +125,7 @@ def test_recommendations_for_new_articles(generate_article):
     for article, recommended in [(first_article, second_article), (second_article, first_article)]:
         result = checks.API.wait_recommendations(article.id())
         assert len(result['items']) >= 1
-        #assert result['items'][0]['id'] == recommended.id()
-        assert recommended.id() == recommended.id()
+        assert result['items'][0]['id'] == recommended.id()
         # load the article page, this will call recommendations
         article_from_api = checks.API.wait_article(id=article.id())
         checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'])
