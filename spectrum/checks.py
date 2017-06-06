@@ -366,9 +366,9 @@ class ApiCheck:
         self._host = host
         self._authorization = authorization
 
-    def labs_experiments(self):
+    def labs_posts(self):
         #body =
-        self._list_api('/labs-experiments', 'labs-experiment')
+        self._list_api('/labs-posts', 'labs-post')
         #self._ensure_list_has_at_least_1_element(body)
 
     def subjects(self):
@@ -565,11 +565,11 @@ class JournalCheck:
         LOGGER.info("Loading %s", url, extra={'id':id})
         body = self.generic(url)
         figures_link = self._link(body, self.CSS_FIGURES_LINK)
-        LOGGER.info("Temporarily skipping: %s %s", figures_link, has_figures)
-        #if has_figures:
-        #    assert figures_link is not None, "Cannot find figures link with selector %s" % self.CSS_FIGURES_LINK
-        #    figures_url = _build_url(figures_link, self._host)
-        #    LOGGER.info("Loading %s", figures_url, extra={'id':id})
+        if has_figures:
+            assert figures_link is not None, "Cannot find figures link with selector %s" % self.CSS_FIGURES_LINK
+            figures_url = _build_url(figures_link, self._host)
+            LOGGER.info("Loading figures page %s", figures_url, extra={'id':id})
+            self.generic(url)
         return body
 
     def search(self, query, count=1):
@@ -730,7 +730,7 @@ def _log_connection_error(e):
 def _assert_status_code(response, expected_status_code, url):
     try:
         assert response.status_code == expected_status_code, \
-            "Response from %s had status %d" % (url, response.status_code)
+                "Response from %s had status %d\nHeaders: %s\nAssertion, not request, performed at %s" % (url, response.status_code, pformat(response.headers), datetime.now().isoformat())
             #"Response from %s had status %d, body %s" % (url, response.status_code, response.content)
     except UnicodeDecodeError:
         LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
