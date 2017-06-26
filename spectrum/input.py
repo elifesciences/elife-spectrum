@@ -157,7 +157,7 @@ class JournalCmsSession:
         view_page = self._browser.get(view_url)
         img_selector = ".field--name-field-image img"
         img = view_page.soup.select_one(img_selector)
-        assert img is not None, ("Cannot find %s in %s response\n%s" % img_selector, view_page.status_code, view_page.content)
+        assert img is not None, ("Cannot find %s in %s response\n%s" % (img_selector, view_page.status_code, view_page.content))
         assert "king_county" in img.get('src')
         LOGGER.info(
             "Tag: %s",
