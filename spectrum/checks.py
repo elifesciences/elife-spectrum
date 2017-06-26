@@ -430,7 +430,7 @@ class ApiCheck:
         LOGGER.info("Found article version %s on api: %s", version, latest_url, extra={'id': id})
         return body
 
-    def wait_article(self, id, **constraints):
+    def wait_article(self, id, item_check=None, **constraints):
         "Article must be immediately present with this version, but will poll until the constraints (fields with certain values) are satisfied"
         latest_url = "%s/articles/%s" % (self._host, id)
         def _is_ready():
@@ -439,14 +439,21 @@ class ApiCheck:
                 LOGGER.debug("%s: 404", latest_url)
                 return False
             body = self._ensure_sane_response(response, latest_url)
+            item_check_presence = ''
+            if item_check:
+                if not item_check(body):
+                    return False
+                else:
+                    item_check_presence = " and satisfying check %s" % item_check
+            constraints_presence = ''
             if constraints:
                 for field, value in constraints.iteritems():
                     if body[field] != value:
                         LOGGER.debug("%s: field `%s` is not `%s` but `%s`",
                                      latest_url, field, value, body[field])
                         return False
-                LOGGER.info("%s: conforming to constraints %s",
-                            latest_url, constraints)
+                constraints_presence = " and conforming to constraints %s" % constraints
+            LOGGER.info("%s present%s%s", latest_url, item_check_presence, constraints_presence)
             return body
         return _poll(
             _is_ready,
@@ -494,15 +501,19 @@ class ApiCheck:
             search_url
         )
 
-    def search_item_check_image(self, uri):
-        class SearchItemCheckImage():
+    def item_check_image(self, uri=None):
+        class ItemCheckImage():
             def __init__(self, uri):
                 self._uri = uri
-            def __call__(self, search_item):
-                return search_item['image']['thumbnail']['source']['uri'] == self._uri
+            def __call__(self, item):
+                if 'image' not in item:
+                    return False
+                if self._uri is None:
+                    return True
+                return item['image']['thumbnail']['source']['uri'] == self._uri
             def __str__(self):
-                return "SearchItemCheckImage(%s)" % self._uri
-        return SearchItemCheckImage(uri)
+                return "ItemCheckImage(%s)" % self._uri
+        return ItemCheckImage(uri)
 
     def wait_recommendations(self, id):
         "Returns as soon as there is one result"
