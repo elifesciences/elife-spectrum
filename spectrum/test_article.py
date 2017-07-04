@@ -142,13 +142,12 @@ def test_adding_article_fragment(generate_article, modify_article):
     _ingest_and_publish_and_wait_for_published(article)
 
     journal_cms_session.create_article_fragment(id=article.id(), image='./spectrum/fixtures/king_county.jpg')
-    article = checks.API.article(article.id())
-    # TODO: transition to IIIF and use a IiifCheck object
+    article = checks.API.wait_article(article.id(), item_check=checks.API.item_check_image())
     image_uri = article['image']['thumbnail']['source']['uri']
     response = requests.head(image_uri)
     checks.LOGGER.info("Found %s: %s", image_uri, response.status_code)
     assert response.status_code == 200, "Image %s is not loading" % image_uri
-    checks.API.wait_search(invented_word, item_check=checks.API.search_item_check_image(image_uri))
+    checks.API.wait_search(invented_word, item_check=checks.API.item_check_image(image_uri))
 
 def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
