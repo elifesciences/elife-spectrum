@@ -337,7 +337,7 @@ class LaxArticleCheck:
     def published(self, id, version):
         return _poll(
             lambda: self._is_present(id, version),
-            "article version %s in lax: %s/api/v2/articles/%s/version/%s",
+            "article version %s in lax: %s/api/v2/articles/%s/versions/%s",
             version, self._host, id, version
         )
 
