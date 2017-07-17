@@ -337,26 +337,21 @@ class LaxArticleCheck:
     def published(self, id, version):
         return _poll(
             lambda: self._is_present(id, version),
-            "article version %s in lax: %s/api/v1/article/10.7554/eLife.%s/version",
-            version, self._host, id
+            "article version %s in lax: %s/api/v2/articles/%s/versions/%s",
+            version, self._host, id, version
         )
 
     def _is_present(self, id, version):
-        template = "%s/api/v1/article/10.7554/eLife.%s/version"
-        url = template % (self._host, id)
-        version_key = str(version)
-        # TODO: remove verify=False
+        template = "%s/api/v2/articles/%s/versions/%s"
+        url = template % (self._host, id, version)
         try:
-            response = requests.get(url, verify=False)
+            response = requests.get(url)
             if response.status_code != 200:
                 return False
             if response.status_code >= 500:
                 raise UnrecoverableError(response)
-            article_versions = response.json()
-            if version_key not in article_versions:
-                return False
-            LOGGER.info("Found article version %s in lax: %s", version_key, url, extra={'id': id})
-            return article_versions[version_key]
+            LOGGER.info("Found article version %s in lax: %s", version, url, extra={'id': id})
+            return response.json()
         except ConnectionError as e:
             _log_connection_error(e)
             return False
