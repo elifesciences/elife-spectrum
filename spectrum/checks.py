@@ -813,6 +813,11 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
     for url, future in zip(urls, futures):
         response = future.result()
         LOGGER.debug("Loading (%s) resource %s", resource_checking_method, url, extra=extra)
+
+        if response.status_code == 504:
+            LOGGER.warning("Loading (%s) resource %s again due to 504 timeout", resource_checking_method, url, extra=extra)
+            response = requests.get(url)
+
         _assert_status_code(response, 200, url)
         RESOURCE_CACHE[url] = response.status_code
 
