@@ -150,6 +150,7 @@ def test_adding_article_fragment(generate_article, modify_article):
     checks.API.wait_search(invented_word, item_check=checks.API.item_check_image(image_uri))
 
 @pytest.mark.personalised_covers
+@pytest.mark.continuum
 def test_personalised_covers_for_new_articles(generate_article):
     article = generate_article(15893)
     _ingest_and_publish_and_wait_for_published(article)
