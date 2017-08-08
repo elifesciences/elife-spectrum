@@ -149,6 +149,13 @@ def test_adding_article_fragment(generate_article, modify_article):
     assert response.status_code == 200, "Image %s is not loading" % image_uri
     checks.API.wait_search(invented_word, item_check=checks.API.item_check_image(image_uri))
 
+@pytest.mark.personalised_covers
+def test_personalised_covers_for_new_articles(generate_article):
+    article = generate_article(15893)
+    _ingest_and_publish_and_wait_for_published(article)
+    checks.PERSONALISED_COVERS_A4.of(id=article.id())
+    checks.PERSONALISED_COVERS_LETTER.of(id=article.id())
+
 def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
 
