@@ -46,6 +46,11 @@ class UnrecoverableError(RuntimeError):
 
 class BucketFileCheck:
     def __init__(self, s3, bucket_name, key, prefix=None):
+        """Polls for the existence of a file in bucket_name.
+
+        key is a pattern to be filled with the args passed to of().
+        prefix is a API call filter to be used to reduce the number of objects to scan.
+        """
         self._s3 = s3
         self._bucket_name = bucket_name
         self._key = key
@@ -836,10 +841,22 @@ EIF = BucketFileCheck(
 ARCHIVE = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_archive'],
-    # notice {{6}} is the escaping for {6} in the regex,
+    # notice {{12}} is the escaping for {6} in the regex,
     # it should not be substituted
     'elife-{id}-(poa|vor)-v{version}-20[0-9]{{12}}.zip',
     'elife-{id}-'
+)
+PERSONALISED_COVERS_A4 = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_covers'],
+    '{id}-cover-a4.pdf',
+    '{id}-'
+)
+PERSONALISED_COVERS_LETTER = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_covers'],
+    '{id}-cover-letter.pdf',
+    '{id}-'
 )
 WEBSITE = WebsiteArticleCheck(
     host=SETTINGS['website_host'],
