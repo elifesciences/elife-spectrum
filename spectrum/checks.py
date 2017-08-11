@@ -669,6 +669,34 @@ class JournalCheck:
         pdf_download_links = [a.get('href') for a in soup.select(self.CSS_DOWNLOAD_LINK) if a.text in ['Article PDF', 'Figures PDF']]
         return figure_download_links + pdf_download_links
 
+class HttpCheck:
+    def __init__(self, url):
+        self._url = url
+
+    def of(self, **kwargs):
+        target = self._url.format(**kwargs)
+        return _poll(
+            lambda: self._is_present(target, **kwargs),
+            "URL %s",
+            target
+        )
+
+    # TODO: extract to remove duplication with GithubCheck
+    def _is_present(self, url, text_match=None, **extra):
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                if text_match:
+                    if text_match in response.content:
+                        LOGGER.info("Body of %s matches %s", url, text_match, extra=extra)
+                        return True
+                else:
+                    LOGGER.info("GET on %s with status 200", url, extra=extra)
+                    return True
+            return False
+        except ConnectionError as e:
+            _log_connection_error(e)
+        return False
 
 class GithubCheck:
     def __init__(self, repo_url):
@@ -863,6 +891,7 @@ WEBSITE = WebsiteArticleCheck(
     user=SETTINGS['website_user'],
     password=SETTINGS['website_password']
 )
+# TODO: rename into ..._CDN_BUCKET
 IMAGES_PUBLISHED_CDN = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_published'],
@@ -940,6 +969,10 @@ JOURNAL_LISTING_OF_LISTING_PATHS = [
     '/archive/2016',
     '/subjects',
 ]
+# TODO: put in config
+CDN_XML = HttpCheck(
+    'https://end2end-cdn.elifesciences.org/articles/{id}/elife-{id}-v{version}.xml'
+)
 
 GITHUB_XML = GithubCheck(
     repo_url=SETTINGS['github_article_xml_repository_url']

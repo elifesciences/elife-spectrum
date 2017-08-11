@@ -57,11 +57,16 @@ def test_article_multiple_versions(generate_article, modify_article):
 @pytest.mark.continuum
 def test_article_silent_correction(generate_article, modify_article):
     template_id = 15893
+    print 'starting test'
     article = generate_article(template_id)
     _ingest_and_publish_and_wait_for_published(article)
 
-    # TODO: for stability, wait until all the publishing workflows have finished
+    # TODO: for stability, wait until all the publishing workflows have finished. Github xml is enough
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
+    # 1. load the XML through the CDN
+    checks.CDN_XML.of(id=article.id(), version=article.version())
+    #text_match='cytomegalovirus',
+    # 2. store in a variable hash/content
 
     silent_correction_start = datetime.now()
     silently_corrected_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
@@ -70,6 +75,8 @@ def test_article_silent_correction(generate_article, modify_article):
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='CYTOMEGALOVIRUS')
     checks.ARCHIVE.of(id=article.id(), version=article.version(), last_modified_after=silent_correction_start)
+
+    # 3. poll the XML through the CDN until it contains the new word
 
 
 @pytest.mark.continuum
