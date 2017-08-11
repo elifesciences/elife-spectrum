@@ -673,12 +673,17 @@ class HttpCheck:
     def __init__(self, url):
         self._url = url
 
-    def of(self, **kwargs):
+    def of(self, text_match=None, **kwargs):
         target = self._url.format(**kwargs)
+        if text_match:
+            text_match_suffix = ' with text matching `%s`' % text_match
+        else:
+            text_match_suffix = ''
         return _poll(
-            lambda: self._is_present(target, **kwargs),
-            "URL %s",
-            target
+            lambda: self._is_present(target, text_match, **kwargs),
+            "URL %s%s",
+            target,
+            text_match_suffix
         )
 
     # TODO: extract to remove duplication with GithubCheck
@@ -690,10 +695,14 @@ class HttpCheck:
                     if text_match in response.content:
                         LOGGER.info("Body of %s matches %s", url, text_match, extra=extra)
                         return True
+                    else:
+                        LOGGER.debug("Body of %s does not match %s", url, text_match, extra=extra)
                 else:
                     LOGGER.info("GET on %s with status 200", url, extra=extra)
                     return True
-            return False
+            else:
+                LOGGER.debug("GET on %s with status %s", url, response.status_code, extra=extra)
+                return False
         except ConnectionError as e:
             _log_connection_error(e)
         return False
