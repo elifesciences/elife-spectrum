@@ -96,7 +96,6 @@ class JournalCmsSession:
         if image:
             form.attach({'files[field_image_0]': image})
             LOGGER.info("Attaching image")
-            #self._choose_submit(form, 'op', value='Upload')
 
         LOGGER.info("Saving form")
         self._choose_submit(form, 'op', value='Save and publish')
@@ -144,19 +143,13 @@ class JournalCmsSession:
             image,
             extra={'id': id}
         )
-        # TODO: not needed to submit the image for separate upload
-        #self._choose_submit(form, 'field_image_0_upload_button', value='Upload')
-        #response = self._browser.submit(form, edit_page.url)
-        #form = mechanicalsoup.Form(response.soup.form)
 
         LOGGER.info(
             "Saving form",
             extra={'id': id}
         )
-
         # Button text will be 'Save and keep published' or 'Save and keep unpublished'
         button_text = edit_page.soup.find('div', {'id': 'edit-actions'}).find('input', 'form-submit').get('value')
-        # TODO: do the same on the POST blog article (other method in this class)
         response = self._browser.submit(form, edit_page.url, data={'op': button_text})
         # requests follows redirects by default
         self._assert_html_response(response)
