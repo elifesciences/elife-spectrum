@@ -95,13 +95,15 @@ class JournalCmsSession:
         form.textarea({'field_content[0][subform][field_block_html][0][value]': text})
         if image:
             form.attach({'files[field_image_0]': image})
-            LOGGER.info("Adding image")
-            self._choose_submit(form, 'op', value='Upload')
+            LOGGER.info("Attaching image")
+            #self._choose_submit(form, 'op', value='Upload')
 
         LOGGER.info("Saving form")
         self._choose_submit(form, 'op', value='Save and publish')
         # not sure why, but `data` here is necessary
         response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
+        # requests follows redirects by default
+        self._assert_html_response(response)
         assert _journal_cms_page_title(response.soup) == title
         #check https://end2end--journal-cms.elifesciences.org/admin/content?status=All&type=All&title=b9djvu04y6v1t4kug4ts8kct5pagf8&langcode=All
         # but in checks module
@@ -157,7 +159,7 @@ class JournalCmsSession:
         # TODO: do the same on the POST blog article (other method in this class)
         response = self._browser.submit(form, edit_page.url, data={'op': button_text})
         # requests follows redirects by default
-        assert response.status_code == 200, "Response from saving the from was expected to be 200 from the listing page, but it was %s\nBody: %s" % (response.status_code, response.content)
+        self._assert_html_response(response)
         view_page = self._browser.get(view_url)
         img_selector = ".field--name-field-image img"
         img = view_page.soup.select_one(img_selector)
@@ -187,6 +189,9 @@ class JournalCmsSession:
             if inp == chosen_submit:
                 continue
             del inp['name']
+
+    def _assert_html_response(self, response):
+        assert response.status_code == 200, "Response from saving the from was expected to be 200 from the listing page, but it was %s\nBody: %s" % (response.status_code, response.content)
 
 def _journal_cms_page_title(soup):
     # <h1 class="js-quickedit-page-title title page-title"><span data-quickedit-field-id="node/1709/title/en/full" class="field field--name-title field--type-string field--label-hidden">Spectrum blog article: jvsfz4oj9vz9hk239fbpq4fbjc9yoh</span></h1>
