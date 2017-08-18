@@ -116,7 +116,7 @@ class JournalCmsSession:
             view_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, text=id).get('href'))
             edit_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-operations').find('li', 'edit').find('a', href=True, text='Edit').get('href'))
         except (AttributeError, TypeError):
-            raise AssertionError('View and edit link not found for article %s when loading URL %s' % (id, filtered_content_url))
+            raise AssertionError('Edit link not found for article %s when loading URL %s' % (id, filtered_content_url))
 
         LOGGER.info(
             "Access edit form",
@@ -138,13 +138,14 @@ class JournalCmsSession:
 
         form.attach({'files[field_image_0]': image})
         LOGGER.info(
-            "Submitting thumbnail %s",
+            "Attaching thumbnail %s",
             image,
             extra={'id': id}
         )
-        self._choose_submit(form, 'field_image_0_upload_button', value='Upload')
-        response = self._browser.submit(form, edit_page.url)
-        form = mechanicalsoup.Form(response.soup.form)
+        # TODO: not needed to submit the image for separate upload
+        #self._choose_submit(form, 'field_image_0_upload_button', value='Upload')
+        #response = self._browser.submit(form, edit_page.url)
+        #form = mechanicalsoup.Form(response.soup.form)
 
         LOGGER.info(
             "Saving form",
@@ -153,7 +154,10 @@ class JournalCmsSession:
 
         # Button text will be 'Save and keep published' or 'Save and keep unpublished'
         button_text = edit_page.soup.find('div', {'id': 'edit-actions'}).find('input', 'form-submit').get('value')
+        # TODO: do the same on the POST blog article (other method in this class)
         response = self._browser.submit(form, edit_page.url, data={'op': button_text})
+        # requests follows redirects by default
+        assert response.status_code == 200, "Response from saving the from was expected to be 200 from the listing page, but it was %s\nBody: %s" % (response.status_code, response.content)
         view_page = self._browser.get(view_url)
         img_selector = ".field--name-field-image img"
         img = view_page.soup.select_one(img_selector)
