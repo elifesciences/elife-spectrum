@@ -26,6 +26,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     article = generate_article(template_id)
     _ingest(article)
     run1 = _wait_for_publishable(article, run_after=run1_start)
+    checks.CDN_XML.of(text_match='cytomegalovirus', id=article.id(), version=article.version())
 
     run2_start = datetime.now()
     modified_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
@@ -35,6 +36,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     assert run2 != run1, "A new run should have been triggered"
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run2)
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
+    checks.CDN_XML.of(text_match='CYTOMEGALOVIRUS', id=article.id(), version=article.version())
 
 @pytest.mark.continuum
 @pytest.mark.metrics
@@ -60,8 +62,9 @@ def test_article_silent_correction(generate_article, modify_article):
     article = generate_article(template_id)
     _ingest_and_publish_and_wait_for_published(article)
 
-    # TODO: for stability, wait until all the publishing workflows have finished
+    # TODO: for stability, wait until all the publishing workflows have finished. Github xml is enough
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
+    checks.CDN_XML.of(text_match='cytomegalovirus', id=article.id(), version=article.version())
 
     silent_correction_start = datetime.now()
     silently_corrected_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
@@ -70,7 +73,7 @@ def test_article_silent_correction(generate_article, modify_article):
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='CYTOMEGALOVIRUS')
     checks.ARCHIVE.of(id=article.id(), version=article.version(), last_modified_after=silent_correction_start)
-
+    checks.CDN_XML.of(text_match='CYTOMEGALOVIRUS', id=article.id(), version=article.version())
 
 @pytest.mark.continuum
 def test_article_already_present_version(generate_article, version_article):
@@ -169,12 +172,10 @@ def _wait_for_publishable(article, run_after):
     # fails quite often but is now late in the process, can we make an intermediate check?
     (run, ) = checks.EIF.of(id=article.id(), version=article.version())
     for each in article.figure_names():
-        checks.IMAGES_PUBLISHED_CDN.of(id=article.id(), figure_name=each, version=article.version())
-    checks.XML_PUBLISHED_CDN.of(id=article.id(), version=article.version())
-    checks.XML_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
+        checks.IMAGES_PUBLISHED_CDN_BUCKET.of(id=article.id(), figure_name=each, version=article.version())
+    checks.XML_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     if article.has_pdf():
-        checks.PDF_PUBLISHED_CDN.of(id=article.id(), version=article.version())
-        checks.PDF_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
+        checks.PDF_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     checks.API_PREVIEW.article(id=article.id(), version=article.version())
     checks.WEBSITE.unpublished(id=article.id(), version=article.version())
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run)

@@ -669,6 +669,23 @@ class JournalCheck:
         pdf_download_links = [a.get('href') for a in soup.select(self.CSS_DOWNLOAD_LINK) if a.text in ['Article PDF', 'Figures PDF']]
         return figure_download_links + pdf_download_links
 
+class HttpCheck:
+    def __init__(self, url):
+        self._url = url
+
+    def of(self, text_match=None, **kwargs):
+        target = self._url.format(**kwargs)
+        if text_match:
+            text_match_suffix = ' with text matching `%s`' % text_match
+        else:
+            text_match_suffix = ''
+        return _poll(
+            lambda: _is_content_present(target, text_match, **kwargs),
+            "URL %s%s",
+            target,
+            text_match_suffix
+        )
+
 
 class GithubCheck:
     def __init__(self, repo_url):
@@ -679,26 +696,30 @@ class GithubCheck:
         url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
         error_message_suffix = (" and matching %s" % text_match) if text_match else ""
         _poll(
-            lambda: self._is_present(url, text_match, id),
+            lambda: _is_content_present(url, text_match=text_match, **{'id':id}),
             "article on github with URL %s existing" + error_message_suffix,
             url
         )
 
-    def _is_present(self, url, text_match, id):
-        try:
-            response = requests.get(url)
-            if response.status_code == 200:
-                if text_match:
-                    if text_match in response.content:
-                        LOGGER.info("Body of %s matches %s", url, text_match, extra={'id': id})
-                        return True
-                else:
-                    LOGGER.info("GET on %s with status 200", url, extra={'id': id})
+def _is_content_present(url, text_match=None, **extra):
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            if text_match:
+                if text_match in response.content:
+                    LOGGER.info("Body of %s matches %s", url, text_match, extra=extra)
                     return True
+                else:
+                    LOGGER.debug("Body of %s does not match %s", url, text_match, extra=extra)
+            else:
+                LOGGER.info("GET on %s with status 200", url, extra=extra)
+                return True
+        else:
+            LOGGER.debug("GET on %s with status %s", url, response.status_code, extra=extra)
             return False
-        except ConnectionError as e:
-            _log_connection_error(e)
-        return False
+    except ConnectionError as e:
+        _log_connection_error(e)
+    return False
 
 def _poll(action_fn, error_message, *error_message_args):
     """
@@ -863,35 +884,23 @@ WEBSITE = WebsiteArticleCheck(
     user=SETTINGS['website_user'],
     password=SETTINGS['website_password']
 )
-IMAGES_PUBLISHED_CDN = BucketFileCheck(
+IMAGES_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg',
     'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg'
 )
-XML_PUBLISHED_CDN = BucketFileCheck(
+XML_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}.xml',
     'articles/{id}/elife-{id}-v{version}.xml'
 )
-XML_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
-    aws.S3,
-    SETTINGS['bucket_published'],
-    'articles/{id}/elife-{id}-v{version}-download.xml',
-    'articles/{id}/elife-{id}-v{version}-download.xml'
-)
-PDF_PUBLISHED_CDN = BucketFileCheck(
+PDF_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}.pdf',
     'articles/{id}/elife-{id}-v{version}.pdf'
-)
-PDF_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
-    aws.S3,
-    SETTINGS['bucket_published'],
-    'articles/{id}/elife-{id}-v{version}-download.pdf',
-    'articles/{id}/elife-{id}-v{version}-download.pdf'
 )
 DASHBOARD = DashboardArticleCheck(
     host=SETTINGS['dashboard_host'],
@@ -940,6 +949,9 @@ JOURNAL_LISTING_OF_LISTING_PATHS = [
     '/archive/2016',
     '/subjects',
 ]
+CDN_XML = HttpCheck(
+    str(SETTINGS['generic_cdn_host']) + '/articles/{id}/elife-{id}-v{version}.xml'
+)
 
 GITHUB_XML = GithubCheck(
     repo_url=SETTINGS['github_article_xml_repository_url']
