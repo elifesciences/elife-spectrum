@@ -172,12 +172,10 @@ def _wait_for_publishable(article, run_after):
     # fails quite often but is now late in the process, can we make an intermediate check?
     (run, ) = checks.EIF.of(id=article.id(), version=article.version())
     for each in article.figure_names():
-        checks.IMAGES_PUBLISHED_CDN.of(id=article.id(), figure_name=each, version=article.version())
-    checks.XML_PUBLISHED_CDN.of(id=article.id(), version=article.version())
-    checks.XML_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
+        checks.IMAGES_PUBLISHED_CDN_BUCKET.of(id=article.id(), figure_name=each, version=article.version())
+    checks.XML_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     if article.has_pdf():
-        checks.PDF_PUBLISHED_CDN.of(id=article.id(), version=article.version())
-        checks.PDF_DOWNLOAD_PUBLISHED_CDN.of(id=article.id(), version=article.version())
+        checks.PDF_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     checks.API_PREVIEW.article(id=article.id(), version=article.version())
     checks.WEBSITE.unpublished(id=article.id(), version=article.version())
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run)
