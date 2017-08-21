@@ -900,36 +900,23 @@ WEBSITE = WebsiteArticleCheck(
     user=SETTINGS['website_user'],
     password=SETTINGS['website_password']
 )
-# TODO: rename into ..._CDN_BUCKET
-IMAGES_PUBLISHED_CDN = BucketFileCheck(
+IMAGES_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg',
     'articles/{id}/elife-{id}-{figure_name}-v{version}.jpg'
 )
-XML_PUBLISHED_CDN = BucketFileCheck(
+XML_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}.xml',
     'articles/{id}/elife-{id}-v{version}.xml'
 )
-XML_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
-    aws.S3,
-    SETTINGS['bucket_published'],
-    'articles/{id}/elife-{id}-v{version}-download.xml',
-    'articles/{id}/elife-{id}-v{version}-download.xml'
-)
-PDF_PUBLISHED_CDN = BucketFileCheck(
+PDF_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}.pdf',
     'articles/{id}/elife-{id}-v{version}.pdf'
-)
-PDF_DOWNLOAD_PUBLISHED_CDN = BucketFileCheck(
-    aws.S3,
-    SETTINGS['bucket_published'],
-    'articles/{id}/elife-{id}-v{version}-download.pdf',
-    'articles/{id}/elife-{id}-v{version}-download.pdf'
 )
 DASHBOARD = DashboardArticleCheck(
     host=SETTINGS['dashboard_host'],
