@@ -978,9 +978,8 @@ JOURNAL_LISTING_OF_LISTING_PATHS = [
     '/archive/2016',
     '/subjects',
 ]
-# TODO: put in config
 CDN_XML = HttpCheck(
-    'https://end2end-cdn.elifesciences.org/articles/{id}/elife-{id}-v{version}.xml'
+    str(SETTINGS['generic_cdn_host']) + '/articles/{id}/elife-{id}-v{version}.xml'
 )
 
 GITHUB_XML = GithubCheck(
