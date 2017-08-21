@@ -721,6 +721,27 @@ def _is_content_present(url, text_match=None, **extra):
         _log_connection_error(e)
     return False
 
+class ReviewerSuggestionsCheck:
+    def __init__(self, host, user, password):
+        self._host = host
+        self._user = user
+        self._password = password
+
+    def recommend(self, manuscript='', subject='', keywords='', abstract=''):
+        template = "%s/api/recommend-reviewers"
+        query = {
+            "manuscript_no": manuscript,
+            "subject_area": subject,
+            "keywords": keywords,
+            "abstract": abstract,
+        }
+        url = template % self._host
+        response = requests.get(url, params=query, auth=(self._user, self._password))
+        LOGGER.info("Found recommendations at %s for query %s", url, query)
+        if response.status_code > 299:
+            raise UnrecoverableError(response)
+        return response.json()
+
 def _poll(action_fn, error_message, *error_message_args):
     """
     Poll until action_fn returns something truthy. After GLOBAL_TIMEOUT throws an exception.
@@ -955,4 +976,9 @@ CDN_XML = HttpCheck(
 
 GITHUB_XML = GithubCheck(
     repo_url=SETTINGS['github_article_xml_repository_url']
+)
+REVIEWER_SUGGESTIONS = ReviewerSuggestionsCheck(
+    host=SETTINGS['reviewer_suggestions_host'],
+    user=SETTINGS['reviewer_suggestions_user'],
+    password=SETTINGS['reviewer_suggestions_password']
 )
