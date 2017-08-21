@@ -26,6 +26,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     article = generate_article(template_id)
     _ingest(article)
     run1 = _wait_for_publishable(article, run_after=run1_start)
+    checks.CDN_XML.of(text_match='cytomegalovirus', id=article.id(), version=article.version())
 
     run2_start = datetime.now()
     modified_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
@@ -35,7 +36,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     assert run2 != run1, "A new run should have been triggered"
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run2)
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
-    # TODO: add Cdn Check to check invalidation
+    checks.CDN_XML.of(text_match='CYTOMEGALOVIRUS', id=article.id(), version=article.version())
 
 @pytest.mark.continuum
 @pytest.mark.metrics
@@ -63,7 +64,7 @@ def test_article_silent_correction(generate_article, modify_article):
 
     # TODO: for stability, wait until all the publishing workflows have finished. Github xml is enough
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
-    checks.CDN_XML.of(text_match='cytomegalovirus', id=article.id(), version=article.version()) #
+    checks.CDN_XML.of(text_match='cytomegalovirus', id=article.id(), version=article.version())
 
     silent_correction_start = datetime.now()
     silently_corrected_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
