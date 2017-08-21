@@ -696,7 +696,7 @@ class GithubCheck:
         url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
         error_message_suffix = (" and matching %s" % text_match) if text_match else ""
         _poll(
-            lambda: _is_content_present(url, text_match, id),
+            lambda: _is_content_present(url, text_match=text_match, **{'id':id}),
             "article on github with URL %s existing" + error_message_suffix,
             url
         )
