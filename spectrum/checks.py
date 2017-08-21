@@ -680,32 +680,12 @@ class HttpCheck:
         else:
             text_match_suffix = ''
         return _poll(
-            lambda: self._is_present(target, text_match, **kwargs),
+            lambda: _is_content_present(target, text_match, **kwargs),
             "URL %s%s",
             target,
             text_match_suffix
         )
 
-    # TODO: extract to remove duplication with GithubCheck
-    def _is_present(self, url, text_match=None, **extra):
-        try:
-            response = requests.get(url)
-            if response.status_code == 200:
-                if text_match:
-                    if text_match in response.content:
-                        LOGGER.info("Body of %s matches %s", url, text_match, extra=extra)
-                        return True
-                    else:
-                        LOGGER.debug("Body of %s does not match %s", url, text_match, extra=extra)
-                else:
-                    LOGGER.info("GET on %s with status 200", url, extra=extra)
-                    return True
-            else:
-                LOGGER.debug("GET on %s with status %s", url, response.status_code, extra=extra)
-                return False
-        except ConnectionError as e:
-            _log_connection_error(e)
-        return False
 
 class GithubCheck:
     def __init__(self, repo_url):
@@ -716,26 +696,30 @@ class GithubCheck:
         url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
         error_message_suffix = (" and matching %s" % text_match) if text_match else ""
         _poll(
-            lambda: self._is_present(url, text_match, id),
+            lambda: _is_content_present(url, text_match, id),
             "article on github with URL %s existing" + error_message_suffix,
             url
         )
 
-    def _is_present(self, url, text_match, id):
-        try:
-            response = requests.get(url)
-            if response.status_code == 200:
-                if text_match:
-                    if text_match in response.content:
-                        LOGGER.info("Body of %s matches %s", url, text_match, extra={'id': id})
-                        return True
-                else:
-                    LOGGER.info("GET on %s with status 200", url, extra={'id': id})
+def _is_content_present(url, text_match=None, **extra):
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            if text_match:
+                if text_match in response.content:
+                    LOGGER.info("Body of %s matches %s", url, text_match, extra=extra)
                     return True
+                else:
+                    LOGGER.debug("Body of %s does not match %s", url, text_match, extra=extra)
+            else:
+                LOGGER.info("GET on %s with status 200", url, extra=extra)
+                return True
+        else:
+            LOGGER.debug("GET on %s with status %s", url, response.status_code, extra=extra)
             return False
-        except ConnectionError as e:
-            _log_connection_error(e)
-        return False
+    except ConnectionError as e:
+        _log_connection_error(e)
+    return False
 
 def _poll(action_fn, error_message, *error_message_args):
     """
