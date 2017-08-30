@@ -169,18 +169,18 @@ JOURNAL_ALL = AllOf(
     +JOURNAL_PAGES
 )
 
-class ReviewerSuggestions():
-    def __init__(self, reviewer_suggestions, number_of_keywords=10000, manuscript=10627):
-        self._reviewer_suggestions = reviewer_suggestions
+class PeerScout():
+    def __init__(self, peerscout, number_of_keywords=10000, manuscript=10627):
+        self._peerscout = peerscout
         self._number_of_keywords = number_of_keywords
         self._manuscript = manuscript
 
     def run(self):
         keywords = "stress dummy%d" % randint(0, self._number_of_keywords)
         LOGGER.info("Loading suggestions for keywords %s", keywords)
-        self._reviewer_suggestions.recommend(manuscript=self._manuscript, keywords=keywords)
+        self._peerscout.recommend(manuscript=self._manuscript, keywords=keywords)
 
     def __str__(self):
-        return "ReviewerSuggestions"
+        return "PeerScout"
 
-REVIEWER_SUGGESTIONS = ReviewerSuggestions(checks.REVIEWER_SUGGESTIONS)
+PEERSCOUT = PeerScout(checks.PEERSCOUT)
