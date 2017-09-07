@@ -1,5 +1,6 @@
 from os import path
 import random
+import re
 import string
 import requests
 from spectrum import aws, logger
@@ -102,7 +103,7 @@ class JournalCmsSession:
         # not sure why, but `data` here is necessary
         response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
         # requests follows redirects by default
-        self._assert_html_response(response)
+        _assert_html_response(response)
         assert _journal_cms_page_title(response.soup) == title
         #check https://end2end--journal-cms.elifesciences.org/admin/content?status=All&type=All&title=b9djvu04y6v1t4kug4ts8kct5pagf8&langcode=All
         # but in checks module
@@ -152,7 +153,7 @@ class JournalCmsSession:
         button_text = edit_page.soup.find('div', {'id': 'edit-actions'}).find('input', 'form-submit').get('value')
         response = self._browser.submit(form, edit_page.url, data={'op': button_text})
         # requests follows redirects by default
-        self._assert_html_response(response)
+        _assert_html_response(response)
         view_page = self._browser.get(view_url)
         img_selector = ".field--name-field-image img"
         img = view_page.soup.select_one(img_selector)
@@ -183,13 +184,43 @@ class JournalCmsSession:
                 continue
             del inp['name']
 
-    def _assert_html_response(self, response):
-        assert response.status_code == 200, "Response from saving the from was expected to be 200 from the listing page, but it was %s\nBody: %s" % (response.status_code, response.content)
+def _assert_html_response(response):
+    assert response.status_code == 200, "Response from saving the from was expected to be 200 from the listing page, but it was %s\nBody: %s" % (response.status_code, response.content)
 
 def _journal_cms_page_title(soup):
     # <h1 class="js-quickedit-page-title title page-title"><span data-quickedit-field-id="node/1709/title/en/full" class="field field--name-title field--type-string field--label-hidden">Spectrum blog article: jvsfz4oj9vz9hk239fbpq4fbjc9yoh</span></h1>
     #<h1 class="js-quickedit-page-title title page-title">alfred</h1>
     return soup.find("h1", {"class": "page-title"}).text.strip()
+
+class Journal:
+    def __init__(self, host):
+        self._host = host
+
+    def session(self):
+        browser = mechanicalsoup.Browser()
+        return JournalSession(self._host, browser)
+
+class JournalSession:
+    def __init__(self, host, browser):
+        self._host = host
+        self._browser = browser
+
+    def login(self):
+        self._enable_feature_flag()
+
+        login_url = "%s/log-in" % self._host
+        # should be automatically redirected back by simulator
+        logged_in_page = self._browser.get(login_url)
+        _assert_html_response(logged_in_page)
+
+        pattern = re.compile(r'Log out')
+        logout_link = logged_in_page.soup.find("a", text=pattern)
+        assert logout_link.get('href'), '/log-out'
+
+    def _enable_feature_flag(self):
+        feature_flag = "%s/?open-sesame" % self._host
+        flagged_page = self._browser.get(feature_flag)
+        _assert_html_response(flagged_page)
 
 def invented_word(length=30, characters=None):
     if not characters:
@@ -217,4 +248,8 @@ JOURNAL_CMS = JournalCms(
     SETTINGS['journal_cms_host'],
     SETTINGS['journal_cms_user'],
     SETTINGS['journal_cms_password']
+)
+
+JOURNAL = Journal(
+    SETTINGS['journal_host'],
 )

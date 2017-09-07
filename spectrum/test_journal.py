@@ -1,6 +1,6 @@
 "Tests that involve Journal pages that are not covered by other tests"
 import pytest
-from spectrum import checks
+from spectrum import checks, input
 
 @pytest.mark.two
 @pytest.mark.journal_cms
@@ -53,6 +53,13 @@ def test_rss_feeds():
     print recent_response.content
     ahead_response = checks.JOURNAL.just_load('/rss/ahead.xml')
     print ahead_response.content
+
+# TODO: mark with `journal` all `two` to better isolate them
+@pytest.mark.journal
+@pytest.mark.profiles
+def test_login():
+    session = input.JOURNAL.session()
+    session.login()
 
 #path: /interviews/{id}
 # how do we get the link? navigate from /collections
