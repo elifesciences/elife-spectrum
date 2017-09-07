@@ -1,5 +1,6 @@
 from os import path
 import random
+import re
 import string
 import requests
 from spectrum import aws, logger
@@ -205,36 +206,22 @@ class JournalSession:
         self._browser = browser
 
     def login(self):
-        feature_flag = "%s/?open-sesame" % self._host
-        flagged_page = self._browser.get(feature_flag)
-        _assert_html_response(flagged_page)
+        self._enable_feature_flag()
+
         login_url = "%s/log-in" % self._host
         # should be automatically redirected back by simulator
         logged_in_page = self._browser.get(login_url)
-        # <a href="/log-out" class="button button--extra-small button--default">Log out</a>
-        print logged_in_page.content
         _assert_html_response(logged_in_page)
-        print logged_in_page.soup
-        #form = mechanicalsoup.Form(create_page.soup.form)
-        #form.input({'title[0][value]': title})
-        #LOGGER.info("Adding paragraph")
-        #self._choose_submit(form, 'field_content_paragraph_add_more')
-        #response = self._browser.submit(form, create_page.url)
-        #form = mechanicalsoup.Form(response.soup.form)
-        #form.textarea({'field_content[0][subform][field_block_html][0][value]': text})
-        #if image:
-        #    form.attach({'files[field_image_0]': image})
-        #    LOGGER.info("Attaching image")
 
-        #LOGGER.info("Saving form")
-        #self._choose_submit(form, 'op', value='Save and publish')
-        ## not sure why, but `data` here is necessary
-        #response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
-        ## requests follows redirects by default
-        #assert _journal_cms_page_title(response.soup) == title
-        ##check https://end2end--journal-cms.elifesciences.org/admin/content?status=All&type=All&title=b9djvu04y6v1t4kug4ts8kct5pagf8&langcode=All
-        ## but in checks module
-        ## TODO: return id and/or node id
+        pattern = re.compile(r'Log out')
+        logout_link = logged_in_page.soup.find("a", text=pattern)
+        assert logout_link.get('href'), '/log-out'
+
+    def _enable_feature_flag(self):
+        feature_flag = "%s/?open-sesame" % self._host
+        flagged_page = self._browser.get(feature_flag)
+        _assert_html_response(flagged_page)
+
 
 def invented_word(length=30, characters=None):
     if not characters:
