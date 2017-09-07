@@ -222,7 +222,6 @@ class JournalSession:
         flagged_page = self._browser.get(feature_flag)
         _assert_html_response(flagged_page)
 
-
 def invented_word(length=30, characters=None):
     if not characters:
         characters = string.ascii_lowercase + string.digits
