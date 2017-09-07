@@ -61,7 +61,6 @@ def test_login():
     session = input.JOURNAL.session()
     session.login()
 
-
 #path: /interviews/{id}
 # how do we get the link? navigate from /collections
 
