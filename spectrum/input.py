@@ -213,9 +213,20 @@ class JournalSession:
         logged_in_page = self._browser.get(login_url)
         _assert_html_response(logged_in_page)
 
+        # if changing to another check, move in logout()
         pattern = re.compile(r'Log out')
         logout_link = logged_in_page.soup.find("a", text=pattern)
-        assert logout_link.get('href'), '/log-out'
+        assert logout_link.get('href') == '/log-out', "No /log-out link with text 'Log out' found in the page. Log in seems to have failed"
+        return logged_in_page
+
+    def logout(self):
+        logout_url = "%s/log-out" % self._host
+        logged_in_page = self._browser.get(logout_url)
+        _assert_html_response(logged_in_page)
+
+        pattern = re.compile(r'Log out')
+        logout_link = logged_in_page.soup.find("a", text=pattern)
+        assert logout_link is None, "A 'Log out' link is shown in the page. Log out seems to have failed"
 
     def _enable_feature_flag(self):
         feature_flag = "%s/?open-sesame" % self._host
