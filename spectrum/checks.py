@@ -1,3 +1,8 @@
+"""
+Read-only, headless checks against services under test.
+
+Contains anything from HTTP(S) calls to REST JSON APIs to S3 checks over the presence or recent modification of files.
+"""
 from datetime import datetime
 from pprint import pformat
 import os
