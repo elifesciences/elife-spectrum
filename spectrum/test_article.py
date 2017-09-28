@@ -98,9 +98,9 @@ def test_article_with_unicode_content(generate_article):
 @pytest.mark.continuum
 @pytest.mark.search
 def test_searching_for_a_new_article(generate_article, modify_article):
-    template_id = 15893
+    template_id = '00666'
     invented_word = input.invented_word()
-    new_article = modify_article(generate_article(template_id), replacements={'cytomegalovirus':invented_word})
+    new_article = modify_article(generate_article(template_id), replacements={'falciparum':invented_word})
     _ingest_and_publish_and_wait_for_published(new_article)
     result = checks.API.wait_search(invented_word)
     assert len(result['items']) == 1, "Searching for %s returned too many results: %d" % (invented_word, len(result['items']))
