@@ -44,8 +44,10 @@ def test_article_multiple_versions(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
     _ingest_and_publish_and_wait_for_published(article)
+    checks.GITHUB_XML.article(id=article.id(), version=article.version())
     new_article = modify_article(article, new_version=2, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     article_from_api = _ingest_and_publish_and_wait_for_published(new_article)
+    checks.GITHUB_XML.article(id=new_article.id(), version=new_article.version())
     version1_content = checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], version=1)
     assert 'cytomegalovirus' in version1_content
     assert 'CYTOMEGALOVIRUS' not in version1_content
@@ -135,6 +137,13 @@ def test_recommendations_for_new_articles(generate_article):
         # see if it propagates through CDN?
         checks.JOURNAL_CDN.article(id=article.id(), volume=article_from_api['volume'])
 
+@pytest.mark.continuum
+@pytest.mark.article
+def test_article_propagates_to_github(generate_article):
+    article = generate_article(15893)
+    _ingest_and_publish_and_wait_for_published(article)
+    checks.GITHUB_XML.article(id=article.id(), version=article.version())
+
 @pytest.mark.journal_cms
 @pytest.mark.continuum
 def test_adding_article_fragment(generate_article, modify_article):
@@ -193,7 +202,6 @@ def _wait_for_published(article):
     article_from_api = checks.API.article(id=article.id(), version=article.version())
     checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], has_figures=article.has_figures())
     checks.JOURNAL_CDN.article(id=article.id(), volume=article_from_api['volume'], has_figures=article.has_figures())
-    checks.GITHUB_XML.article(id=article.id(), version=article.version())
     return article_from_api
 
 def _publish(article, run_after):
