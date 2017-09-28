@@ -3,6 +3,7 @@ import pytest
 from spectrum import checks, input
 
 @pytest.mark.two
+@pytest.mark.journal
 @pytest.mark.journal_cms
 @pytest.mark.search
 def test_homepage():
@@ -11,6 +12,7 @@ def test_homepage():
         checks.JOURNAL.generic(links[0])
 
 @pytest.mark.two
+@pytest.mark.journal
 @pytest.mark.journal_cms
 @pytest.mark.medium
 @pytest.mark.search
@@ -18,12 +20,14 @@ def test_magazine():
     checks.JOURNAL.magazine()
 
 @pytest.mark.two
+@pytest.mark.journal
 @pytest.mark.journal_cms
 @pytest.mark.parametrize("path", checks.JOURNAL_GENERIC_PATHS)
 def test_various_generic_pages(path):
     checks.JOURNAL.generic(path)
 
 @pytest.mark.two
+@pytest.mark.journal
 @pytest.mark.journal_cms
 @pytest.mark.parametrize("path", checks.JOURNAL_LISTING_PATHS)
 def test_listings(path):
@@ -32,6 +36,7 @@ def test_listings(path):
         checks.JOURNAL.generic(items[0])
 
 @pytest.mark.two
+@pytest.mark.journal
 @pytest.mark.journal_cms
 @pytest.mark.parametrize("path", checks.JOURNAL_LISTING_OF_LISTING_PATHS)
 def test_listings_of_listings(path):
@@ -40,6 +45,7 @@ def test_listings_of_listings(path):
         checks.JOURNAL.generic(items[0])
 
 @pytest.mark.two
+@pytest.mark.journal
 @pytest.mark.journal_cms
 def test_events():
     items, _ = checks.JOURNAL.listing('/events')
@@ -47,6 +53,7 @@ def test_events():
         checks.JOURNAL.generic(items[0])
 
 @pytest.mark.two
+@pytest.mark.journal
 @pytest.mark.observer
 def test_rss_feeds():
     recent_response = checks.JOURNAL.just_load('/rss/recent.xml')
@@ -54,7 +61,6 @@ def test_rss_feeds():
     ahead_response = checks.JOURNAL.just_load('/rss/ahead.xml')
     print ahead_response.content
 
-# TODO: mark with `journal` all `two` to better isolate them
 @pytest.mark.journal
 @pytest.mark.profiles
 def test_login():

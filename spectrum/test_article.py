@@ -10,6 +10,7 @@ from spectrum import checks
 
 @pytest.mark.continuum
 @pytest.mark.article
+@pytest.mark.journal
 @pytest.mark.parametrize("template_id", generator.all_stored_articles())
 def test_article_first_version(template_id, article_id_filter, generate_article):
     if article_id_filter:
@@ -19,6 +20,7 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
     article = generate_article(template_id)
     _ingest_and_publish_and_wait_for_published(article)
 
+@pytest.mark.journal
 @pytest.mark.continuum
 def test_article_multiple_ingests_of_the_same_version(generate_article, modify_article):
     template_id = 15893
@@ -38,6 +40,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
     checks.CDN_XML.of(text_match='CYTOMEGALOVIRUS', id=article.id(), version=article.version())
 
+@pytest.mark.journal
 @pytest.mark.continuum
 @pytest.mark.metrics
 def test_article_multiple_versions(generate_article, modify_article):
@@ -58,6 +61,7 @@ def test_article_multiple_versions(generate_article, modify_article):
 # this is a silent correction of a 'correction' article, don't be confused
 # we use this article because it's small and fast to process
 # the silent correction is changing one word from lowercase to uppercase
+@pytest.mark.journal
 @pytest.mark.continuum
 def test_article_silent_correction(generate_article, modify_article):
     template_id = 15893
@@ -89,6 +93,7 @@ def test_article_already_present_version(generate_article, version_article):
     error = checks.DASHBOARD.error(id=article.id(), version=1, run=2)
     assert re.match(r".*already published article version.*", error['event-message']), ("Error found on the dashboard does not match the expected description: %s" % error)
 
+@pytest.mark.journal
 @pytest.mark.continuum
 def test_article_with_unicode_content(generate_article):
     article = generate_article(template_id=19532)
@@ -97,6 +102,7 @@ def test_article_with_unicode_content(generate_article):
     journal_page = checks.JOURNAL.article(id=article.id(), volume=article_from_api['volume'], has_figures=article.has_figures())
     assert "Szymon \xc5\x81\xc4\x99ski" in journal_page
 
+@pytest.mark.journal
 @pytest.mark.continuum
 @pytest.mark.search
 def test_searching_for_a_new_article(generate_article, modify_article):
@@ -109,6 +115,7 @@ def test_searching_for_a_new_article(generate_article, modify_article):
     checks.JOURNAL.search(invented_word, count=1)
     checks.JOURNAL_CDN.search(invented_word, count=1)
 
+@pytest.mark.journal
 @pytest.mark.recommendations
 def test_recommendations_for_new_articles(generate_article):
     template_id = '06847'
