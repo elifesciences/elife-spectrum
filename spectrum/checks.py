@@ -406,7 +406,10 @@ class ApiCheck:
         self._list_api('/collections', 'collection')
 
     def profiles(self):
-        self._list_api('/profiles', 'profile')
+        return self._list_api('/profiles', 'profile')
+
+    def profile(self, id):
+        return self._item_api('/profiles/%s' % id, 'profile')
 
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
