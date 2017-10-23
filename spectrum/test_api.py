@@ -18,6 +18,10 @@ def test_list_based_apis_journal_cms():
 def test_list_based_apis_medium():
     checks.API.medium_articles()
 
+@pytest.mark.profiles
+def test_list_based_apis_profiles():
+    checks.API.profiles()
+
 @pytest.mark.two
 @pytest.mark.search
 def test_search():

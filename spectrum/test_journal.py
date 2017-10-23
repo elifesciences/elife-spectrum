@@ -66,6 +66,19 @@ def test_rss_feeds():
 def test_login():
     session = input.JOURNAL.session()
     session.login()
+    # no pagination needed so far
+    profiles = checks.API.profiles()['items']
+    id = None
+    magic_orcid = '0000-0002-1825-0097'
+    for profile_snippet in profiles:
+        # magic ORCID used by orcid-dummy
+        if profile_snippet['orcid'] == magic_orcid:
+            id = profile_snippet['id']
+    assert id is not None, "We didn't find the profile for the test user in %s" % profiles
+    profile = checks.API.profile(id)
+    assert profile['id'] == id
+    assert profile['orcid'] == magic_orcid
+    assert profile['name'] == {'index': 'Carberry, Josiah', 'preferred': 'Josiah Carberry'}
     session.logout()
 
 #path: /interviews/{id}
