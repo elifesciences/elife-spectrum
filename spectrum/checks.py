@@ -405,6 +405,12 @@ class ApiCheck:
     def collections(self):
         self._list_api('/collections', 'collection')
 
+    def profiles(self):
+        return self._list_api('/profiles', 'profile')
+
+    def profile(self, id):
+        return self._item_api('/profiles/%s' % id, 'profile')
+
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
         response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity}))
