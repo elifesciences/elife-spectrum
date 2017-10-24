@@ -228,6 +228,10 @@ class JournalSession:
         profile = logged_in_page.soup.select_one(profile_selector)
         assert profile is None, ("Found %s in %s response\n%s" % (profile_selector, logged_in_page.status_code, logged_in_page.content))
 
+    def check(self, path):
+        page = self._browser.get("%s/%s" % (self._host, path.lstrip('/')))
+        _assert_html_response(page)
+
     def _enable_feature_flag(self):
         feature_flag = "%s/?open-sesame" % self._host
         flagged_page = self._browser.get(feature_flag)
