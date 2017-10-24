@@ -66,6 +66,14 @@ def test_rss_feeds():
 def test_login():
     session = input.JOURNAL.session()
     session.login()
+    session.logout()
+
+@pytest.mark.journal
+@pytest.mark.profiles
+def test_profile():
+    session = input.JOURNAL.session()
+    session.login()
+
     # no pagination needed so far
     profiles = checks.API.profiles()['items']
     id = None
@@ -75,11 +83,8 @@ def test_login():
         if profile_snippet['orcid'] == magic_orcid:
             id = profile_snippet['id']
     assert id is not None, "We didn't find the profile for the test user in %s" % profiles
-    profile = checks.API.profile(id)
-    assert profile['id'] == id
-    assert profile['orcid'] == magic_orcid
-    assert profile['name'] == {'index': 'Carberry, Josiah', 'preferred': 'Josiah Carberry'}
-    session.logout()
+
+    session.check('/profiles/%s' % id)
 
 #path: /interviews/{id}
 # how do we get the link? navigate from /collections
