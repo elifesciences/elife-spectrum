@@ -232,6 +232,8 @@ class JournalSession:
         page = self._browser.get("%s/%s" % (self._host, path.lstrip('/')))
         _assert_html_response(page)
 
+        return page
+
     def _enable_feature_flag(self):
         feature_flag = "%s/?open-sesame" % self._host
         flagged_page = self._browser.get(feature_flag)
