@@ -63,7 +63,7 @@ def test_rss_feeds():
 
 @pytest.mark.journal
 @pytest.mark.profiles
-def test_login():
+def test_logging_in_and_out():
     session = input.JOURNAL.session()
     session.login()
     session.logout()
