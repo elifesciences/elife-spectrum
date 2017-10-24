@@ -1,6 +1,5 @@
 from os import path
 import random
-import re
 import string
 import requests
 from spectrum import aws, logger
