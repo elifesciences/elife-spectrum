@@ -228,8 +228,8 @@ class JournalSession:
         profile = logged_in_page.soup.select_one(profile_selector)
         assert profile is None, ("Found %s in %s response\n%s" % (profile_selector, logged_in_page.status_code, logged_in_page.content))
 
-    def check(self, path):
-        page = self._browser.get("%s/%s" % (self._host, path.lstrip('/')))
+    def check(self, page_path):
+        page = self._browser.get("%s/%s" % (self._host, page_path.lstrip('/')))
         _assert_html_response(page)
 
         return page
