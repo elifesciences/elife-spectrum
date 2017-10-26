@@ -22,6 +22,11 @@ def test_list_based_apis_medium():
 def test_list_based_apis_profiles():
     checks.API.profiles()
 
+@pytest.mark.annotations
+def test_list_based_apis_annotations():
+    # DUMMY: nothing for now
+    pass
+
 @pytest.mark.two
 @pytest.mark.search
 def test_search():
