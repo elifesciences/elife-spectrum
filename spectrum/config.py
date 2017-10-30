@@ -9,8 +9,8 @@ SETTINGS = dict(CONFIG.items(ENV))
 
 if __name__ == '__main__':
     for section in CONFIG.sections():
-        print section
+        print(section)
         for option in CONFIG.options(section):
-            print "   %s: %s" % (option, CONFIG.get(section, option))
+            print("   %s: %s" % (option, CONFIG.get(section, option)))
 
 
