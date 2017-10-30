@@ -284,7 +284,7 @@ class DashboardArticleCheck:
 
     def _check_for_run(self, version_contents, run=None):
         if run:
-            matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
+            matching_runs = [r for _, r in version_contents['runs'].items() if r['run-id'] == run]
         else:
             matching_runs = version_contents['runs'].values()
         if len(matching_runs) > 1:
@@ -294,7 +294,7 @@ class DashboardArticleCheck:
         return matching_runs[0]
 
     def _check_for_run_after(self, version_contents, run_after):
-        matching_runs = [r for _, r in version_contents['runs'].iteritems() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') > run_after.strftime('%s')]
+        matching_runs = [r for _, r in version_contents['runs'].items() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') > run_after.strftime('%s')]
         if len(matching_runs) > 1:
             raise RuntimeError("Too many runs after run_after %s: %s", run_after, matching_runs)
         if len(matching_runs) == 0:
@@ -458,7 +458,7 @@ class ApiCheck:
                     item_check_presence = " and satisfying check %s" % item_check
             constraints_presence = ''
             if constraints:
-                for field, value in constraints.iteritems():
+                for field, value in constraints.items():
                     if body[field] != value:
                         LOGGER.debug("%s: field `%s` is not `%s` but `%s`",
                                      latest_url, field, value, body[field])
