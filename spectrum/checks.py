@@ -286,7 +286,7 @@ class DashboardArticleCheck:
         if run:
             matching_runs = [r for _, r in version_contents['runs'].items() if r['run-id'] == run]
         else:
-            matching_runs = version_contents['runs'].values()
+            matching_runs = list(version_contents['runs'].values())
         if len(matching_runs) > 1:
             raise RuntimeError("Too many runs matching run-id %s: %s", run, pformat(matching_runs))
         if len(matching_runs) == 0:
