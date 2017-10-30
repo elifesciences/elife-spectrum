@@ -88,12 +88,12 @@ def _generate(filename, id, generated_article_directory, template_id, template_v
     extension = filename_components[1]
     if extension == '.jinja':
         with open(filename, 'r') as template_file:
-            data = template_file.read().decode('UTF-8')
+            data = template_file.read()
         template = jinja2.Template(data)
         content = template.render(article={'id': id}, **template_variables)
         target = target.replace('.jinja', '')
         with open(target, 'w') as target_file:
-            target_file.write(content.encode('utf-8'))
+            target_file.write(content)
     else:
         shutil.copy(filename, target)
     return target
