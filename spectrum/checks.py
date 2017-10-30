@@ -8,12 +8,12 @@ from pprint import pformat
 import os
 import re
 from ssl import SSLError
+from concurrent.futures import ThreadPoolExecutor, wait
 
 from bs4 import BeautifulSoup
 import polling
 import requests
 from requests.exceptions import ConnectionError
-from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
