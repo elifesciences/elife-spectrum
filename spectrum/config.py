@@ -1,5 +1,5 @@
 import os
-from ConfigParser import RawConfigParser
+from configparser import RawConfigParser
 
 CONFIG = RawConfigParser()
 CONFIG.read('./app.cfg')
