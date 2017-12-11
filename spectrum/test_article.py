@@ -193,17 +193,12 @@ def _wait_for_publishable(article, run_after):
     if article.has_pdf():
         checks.PDF_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     checks.API_PREVIEW.article(id=article.id(), version=article.version())
-    checks.WEBSITE.unpublished(id=article.id(), version=article.version())
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run)
     return run
 
 def _wait_for_published(article):
     checks.DASHBOARD.published(id=article.id(), version=article.version())
-    version_info = checks.LAX.published(id=article.id(), version=article.version())
-    checks.WEBSITE.published(id=article.id(), version=article.version())
-    checks.WEBSITE.visible('/content/%s/e%sv%s' % \
-        (version_info['volume'], version_info['id'], \
-         version_info['version']), id=article.id())
+    checks.LAX.published(id=article.id(), version=article.version())
 
     checks.ARCHIVE.of(id=article.id(), version=article.version())
     article_from_api = checks.API.article(id=article.id(), version=article.version())
