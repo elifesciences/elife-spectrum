@@ -118,26 +118,6 @@ class BucketFileCheck:
         except SSLError as e:
             _log_connection_error(e)
         return False
-        #try:
-        #    text_file = StringIO.StringIO()
-        #    LOGGER.debug(
-        #        "Downloading %s/%s",
-        #        self._bucket_name,
-        #        file.key,
-        #        extra={'id': id}
-        #    )
-        #    bucket.download_fileobj(file.key, text_file)
-        #    if text_match not in text_file.getvalue():
-        #        LOGGER.info(
-        #            "%s/%s does not match `%s`",
-        #            self._bucket_name,
-        #            file.key,
-        #            text_match,
-        #            extra={'id': id}
-        #        )
-        #        return False
-        #finally:
-        #    text_file.close()
 
 class DashboardArticleCheck:
     def __init__(self, host, user, password):
