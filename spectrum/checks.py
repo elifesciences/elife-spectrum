@@ -885,12 +885,6 @@ def _build_url(path, host):
     assert path.startswith("/"), ("I found a non-absolute path %s and I don't know how to load it" % path)
     return "%s%s" % (host, path)
 
-EIF = BucketFileCheck(
-    aws.S3,
-    SETTINGS['bucket_eif'],
-    '{id}.{version}/(?P<run>.*)/elife-{id}-v{version}.json',
-    '{id}.{version}/'
-)
 ARCHIVE = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_archive'],
@@ -910,11 +904,6 @@ PERSONALISED_COVERS_LETTER = BucketFileCheck(
     SETTINGS['bucket_covers'],
     '{id}-cover-letter.pdf',
     '{id}-'
-)
-WEBSITE = WebsiteArticleCheck(
-    host=SETTINGS['website_host'],
-    user=SETTINGS['website_user'],
-    password=SETTINGS['website_password']
 )
 IMAGES_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     aws.S3,
