@@ -255,20 +255,26 @@ content must work as a discrete item on each author's roll over and on the displ
           <p>This footnote text must work in isolation as nothing is processed on the html view to make it "work"</p>
         </fn>
       </author-notes>
-      <!-- CHANGE: pub-date will still continue to keep the first (whether PoA or VoR) pub date in the XML with a date-type="publication". 
-                This date will remain in all instances of the XML for an article. If a further version is published another date wil be added, with a
-                date-type="update". Each time a new instance of the XML is published, the pub date with the date-type="update" will be replaced with the new date of
-                the publication date of this instance. There will only ever be two pub dates in an XML file. -->
-      <pub-date publication-format="electronic" date-type="update">
-        <day>11</day>
-        <month>08</month>
-        <year>2016</year>
-      </pub-date>
-      <pub-date publication-format="electronic" date-type="publication">
+      <pub-date publication-format="electronic" date-type="pub">
         <day>25</day>
         <month>04</month>
         <year>2016</year>
       </pub-date>
+      <!-- CHANGE: pub-date will still continue to keep the first (whether PoA or VoR) pub date in the XML with a date-type="publication". 
+                This date will remain in all instances of the XML for an article. If a further version is published another date wil be added, with a
+                date-type="update". Each time a new instance of the XML is published, the pub date with the date-type="update" will be replaced with the new date of
+                the publication date of this instance. There will only ever be two pub dates in an XML file. 
+            <pub-date publication-format="electronic" date-type="update">
+                <day>11</day>
+                <month>08</month>
+                <year>2016</year>
+            </pub-date>
+            <pub-date publication-format="electronic" date-type="publication">
+                <day>25</day>
+                <month>04</month>
+                <year>2016</year>
+             </pub-date>
+            -->
       <!-- TO NOTE: pub-type collection required for Continuum to process content as VoR-->
       <pub-date pub-type="collection">
         <year>2016</year>
