@@ -33,8 +33,8 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
     run2_start = datetime.now()
     modified_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _ingest(modified_article)
-    checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run2_start)
-    (run2, ) = checks.EIF.of(id=article.id(), version=article.version(), last_modified_after=run2_start)
+    article_on_dashboard = checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run2_start)
+    run2 = article_on_dashboard['versions'][str(article.version())]['runs']['2']['run-id']
     assert run2 != run1, "A new run should have been triggered"
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run2)
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
@@ -183,27 +183,22 @@ def _feed_silent_correction(article):
     input.SILENT_CORRECTION_BUCKET.upload(article.filename(), article.id())
 
 def _wait_for_publishable(article, run_after):
-    if run_after:
-        checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run_after)
-    # fails quite often but is now late in the process, can we make an intermediate check?
-    (run, ) = checks.EIF.of(id=article.id(), version=article.version())
+    article_on_dashboard = checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run_after)
+    runs = article_on_dashboard['versions'][str(article.version())]['runs']
+    last_run_number = max([int(i) for i in runs.keys()])
+    run = runs[str(last_run_number)]['run-id']
     for each in article.figure_names():
         checks.IMAGES_PUBLISHED_CDN_BUCKET.of(id=article.id(), figure_name=each, version=article.version())
     checks.XML_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     if article.has_pdf():
         checks.PDF_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     checks.API_PREVIEW.article(id=article.id(), version=article.version())
-    checks.WEBSITE.unpublished(id=article.id(), version=article.version())
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run)
     return run
 
 def _wait_for_published(article):
     checks.DASHBOARD.published(id=article.id(), version=article.version())
-    version_info = checks.LAX.published(id=article.id(), version=article.version())
-    checks.WEBSITE.published(id=article.id(), version=article.version())
-    checks.WEBSITE.visible('/content/%s/e%sv%s' % \
-        (version_info['volume'], version_info['id'], \
-         version_info['version']), id=article.id())
+    checks.LAX.published(id=article.id(), version=article.version())
 
     checks.ARCHIVE.of(id=article.id(), version=article.version())
     article_from_api = checks.API.article(id=article.id(), version=article.version())

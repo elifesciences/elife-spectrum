@@ -118,90 +118,6 @@ class BucketFileCheck:
         except SSLError as e:
             _log_connection_error(e)
         return False
-        #try:
-        #    text_file = StringIO.StringIO()
-        #    LOGGER.debug(
-        #        "Downloading %s/%s",
-        #        self._bucket_name,
-        #        file.key,
-        #        extra={'id': id}
-        #    )
-        #    bucket.download_fileobj(file.key, text_file)
-        #    if text_match not in text_file.getvalue():
-        #        LOGGER.info(
-        #            "%s/%s does not match `%s`",
-        #            self._bucket_name,
-        #            file.key,
-        #            text_match,
-        #            extra={'id': id}
-        #        )
-        #        return False
-        #finally:
-        #    text_file.close()
-
-class WebsiteArticleCheck:
-    def __init__(self, host, user, password):
-        self._host = host
-        self._user = user
-        self._password = password
-
-    def unpublished(self, id, version=1):
-        return self._wait_for_status(id, version, publish=False)
-
-    def published(self, id, version=1):
-        return self._wait_for_status(id, version, publish=True)
-
-    def _wait_for_status(self, id, version, publish):
-        article = _poll(
-            lambda: self._is_present(id, version, publish),
-            "article on website with publish status %s: %s/api/article/%s.%s.json",
-            publish, self._host, id, version
-        )
-        assert article['article-id'] == id, \
-                "The article id does not correspond to the one we were looking for"
-        return article
-
-    def visible(self, path, **kwargs):
-        article = _poll(
-            lambda: self._is_visible(path, extra=kwargs),
-            "article visible on website: %s%s",
-            self._host, path
-        )
-        return article
-
-    def _is_present(self, id, version, publish):
-        template = "%s/api/article/%s.%s.json"
-        url = template % (self._host, id, version)
-        try:
-            response = requests.get(url, auth=(self._user, self._password))
-            if response.status_code == 200:
-                article = response.json()
-                if article['publish'] is publish:
-                    LOGGER.info(
-                        "Found %s on website with publish status %s",
-                        url,
-                        publish,
-                        extra={'id': id}
-                    )
-                    return article
-        except ConnectionError as e:
-            _log_connection_error(e)
-        return False
-
-    def _is_visible(self, path, extra=None):
-        extra = {} if extra is None else extra
-        template = "%s/%s"
-        url = template % (self._host, path)
-        try:
-            response = requests.get(url)
-            if response.status_code >= 500:
-                raise UnrecoverableError(response)
-            if response.status_code == 200:
-                LOGGER.info("Found %s visible on website", url, extra=extra)
-                return True
-        except ConnectionError as e:
-            _log_connection_error(e)
-        return False
 
 class DashboardArticleCheck:
     def __init__(self, host, user, password):
@@ -885,12 +801,6 @@ def _build_url(path, host):
     assert path.startswith("/"), ("I found a non-absolute path %s and I don't know how to load it" % path)
     return "%s%s" % (host, path)
 
-EIF = BucketFileCheck(
-    aws.S3,
-    SETTINGS['bucket_eif'],
-    '{id}.{version}/(?P<run>.*)/elife-{id}-v{version}.json',
-    '{id}.{version}/'
-)
 ARCHIVE = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_archive'],
@@ -910,11 +820,6 @@ PERSONALISED_COVERS_LETTER = BucketFileCheck(
     SETTINGS['bucket_covers'],
     '{id}-cover-letter.pdf',
     '{id}-'
-)
-WEBSITE = WebsiteArticleCheck(
-    host=SETTINGS['website_host'],
-    user=SETTINGS['website_user'],
-    password=SETTINGS['website_password']
 )
 IMAGES_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     aws.S3,
