@@ -176,6 +176,12 @@ def test_personalised_covers_for_new_articles(generate_article):
     checks.PERSONALISED_COVERS_A4.of(id=article.id())
     checks.PERSONALISED_COVERS_LETTER.of(id=article.id())
 
+@pytest.mark.observer
+def test_rss_feed_contains_new_article(generate_article):
+    article = generate_article(15893)
+    _ingest_and_publish_and_wait_for_published(article)
+    checks.OBSERVER.latest_article(article.id())
+
 def _ingest(article):
     input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
 
