@@ -669,6 +669,35 @@ class PeerscoutCheck:
             raise UnrecoverableError(response)
         return response.json()
 
+class ObserverCheck:
+    def __init__(self, host):
+        self._host = host
+
+    def latest_article(self, id):
+        template = "%s/report/latest-articles"
+        url = template % self._host
+        return _poll(
+            lambda: self._is_present(url, id),
+            "article with id %s at %s",
+            id, url
+        )
+
+    def _is_present(self, url, id):
+        response = requests.get(url)
+        LOGGER.debug("Loaded %s (%s)", url, response.status_code)
+        if response.status_code > 299:
+            raise UnrecoverableError(response)
+        soup = BeautifulSoup(response.content, "lxml-xml")
+        target_guid = "https://dx.doi.org/10.7554/eLife.%s" % id
+        guids = {item.guid.string:item for item in soup.rss.channel.find_all("item")}
+        # TODO: extra argument in LOGGER usage
+        if target_guid in guids.keys():
+            LOGGER.info("Found item %s at %s:\n%s", id, url, guids[target_guid])
+            return guids[target_guid]
+        else:
+            LOGGER.debug("Item %s not found in %s", target_guid, pformat(guids.keys()))
+            return False
+
 def _poll(action_fn, error_message, *error_message_args):
     """
     Poll until action_fn returns something truthy. After GLOBAL_TIMEOUT throws an exception.
@@ -897,4 +926,7 @@ PEERSCOUT = PeerscoutCheck(
     host=SETTINGS['peerscout_host'],
     user=SETTINGS['peerscout_user'],
     password=SETTINGS['peerscout_password']
+)
+OBSERVER = ObserverCheck(
+    host=SETTINGS['observer_host']
 )
