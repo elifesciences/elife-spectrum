@@ -674,7 +674,7 @@ class ObserverCheck:
         self._host = host
 
     def latest_article(self, id):
-        template = "%s/report/latest-articles"
+        template = "%s/report/latest-articles?per-page=100&page=1"
         url = template % self._host
         return _poll(
             lambda: self._is_present(url, id),
