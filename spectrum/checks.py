@@ -684,18 +684,17 @@ class ObserverCheck:
 
     def _is_present(self, url, id):
         response = requests.get(url)
-        LOGGER.debug("Loaded %s (%s)", url, response.status_code)
+        LOGGER.debug("Loaded %s (%s)", url, response.status_code, extra={'id':id})
         if response.status_code > 299:
             raise UnrecoverableError(response)
         soup = BeautifulSoup(response.content, "lxml-xml")
         target_guid = "https://dx.doi.org/10.7554/eLife.%s" % id
         guids = {item.guid.string:item for item in soup.rss.channel.find_all("item")}
-        # TODO: extra argument in LOGGER usage
         if target_guid in guids.keys():
-            LOGGER.info("Found item %s at %s:\n%s", id, url, guids[target_guid])
+            LOGGER.info("Found item %s at %s:\n%s", target_guid, url, guids[target_guid], extra={'id':id})
             return guids[target_guid]
         else:
-            LOGGER.debug("Item %s not found in %s", target_guid, pformat(guids.keys()))
+            LOGGER.debug("Item %s not found in %s", target_guid, pformat(guids.keys()), extra={'id':id})
             return False
 
 def _poll(action_fn, error_message, *error_message_args):
