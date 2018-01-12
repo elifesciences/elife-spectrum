@@ -175,6 +175,7 @@ def test_downstream_upload_to_pubmed(generate_article):
     _ingest_and_publish_and_wait_for_published(article)
     checks.PACKAGING_BUCKET.of(vendor="pubmed", folder="outbox", id=article.id())
     #input.BOT_WORKFLOWS.start_pubmed()
+    #python econtools/econ_article_feeder.py -p elife-00666-vor-r1.zip -r 1  ct-elife-production-final ct-workflow-starter-queue PubmedArticleDeposit
     #checks.PACKAGING_BUCKET.published("pubmed", "20180112", article.id())
 
 @pytest.mark.personalised_covers
