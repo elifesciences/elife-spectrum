@@ -19,6 +19,9 @@ class InputBucket:
         self._s3.meta.client.upload_file(filename, self._bucket_name, path.basename(filename))
         LOGGER.info("Uploaded %s to %s", filename, self._bucket_name, extra={'id': id})
 
+    def clean(self, prefix=None):
+        aws.clean_bucket(self._bucket_name, prefix)
+
     def name(self):
         return self._bucket_name
 
@@ -246,6 +249,7 @@ def invented_word(length=30, characters=None):
 
 PRODUCTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_input'])
 SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_silent_corrections'])
+PACKAGING_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_packaging'])
 DASHBOARD = Dashboard(
     SETTINGS['dashboard_host'],
     SETTINGS['dashboard_user'],
