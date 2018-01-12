@@ -61,10 +61,10 @@ def clean_bucket(bucket_name, prefix=None):
     )
     bucket = S3.Bucket(bucket_name)
     bucket.load()
-    all = bucket.objects.all()
+    all_objects = bucket.objects.all()
     if prefix:
-        all = all.filter(Prefix=prefix)
-    keys = [file.key for file in all]
+        all_objects = all_objects.filter(Prefix=prefix)
+    keys = [file.key for file in all_objects]
     batch_size = 100
     batches = [keys[lower:lower+batch_size] for lower in range(0, len(keys), batch_size)]
     for batch in batches:

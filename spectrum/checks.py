@@ -76,16 +76,16 @@ class BucketFileCheck:
             bucket = self._s3.Bucket(self._bucket_name)
             # TODO: necessary?
             bucket.load()
-            all = bucket.objects.all()
+            all_objects = bucket.objects.all()
             if self._prefix:
                 prefix = self._prefix.format(**kwargs)
-                all = all.filter(Prefix=prefix)
+                all_objects = all_objects.filter(Prefix=prefix)
                 LOGGER.debug(
                     "Filtering by prefix %s",
                     prefix,
                     extra={'id': id}
                 )
-            for file in all:
+            for file in all_objects:
                 match = re.match(criteria, file.key)
                 if match:
                     LOGGER.debug(
