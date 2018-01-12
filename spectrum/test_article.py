@@ -170,12 +170,12 @@ def test_adding_article_fragment(generate_article, modify_article):
 
 @pytest.mark.bot
 def test_downstream_upload_to_pubmed(generate_article):
-    #article = generate_article(15893)
+    article = generate_article(15893)
     input.PACKAGING_BUCKET.clean("pubmed/outbox/")
-    #_ingest_and_publish_and_wait_for_published(article)
-    #checks.DOWNSTREAM.outbox("pubmed", article.id())
+    _ingest_and_publish_and_wait_for_published(article)
+    checks.PACKAGING_BUCKET.of(vendor="pubmed", folder="outbox", id=article.id())
     #input.BOT_WORKFLOWS.start_pubmed()
-    #checks.DOWNSTREAM.published("pubmed", "20180112", article.id())
+    #checks.PACKAGING_BUCKET.published("pubmed", "20180112", article.id())
 
 @pytest.mark.personalised_covers
 @pytest.mark.continuum
