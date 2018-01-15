@@ -867,11 +867,11 @@ PDF_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     'articles/{id}/elife-{id}-v{version}.pdf',
     'articles/{id}/elife-{id}-v{version}.pdf'
 )
-PACKAGING_BUCKET = BucketFileCheck(
+PACKAGING_BUCKET_OUTBOX = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_packaging'],
-    '{vendor}/{folder}/elife{id}.xml',
-    '{vendor}/{folder}/elife{id}.xml'
+    '{vendor}/outbox/elife{id}.xml',
+    '{vendor}/outbox/elife{id}.xml'
 )
 DASHBOARD = DashboardArticleCheck(
     host=SETTINGS['dashboard_host'],
@@ -934,4 +934,8 @@ PEERSCOUT = PeerscoutCheck(
 )
 OBSERVER = ObserverCheck(
     host=SETTINGS['observer_host']
+)
+
+PUBMED = HttpCheck(
+    str(SETTINGS['bot_host']) + '/pubmed/elife{id}.xml'
 )

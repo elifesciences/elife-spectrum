@@ -4,7 +4,7 @@ import string
 import requests
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
-from econtools import econ_article_feeder
+from econtools import econ_article_feeder, econ_workflow
 from pollute import modified_environ
 import mechanicalsoup
 
@@ -63,6 +63,20 @@ class SilentCorrectionWorkflowStarter:
                 rate=1,
                 prefix=filename,
                 workflow_name='SilentCorrectionsIngest'
+            )
+
+class BotWorkflowStarter:
+    def __init__(self, aws_access_key_id, aws_secret_access_key, region_name, queue_name):
+        self._aws_access_key_id = aws_access_key_id
+        self._aws_secret_access_key = aws_secret_access_key
+        self._region_name = region_name
+        self._queue_name = queue_name
+
+    def pubmed(self):
+        with modified_environ(added={'AWS_ACCESS_KEY_ID': self._aws_access_key_id, 'AWS_SECRET_ACCESS_KEY': self._aws_secret_access_key, 'AWS_DEFAULT_REGION': self._region_name}):
+            econ_workflow.start_workflow(
+                self._queue_name,
+                workflow_name='PubmedArticleDeposit'
             )
 
 class JournalCms:
@@ -273,4 +287,11 @@ JOURNAL_CMS = JournalCms(
 
 JOURNAL = Journal(
     SETTINGS['journal_host'],
+)
+
+BOT_WORKFLOWS = BotWorkflowStarter(
+    SETTINGS['aws_access_key_id'],
+    SETTINGS['aws_secret_access_key'],
+    SETTINGS['region_name'],
+    SETTINGS['queue_workflow_starter']
 )
