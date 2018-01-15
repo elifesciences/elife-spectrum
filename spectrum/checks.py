@@ -8,12 +8,12 @@ from pprint import pformat
 import os
 import re
 from ssl import SSLError
+from concurrent.futures import ThreadPoolExecutor, wait
 
 from bs4 import BeautifulSoup
 import polling
 import requests
 from requests.exceptions import ConnectionError
-from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
@@ -200,9 +200,9 @@ class DashboardArticleCheck:
 
     def _check_for_run(self, version_contents, run=None):
         if run:
-            matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
+            matching_runs = [r for _, r in version_contents['runs'].items() if r['run-id'] == run]
         else:
-            matching_runs = version_contents['runs'].values()
+            matching_runs = list(version_contents['runs'].values())
         if len(matching_runs) > 1:
             raise RuntimeError("Too many runs matching run-id %s: %s", run, pformat(matching_runs))
         if len(matching_runs) == 0:
@@ -210,7 +210,7 @@ class DashboardArticleCheck:
         return matching_runs[0]
 
     def _check_for_run_after(self, version_contents, run_after):
-        matching_runs = [r for _, r in version_contents['runs'].iteritems() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') > run_after.strftime('%s')]
+        matching_runs = [r for _, r in version_contents['runs'].items() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') > run_after.strftime('%s')]
         if len(matching_runs) > 1:
             raise RuntimeError("Too many runs after run_after %s: %s", run_after, matching_runs)
         if len(matching_runs) == 0:
@@ -374,7 +374,7 @@ class ApiCheck:
                     item_check_presence = " and satisfying check %s" % item_check
             constraints_presence = ''
             if constraints:
-                for field, value in constraints.iteritems():
+                for field, value in constraints.items():
                     if body[field] != value:
                         LOGGER.debug("%s: field `%s` is not `%s` but `%s`",
                                      latest_url, field, value, body[field])
