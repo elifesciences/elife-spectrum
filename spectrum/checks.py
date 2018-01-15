@@ -76,16 +76,16 @@ class BucketFileCheck:
             bucket = self._s3.Bucket(self._bucket_name)
             # TODO: necessary?
             bucket.load()
-            all = bucket.objects.all()
+            all_objects = bucket.objects.all()
             if self._prefix:
                 prefix = self._prefix.format(**kwargs)
-                all = all.filter(Prefix=prefix)
+                all_objects = all_objects.filter(Prefix=prefix)
                 LOGGER.debug(
                     "Filtering by prefix %s",
                     prefix,
                     extra={'id': id}
                 )
-            for file in all:
+            for file in all_objects:
                 match = re.match(criteria, file.key)
                 if match:
                     LOGGER.debug(
@@ -866,6 +866,12 @@ PDF_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     SETTINGS['bucket_published'],
     'articles/{id}/elife-{id}-v{version}.pdf',
     'articles/{id}/elife-{id}-v{version}.pdf'
+)
+PACKAGING_BUCKET = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_packaging'],
+    '{vendor}/{folder}/elife{id}.xml',
+    '{vendor}/{folder}/elife{id}.xml'
 )
 DASHBOARD = DashboardArticleCheck(
     host=SETTINGS['dashboard_host'],
