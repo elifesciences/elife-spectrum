@@ -108,7 +108,7 @@ class BucketFileCheck:
                     if match.groups():
                         LOGGER.info(
                             "Found groups %s in matching the file name %s",
-                            match.groupdict(),
+                            match.groups(),
                             file.key,
                             extra={'id': id}
                         )
