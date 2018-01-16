@@ -72,7 +72,7 @@ class BucketFileCheck:
 
     def _is_present(self, criteria, last_modified_after, **kwargs):
         try:
-            id = kwargs['id']
+            id = kwargs.get('id')
             bucket = self._s3.Bucket(self._bucket_name)
             # TODO: necessary?
             bucket.load()
@@ -873,6 +873,13 @@ PACKAGING_BUCKET_OUTBOX = BucketFileCheck(
     '{vendor}/outbox/elife{id}.xml',
     '{vendor}/outbox/elife{id}.xml'
 )
+PACKAGING_BUCKET_BATCH = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_packaging'],
+    # could probably pass in the date as {date}
+    '{vendor}/published/20[0-9]{{6}}/batch/(elife-.*\\.xml)',
+    '{vendor}/published/'
+)
 DASHBOARD = DashboardArticleCheck(
     host=SETTINGS['dashboard_host'],
     user=SETTINGS['dashboard_user'],
@@ -937,5 +944,5 @@ OBSERVER = ObserverCheck(
 )
 
 PUBMED = HttpCheck(
-    str(SETTINGS['bot_host']) + '/pubmed/elife{id}.xml'
+    str(SETTINGS['bot_host']) + '/pubmed/{xml}'
 )
