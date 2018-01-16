@@ -24,8 +24,8 @@ def test_list_based_apis_profiles():
 
 @pytest.mark.annotations
 def test_list_based_apis_annotations():
-    # DUMMY: nothing for now
-    pass
+    any_profile = 'jcarberry'
+    checks.API.annotations(any_profile)
 
 @pytest.mark.two
 @pytest.mark.search
