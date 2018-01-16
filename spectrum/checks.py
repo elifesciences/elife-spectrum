@@ -327,6 +327,9 @@ class ApiCheck:
     def profile(self, id):
         return self._item_api('/profiles/%s' % id, 'profile')
 
+    def annotations(self, profile_id):
+        self._list_api('/annotations?by=%s' % profile_id, 'annotation')
+
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
         response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity}))
