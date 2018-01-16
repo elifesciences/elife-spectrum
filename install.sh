@@ -9,4 +9,7 @@ if [ ! -e "venv/bin/python2.7" ]; then
 fi
 
 source venv/bin/activate
+if pip list | grep econtools; then
+    pip uninstall -y econtools
+fi
 pip install -r requirements.txt
