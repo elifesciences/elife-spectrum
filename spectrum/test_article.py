@@ -11,6 +11,7 @@ from spectrum import checks
 @pytest.mark.continuum
 @pytest.mark.article
 @pytest.mark.journal
+@pytest.mark.bot
 @pytest.mark.parametrize("template_id", generator.all_stored_articles())
 def test_article_first_version(template_id, article_id_filter, generate_article):
     if article_id_filter:
@@ -22,6 +23,7 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
 
 @pytest.mark.journal
 @pytest.mark.continuum
+@pytest.mark.bot
 def test_article_multiple_ingests_of_the_same_version(generate_article, modify_article):
     template_id = 15893
     run1_start = datetime.now()
@@ -43,6 +45,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
 @pytest.mark.journal
 @pytest.mark.continuum
 @pytest.mark.metrics
+@pytest.mark.bot
 def test_article_multiple_versions(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
@@ -63,6 +66,7 @@ def test_article_multiple_versions(generate_article, modify_article):
 # the silent correction is changing one word from lowercase to uppercase
 @pytest.mark.journal
 @pytest.mark.continuum
+@pytest.mark.bot
 def test_article_silent_correction(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
@@ -82,6 +86,7 @@ def test_article_silent_correction(generate_article, modify_article):
     checks.CDN_XML.of(text_match='CYTOMEGALOVIRUS', id=article.id(), version=article.version())
 
 @pytest.mark.continuum
+@pytest.mark.bot
 def test_article_already_present_version(generate_article, version_article):
     template_id = 15893
     article = generate_article(template_id)
@@ -95,6 +100,7 @@ def test_article_already_present_version(generate_article, version_article):
 
 @pytest.mark.journal
 @pytest.mark.continuum
+@pytest.mark.bot
 def test_article_with_unicode_content(generate_article):
     article = generate_article(template_id=19532)
     _ingest_and_publish(article)
@@ -146,6 +152,7 @@ def test_recommendations_for_new_articles(generate_article):
 
 @pytest.mark.continuum
 @pytest.mark.article
+@pytest.mark.bot
 def test_article_propagates_to_github(generate_article):
     article = generate_article(15893)
     _ingest_and_publish_and_wait_for_published(article)
@@ -183,6 +190,7 @@ def test_downstream_upload_to_pubmed(generate_article):
 
 @pytest.mark.personalised_covers
 @pytest.mark.continuum
+@pytest.mark.bot
 def test_personalised_covers_for_new_articles(generate_article):
     article = generate_article(15893)
     _ingest_and_publish_and_wait_for_published(article)
