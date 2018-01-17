@@ -172,11 +172,14 @@ def test_adding_article_fragment(generate_article, modify_article):
 def test_downstream_upload_to_pubmed(generate_article):
     article = generate_article(15893)
     input.PACKAGING_BUCKET.clean("pubmed/outbox/")
+    test_start = datetime.now()
+
     _ingest_and_publish_and_wait_for_published(article)
-    checks.PACKAGING_BUCKET.of(vendor="pubmed", folder="outbox", id=article.id())
-    #input.BOT_WORKFLOWS.start_pubmed()
-    #python econtools/econ_article_feeder.py -p elife-00666-vor-r1.zip -r 1  ct-elife-production-final ct-workflow-starter-queue PubmedArticleDeposit
-    #checks.PACKAGING_BUCKET.published("pubmed", "20180112", article.id())
+    checks.PACKAGING_BUCKET_OUTBOX.of(vendor="pubmed", folder="outbox", id=article.id())
+    input.BOT_WORKFLOWS.pubmed()
+
+    (xml, ) = checks.PACKAGING_BUCKET_BATCH.of(vendor="pubmed", last_modified_after=test_start)
+    checks.PUBMED.of(xml=xml)
 
 @pytest.mark.personalised_covers
 @pytest.mark.continuum
