@@ -72,7 +72,7 @@ class BucketFileCheck:
 
     def _is_present(self, criteria, last_modified_after, **kwargs):
         try:
-            id = kwargs['id']
+            id = kwargs.get('id')
             bucket = self._s3.Bucket(self._bucket_name)
             # TODO: necessary?
             bucket.load()
@@ -108,7 +108,7 @@ class BucketFileCheck:
                     if match.groups():
                         LOGGER.info(
                             "Found groups %s in matching the file name %s",
-                            match.groupdict(),
+                            match.groups(),
                             file.key,
                             extra={'id': id}
                         )
@@ -867,11 +867,18 @@ PDF_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     'articles/{id}/elife-{id}-v{version}.pdf',
     'articles/{id}/elife-{id}-v{version}.pdf'
 )
-PACKAGING_BUCKET = BucketFileCheck(
+PACKAGING_BUCKET_OUTBOX = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_packaging'],
-    '{vendor}/{folder}/elife{id}.xml',
-    '{vendor}/{folder}/elife{id}.xml'
+    '{vendor}/outbox/elife{id}.xml',
+    '{vendor}/outbox/elife{id}.xml'
+)
+PACKAGING_BUCKET_BATCH = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_packaging'],
+    # could probably pass in the date as {date}
+    '{vendor}/published/20[0-9]{{6}}/batch/(elife-.*\\.xml)',
+    '{vendor}/published/'
 )
 DASHBOARD = DashboardArticleCheck(
     host=SETTINGS['dashboard_host'],
@@ -934,4 +941,8 @@ PEERSCOUT = PeerscoutCheck(
 )
 OBSERVER = ObserverCheck(
     host=SETTINGS['observer_host']
+)
+
+PUBMED = HttpCheck(
+    str(SETTINGS['bot_host']) + '/pubmed/{xml}'
 )
