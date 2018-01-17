@@ -8,6 +8,8 @@ from pprint import pformat
 import os
 import re
 from ssl import SSLError
+import socket
+from urlparse import urlparse
 
 from bs4 import BeautifulSoup
 import polling
@@ -730,7 +732,18 @@ def _poll(action_fn, error_message, *error_message_args):
         built_error_message = error_message_template % tuple(error_message_args)
         if 'last_seen' in details:
             built_error_message = built_error_message + "\n" + pformat(details['last_seen'])
+            if isinstance(details['last_seen'], ConnectionError):
+                host = urlparse(details['last_seen'].request.url).netloc
+                built_error_message = built_error_message + ("\nHost: %s" % host)
+                built_error_message = built_error_message + ("\nIp: %s" % _get_host_ip(host))
         raise TimeoutError.giving_up_on(built_error_message)
+
+def _get_host_ip(host):
+    try:
+        return socket.gethostbyname(host)
+    except socket.gaierror:
+        LOGGER.exception("Cannot lookup host: %s", host)
+        return None
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
