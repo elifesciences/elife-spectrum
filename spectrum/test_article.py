@@ -219,7 +219,7 @@ def _wait_for_publishable(article, run_after):
     checks.XML_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     if article.has_pdf():
         checks.PDF_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
-    checks.API_PREVIEW.article(id=article.id(), version=article.version())
+    checks.API_SUPER_USER.article(id=article.id(), version=article.version())
     checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run)
     return run
 
