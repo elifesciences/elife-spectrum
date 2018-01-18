@@ -329,6 +329,9 @@ class ApiCheck:
     def profile(self, id):
         return self._item_api('/profiles/%s' % id, 'profile')
 
+    def annotations(self, profile_id, access='public'):
+        return self._list_api('/annotations?by=%s&access=%s' % (profile_id, access), 'annotation')
+
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
         response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity}))
@@ -904,7 +907,8 @@ LAX = LaxArticleCheck(
 API = ApiCheck(
     host=SETTINGS['api_gateway_host']
 )
-API_PREVIEW = ApiCheck(
+# allow access to all restricted content
+API_SUPER_USER = ApiCheck(
     host=SETTINGS['api_gateway_host'],
     authorization=SETTINGS['api_gateway_authorization']
 )

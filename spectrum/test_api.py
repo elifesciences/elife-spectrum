@@ -24,8 +24,10 @@ def test_list_based_apis_profiles():
 
 @pytest.mark.annotations
 def test_list_based_apis_annotations():
-    # DUMMY: nothing for now
-    pass
+    any_profile = 'jcarberry'
+    public_version = checks.API.annotations(any_profile)
+    super_user_version = checks.API_SUPER_USER.annotations(any_profile, access='restricted')
+    assert super_user_version['total'] > public_version['total']
 
 @pytest.mark.two
 @pytest.mark.search
