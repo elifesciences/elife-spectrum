@@ -12,6 +12,7 @@ from spectrum import checks
 @pytest.mark.article
 @pytest.mark.journal
 @pytest.mark.bot
+@pytest.mark.lax
 @pytest.mark.parametrize("template_id", generator.all_stored_articles())
 def test_article_first_version(template_id, article_id_filter, generate_article):
     if article_id_filter:
@@ -24,6 +25,7 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
 @pytest.mark.journal
 @pytest.mark.continuum
 @pytest.mark.bot
+@pytest.mark.lax
 def test_article_multiple_ingests_of_the_same_version(generate_article, modify_article):
     template_id = 15893
     run1_start = datetime.now()
@@ -46,6 +48,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
 @pytest.mark.continuum
 @pytest.mark.metrics
 @pytest.mark.bot
+@pytest.mark.lax
 def test_article_multiple_versions(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
@@ -67,6 +70,7 @@ def test_article_multiple_versions(generate_article, modify_article):
 @pytest.mark.journal
 @pytest.mark.continuum
 @pytest.mark.bot
+@pytest.mark.lax
 def test_article_silent_correction(generate_article, modify_article):
     template_id = 15893
     article = generate_article(template_id)
@@ -87,6 +91,7 @@ def test_article_silent_correction(generate_article, modify_article):
 
 @pytest.mark.continuum
 @pytest.mark.bot
+@pytest.mark.lax
 def test_article_already_present_version(generate_article, version_article):
     template_id = 15893
     article = generate_article(template_id)
@@ -101,6 +106,7 @@ def test_article_already_present_version(generate_article, version_article):
 @pytest.mark.journal
 @pytest.mark.continuum
 @pytest.mark.bot
+@pytest.mark.lax
 def test_article_with_unicode_content(generate_article):
     article = generate_article(template_id=19532)
     _ingest_and_publish(article)
@@ -111,6 +117,7 @@ def test_article_with_unicode_content(generate_article):
 @pytest.mark.journal
 @pytest.mark.continuum
 @pytest.mark.search
+@pytest.mark.lax
 def test_searching_for_a_new_article(generate_article, modify_article):
     template_id = '00666'
     invented_word = input.invented_word()
@@ -123,6 +130,7 @@ def test_searching_for_a_new_article(generate_article, modify_article):
 
 @pytest.mark.journal
 @pytest.mark.recommendations
+@pytest.mark.lax
 def test_recommendations_for_new_articles(generate_article):
     template_id = '06847'
     related_template_id = '22661'
@@ -160,6 +168,7 @@ def test_article_propagates_to_github(generate_article):
 
 @pytest.mark.journal_cms
 @pytest.mark.continuum
+@pytest.mark.lax
 def test_adding_article_fragment(generate_article, modify_article):
     journal_cms_session = input.JOURNAL_CMS.login()
     template_id = 15893
@@ -198,6 +207,7 @@ def test_personalised_covers_for_new_articles(generate_article):
     checks.PERSONALISED_COVERS_LETTER.of(id=article.id())
 
 @pytest.mark.observer
+@pytest.mark.lax
 def test_rss_feed_contains_new_article(generate_article):
     article = generate_article(15893)
     _ingest_and_publish_and_wait_for_published(article)
