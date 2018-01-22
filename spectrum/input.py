@@ -222,7 +222,7 @@ class JournalSession:
         self._browser = browser
 
     def login(self):
-        self._enable_feature_flag()
+        self.enable_feature_flag()
 
         login_url = "%s/log-in" % self._host
         # should be automatically redirected back by simulator
@@ -251,7 +251,7 @@ class JournalSession:
 
         return page
 
-    def _enable_feature_flag(self):
+    def enable_feature_flag(self):
         feature_flag = "%s/?open-sesame" % self._host
         flagged_page = self._browser.get(feature_flag)
         _assert_html_response(flagged_page)
