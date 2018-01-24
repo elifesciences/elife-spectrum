@@ -221,7 +221,11 @@ def _feed_silent_correction(article):
 
 def _wait_for_publishable(article, run_after):
     article_on_dashboard = checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run_after)
-    runs = article_on_dashboard['versions'][str(article.version())]['runs']
+    current_version = article_on_dashboard['versions'][str(article.version())]
+    preview_link = current_version['details']['preview-link']
+    checks.LOGGER.info("Found preview-link on dashboard: %s", preview_link)
+    assert preview_link, ("Article %s version %s must have a preview-link:\n%s" % (article.id(), article.version(), current_version))
+    runs = current_version['runs']
     last_run_number = max([int(i) for i in runs.keys()])
     run = runs[str(last_run_number)]['run-id']
     for each in article.figure_names():
