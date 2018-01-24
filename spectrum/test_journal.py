@@ -71,7 +71,8 @@ def test_logging_in_and_out():
 
 @pytest.mark.journal
 @pytest.mark.profiles
-def test_profile():
+@pytest.mark.annotations
+def test_logged_in_profile():
     session = input.JOURNAL.session()
     session.login()
 
@@ -86,6 +87,16 @@ def test_profile():
     assert id is not None, "We didn't find the profile for the test user in %s" % profiles
 
     session.check('/profiles/%s' % id)
+
+@pytest.mark.journal
+@pytest.mark.profiles
+@pytest.mark.annotations
+def test_public_profile():
+    session = input.JOURNAL.session()
+    session.enable_feature_flag()
+
+    magic_profile_id = 'pb74izre'
+    session.check('/profiles/%s' % magic_profile_id)
 
 #path: /interviews/{id}
 # how do we get the link? navigate from /collections
