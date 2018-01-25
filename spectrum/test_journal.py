@@ -2,6 +2,8 @@
 import pytest
 from spectrum import checks, input
 
+MAGIC_ORCID = '0000-0002-1825-0097'
+
 @pytest.mark.two
 @pytest.mark.journal
 @pytest.mark.journal_cms
@@ -76,27 +78,21 @@ def test_logged_in_profile():
     session = input.JOURNAL.session()
     session.login()
 
-    # no pagination needed so far
-    profiles = checks.API.profiles()['items']
-    id = None
-    magic_orcid = '0000-0002-1825-0097'
-    for profile_snippet in profiles:
-        # magic ORCID used by orcid-dummy
-        if profile_snippet['orcid'] == magic_orcid:
-            id = profile_snippet['id']
-    assert id is not None, "We didn't find the profile for the test user in %s" % profiles
-
+    id = _find_profile_id_by_orcid(MAGIC_ORCID)
     session.check('/profiles/%s' % id)
 
 @pytest.mark.journal
 @pytest.mark.profiles
 @pytest.mark.annotations
 def test_public_profile():
-    session = input.JOURNAL.session()
-    session.enable_feature_flag()
+    profile_creation_session = input.JOURNAL.session()
+    profile_creation_session.login()
 
-    magic_profile_id = 'pb74izre'
-    session.check('/profiles/%s' % magic_profile_id)
+    anonymous_session = input.JOURNAL.session()
+    anonymous_session.enable_feature_flag()
+    profile_id = _find_profile_id_by_orcid(MAGIC_ORCID)
+
+    anonymous_session.check('/profiles/%s' % profile_id)
 
 #path: /interviews/{id}
 # how do we get the link? navigate from /collections
@@ -105,3 +101,13 @@ def test_public_profile():
 #path: /content/{volume}/e{id}.ris
 #path: /download/{uri}/{name}
 #path: /about/people/{type}
+
+def _find_profile_id_by_orcid(orcid):
+    # no pagination needed so far
+    profiles = checks.API.profiles()['items']
+    for profile_snippet in profiles:
+        # magic ORCID used by orcid-dummy
+        if profile_snippet['orcid'] == orcid:
+            return profile_snippet['id']
+    assert id is not None, "We didn't find the profile for the test user %s in %s" % (orcid, profiles)
+
