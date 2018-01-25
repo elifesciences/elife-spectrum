@@ -221,7 +221,8 @@ def _feed_silent_correction(article):
 
 def _wait_for_publishable(article, run_after):
     article_on_dashboard = checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run_after)
-    runs = article_on_dashboard['versions'][str(article.version())]['runs']
+    current_version = article_on_dashboard['versions'][str(article.version())]
+    runs = current_version['runs']
     last_run_number = max([int(i) for i in runs.keys()])
     run = runs[str(last_run_number)]['run-id']
     for each in article.figure_names():
@@ -230,7 +231,6 @@ def _wait_for_publishable(article, run_after):
     if article.has_pdf():
         checks.PDF_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     checks.API_SUPER_USER.article(id=article.id(), version=article.version())
-    checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run=run)
     return run
 
 def _wait_for_published(article):
