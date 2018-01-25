@@ -128,7 +128,12 @@ class DashboardArticleCheck:
         self._password = password
 
     def ready_to_publish(self, id, version, run=None, run_after=None):
-        return self._wait_for_status(id, version, run=run, status="ready to publish", run_after=run_after)
+        article_on_dashboard = self._wait_for_status(id, version, run=run, status="ready to publish", run_after=run_after)
+        current_version = article_on_dashboard['versions'][str(version)]
+        preview_link = current_version['details']['preview-link']
+        LOGGER.info("Found preview-link on dashboard: %s", preview_link)
+        assert preview_link, ("Article %s version %s must have a preview-link:\n%s" % (id, version, current_version))
+        return article_on_dashboard
 
     def published(self, id, version, run=None):
         return self._wait_for_status(id, version, run=run, status="published")
