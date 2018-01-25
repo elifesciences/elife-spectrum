@@ -182,7 +182,7 @@ class DashboardArticleCheck:
             else:
                 run_contents = self._check_for_run(version_contents)
             if not run_contents:
-                return False, version_contents['runs']
+                return False, version_contents
             self._check_correctness(run_contents)
             LOGGER.info(
                 "Found %s version %s in status %s on dashboard with run %s",
