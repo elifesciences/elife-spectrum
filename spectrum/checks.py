@@ -182,7 +182,7 @@ class DashboardArticleCheck:
             else:
                 run_contents = self._check_for_run(version_contents)
             if not run_contents:
-                return False, version_contents['runs']
+                return False, version_contents
             self._check_correctness(run_contents)
             LOGGER.info(
                 "Found %s version %s in status %s on dashboard with run %s",
@@ -684,28 +684,33 @@ class ObserverCheck:
         self._host = host
 
     def latest_article(self, id):
-        template = "%s/report/latest-articles?per-page=100&page=1"
-        url = template % self._host
+        template = "%s/report/latest-articles?per-page=100&page=%s"
+        url = template % (self._host, "%s") # page will be substituted later
         return _poll(
             lambda: self._is_present(url, id),
             "article with id %s at %s",
             id, url
         )
 
-    def _is_present(self, url, id):
-        response = requests.get(url)
-        LOGGER.debug("Loaded %s (%s)", url, response.status_code, extra={'id':id})
-        if response.status_code > 299:
-            raise UnrecoverableError(response)
-        soup = BeautifulSoup(response.content, "lxml-xml")
-        target_guid = "https://dx.doi.org/10.7554/eLife.%s" % id
-        guids = {item.guid.string:item for item in soup.rss.channel.find_all("item")}
-        if target_guid in guids.keys():
-            LOGGER.info("Found item %s at %s:\n%s", target_guid, url, guids[target_guid], extra={'id':id})
-            return guids[target_guid]
-        else:
-            LOGGER.debug("Item %s not found in %s", target_guid, pformat(guids.keys()), extra={'id':id})
-            return False
+    def _is_present(self, url_page_template, id):
+        page = 1
+        while True:
+            url = url_page_template % page
+            response = requests.get(url)
+            LOGGER.debug("Loaded %s (%s)", url, response.status_code, extra={'id':id})
+            if response.status_code > 299:
+                raise UnrecoverableError(response)
+            soup = BeautifulSoup(response.content, "lxml-xml")
+            target_guid = "https://dx.doi.org/10.7554/eLife.%s" % id
+            guids = {item.guid.string:item for item in soup.rss.channel.find_all("item")}
+            if not guids:
+                # we have reached an empty page
+                return False
+            if target_guid in guids.keys():
+                LOGGER.info("Found item %s at %s:\n%s", target_guid, url, guids[target_guid], extra={'id':id})
+                return guids[target_guid]
+            LOGGER.debug("Item %s not found on page %s: %s", target_guid, page, pformat(guids.keys()), extra={'id':id})
+            page = page + 1
 
 def _poll(action_fn, error_message, *error_message_args):
     """
