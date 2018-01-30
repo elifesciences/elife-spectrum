@@ -826,7 +826,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
             if script.get("src"):
                 resources.append(script.get("src"))
         for link in soup.find_all("link"):
-            if "canonical" not in link.get("rel"):
+            if " ".join(link.get("rel")) not in ["canonical", "next", "prev", "shortlink"]:
                 resources.append(link.get("href"))
         for video in soup.find_all("video"):
             resources.append(video.get("poster"))
