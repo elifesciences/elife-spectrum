@@ -221,14 +221,14 @@ class JournalSession:
         self._host = host
         self._browser = browser
 
-    def login(self):
-        self.enable_feature_flag()
-
+    # TODO: automatically pass Referer when MechanicalSoup is upgraded to allow it
+    def login(self, referer=None):
         login_url = "%s/log-in" % self._host
+        headers = {}
+        if referer:
+            headers['Referer'] = '%s%s' % (self._host, referer)
+        logged_in_page = self._browser.get(login_url, headers=headers)
         # should be automatically redirected back by simulator
-        #logged_in_page = self._browser.get(login_url)
-        # temporary Referer header to test redirect back to the original page
-        logged_in_page = self._browser.get(login_url, headers={'Referer': '%s/about' % self._host})
         _assert_html_response(logged_in_page)
 
         # if changing to another check, move in logout()
