@@ -227,6 +227,7 @@ class JournalSession:
         headers = {}
         if referer:
             headers['Referer'] = '%s%s' % (self._host, referer)
+        LOGGER.info("Logging in at %s (headers %s)", login_url, headers)
         logged_in_page = self._browser.get(login_url, headers=headers)
         # should be automatically redirected back by simulator
         _assert_html_response(logged_in_page)
@@ -235,6 +236,7 @@ class JournalSession:
         profile_selector = ".login-control__non_js_control_link"
         profile = logged_in_page.soup.select_one(profile_selector)
         assert profile is not None, ("Cannot find %s in %s response\n%s" % (profile_selector, logged_in_page.status_code, logged_in_page.content))
+        LOGGER.info("Found logged-in profile button at %s", profile_selector)
 
         return logged_in_page
 
