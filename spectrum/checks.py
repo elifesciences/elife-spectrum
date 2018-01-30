@@ -499,12 +499,16 @@ class JournalCheck:
     CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
     CSS_DOWNLOAD_LINK = '#downloads a'
 
-    def __init__(self, host, resource_checking_method='head'):
+    def __init__(self, host, resource_checking_method='head', query_string=None):
         self._host = host
         self._resource_checking_method = resource_checking_method
+        self._query_string = query_string
 
     def with_resource_checking_method(self, method):
-        return JournalCheck(self._host, method)
+        return JournalCheck(self._host, method, self._query_string)
+
+    def with_query_string(self, query_string):
+        return JournalCheck(self._host, self._resource_checking_method, query_string)
 
     def article(self, id, volume, has_figures=False, version=None):
         url = _build_url("/content/%s/e%s" % (volume, id), self._host)
@@ -577,6 +581,8 @@ class JournalCheck:
         return links
 
     def _persistently_get(self, url):
+        if self._query_string:
+            url = "%s?%s" % (url, self._query_string)
         response = requests.get(url)
         # intended behavior at the moment: if the page is too slow to load,
         # timeouts will cut it (a CDN may serve a stale version if it has it)
