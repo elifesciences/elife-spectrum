@@ -232,6 +232,7 @@ class JournalSession:
         LOGGER.info("Logging in at %s (headers %s)", login_url, headers)
         logged_in_page = self._browser.get(login_url, headers=headers)
         # should be automatically redirected back by simulator
+        LOGGER.info("Redirected to %s after log in", logged_in_page.url)
         _assert_html_response(logged_in_page)
 
         # if changing to another check, move in logout()
@@ -244,15 +245,17 @@ class JournalSession:
     def logout(self):
         logout_url = "%s/log-out" % self._host
         LOGGER.info("Logging out at %s", logout_url)
-        logged_in_page = self._browser.get(logout_url)
-        _assert_html_response(logged_in_page)
+        logged_out_page = self._browser.get(logout_url)
+        LOGGER.info("Redirected to %s after log out", logged_out_page.url)
+        _assert_html_response(logged_out_page)
 
-        profile = logged_in_page.soup.select_one(self.PROFILE_LINK)
-        assert profile is None, ("Found %s in %s response\n%s" % (self.PROFILE_LINK, logged_in_page.status_code, logged_in_page.content))
-
+        profile = logged_out_page.soup.select_one(self.PROFILE_LINK)
+        assert profile is None, ("Found %s in %s response\n%s" % (self.PROFILE_LINK, logged_out_page.status_code, logged_out_page.content))
 
     def check(self, page_path):
-        page = self._browser.get("%s/%s" % (self._host, page_path.lstrip('/')))
+        url = "%s/%s" % (self._host, page_path.lstrip('/'))
+        LOGGER.info("Visiting %s", url)
+        page = self._browser.get(url)
         _assert_html_response(page)
 
         return page
