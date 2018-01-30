@@ -3,7 +3,9 @@ from sys import argv, exit
 import fileinput
 import requests
 
+# TODO: with_resource_checking_method('GET')
 JOURNAL = checks.JOURNAL.with_query_string("open-sesame")
+
 
 if __name__ == '__main__':
     pages = []
@@ -17,7 +19,7 @@ if __name__ == '__main__':
         # first page of annotations on the API
         checks.API.annotations(profile_id)
 
-        pages.append((load.JournalListing(JOURNAL, "/profiles/%s" % profile_id), 1))
+        pages.append((load.JournalProfile(JOURNAL, "/profiles/%s" % profile_id), 1))
     load_strategy = load.AllOf(pages)
     while True:
         try:
