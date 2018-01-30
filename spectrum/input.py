@@ -242,12 +242,14 @@ class JournalSession:
 
     def logout(self):
         logout_url = "%s/log-out" % self._host
+        LOGGER.info("Logging out at %s", logout_url)
         logged_in_page = self._browser.get(logout_url)
         _assert_html_response(logged_in_page)
 
         profile_selector = ".login-control__non_js_control_link"
         profile = logged_in_page.soup.select_one(profile_selector)
         assert profile is None, ("Found %s in %s response\n%s" % (profile_selector, logged_in_page.status_code, logged_in_page.content))
+
 
     def check(self, page_path):
         page = self._browser.get("%s/%s" % (self._host, page_path.lstrip('/')))
