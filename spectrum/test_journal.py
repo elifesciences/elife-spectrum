@@ -68,7 +68,12 @@ def test_rss_feeds():
 @pytest.mark.annotations
 def test_logging_in_and_out():
     session = input.JOURNAL.session()
-    session.login()
+    session.enable_feature_flag()
+    original = '/about'
+    session.check(original)
+    returned_to = session.login(referer=original)
+    assert '/about' in returned_to.url, "Did not come back to the original page after log in"
+
     session.logout()
 
 @pytest.mark.journal
@@ -76,6 +81,7 @@ def test_logging_in_and_out():
 @pytest.mark.annotations
 def test_logged_in_profile():
     session = input.JOURNAL.session()
+    session.enable_feature_flag()
     session.login()
 
     id = _find_profile_id_by_orcid(MAGIC_ORCID)
@@ -86,6 +92,7 @@ def test_logged_in_profile():
 @pytest.mark.annotations
 def test_public_profile():
     profile_creation_session = input.JOURNAL.session()
+    profile_creation_session.enable_feature_flag()
     profile_creation_session.login()
 
     anonymous_session = input.JOURNAL.session()
