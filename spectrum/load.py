@@ -95,6 +95,29 @@ class JournalListingOfListing():
     def __str__(self):
         return "JournalListingOfListing(%s, listings queue length %s)" % (self._path, len(self._listings))
 
+class JournalProfile():
+    def __init__(self, journal, path):
+        self._journal = journal
+        self._path = path
+        self._pages = Queue([path])
+        self._items = Queue()
+
+    def run(self):
+        if len(self._items):
+            item = self._items.dequeue()
+            LOGGER.info("Loading annotation %s", item)
+            self._journal.generic(item)
+            return
+        self._pages.restart_if_empty()
+        path = self._pages.dequeue()
+        LOGGER.info("Loading profile %s", path)
+        items, links = self._journal.profile(path)
+        self._items.enqueue_all(items)
+        self._pages.enqueue_all(links)
+
+    def __str__(self):
+        return "JournalProfile(%s, pages queue length %s, annotations queue length %s)" % (self._path, len(self._pages), len(self._items))
+
 class JournalPage():
     def __init__(self, journal, path):
         self._journal = journal
