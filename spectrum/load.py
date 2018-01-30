@@ -1,6 +1,7 @@
 import string
 from random import randint
 from spectrum import logger, input, checks
+import requests.exceptions
 
 LOGGER = logger.logger(__name__)
 
@@ -31,6 +32,28 @@ class Queue():
 
     def __len__(self):
         return len(self._contents)
+
+class Limit():
+    def __init__(self, number):
+        self._number = number
+
+    def run(self, strategy):
+        iterations = 0
+        while True:
+            if self._number is not None:
+                if iterations >= self._number:
+                    LOGGER.info("Stopping at %s iterations limit", self._number)
+                    break
+            LOGGER.info("New iteration")
+            try:
+                strategy.run()
+            except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError, requests.exceptions.ConnectionError) as e:
+                LOGGER.exception("Error in loading (%s)", e.message)
+            iterations = iterations + 1
+
+    def __str__(self):
+        return "Limit(%s)" % self._number
+
 
 class JournalSearch():
     def __init__(self, journal, length=3, characters=string.ascii_lowercase):

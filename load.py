@@ -13,23 +13,7 @@ if __name__ == '__main__':
     except AttributeError:
         load.LOGGER.error("Unknown strategy %s", strategy)
         exit(2)
-    if len(argv) >= 3:
-        limit = int(argv[2])
-        load.LOGGER.info("Setting iterations limit %s", limit)
-    else:
-        limit = None
-        load.LOGGER.info("No limit set")
+    limit = load.Limit(argv[2] if len(argv) > 2 else None)
+    load.LOGGER.info("Setting iterations limit %s", limit)
 
-    iterations = 0
-    while True:
-        if limit is not None:
-            if iterations >= limit:
-                load.LOGGER.info("Stopping at %s iterations limit", limit)
-                break
-        load.LOGGER.info("New iteration")
-        try:
-            load_strategy.run()
-        except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError, requests.exceptions.ConnectionError) as e:
-            load.LOGGER.exception("Error in loading (%s)", e.message)
-        iterations = iterations + 1
-
+    limit.run(load_strategy)
