@@ -226,7 +226,9 @@ class JournalSession:
 
         login_url = "%s/log-in" % self._host
         # should be automatically redirected back by simulator
-        logged_in_page = self._browser.get(login_url)
+        #logged_in_page = self._browser.get(login_url)
+        # temporary Referer header to test redirect back to the original page
+        logged_in_page = self._browser.get(login_url, headers={'Referer': '%s/about' % self._host})
         _assert_html_response(logged_in_page)
 
         # if changing to another check, move in logout()
