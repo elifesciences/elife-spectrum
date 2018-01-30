@@ -69,9 +69,10 @@ def test_rss_feeds():
 def test_logging_in_and_out():
     session = input.JOURNAL.session()
     session.enable_feature_flag()
-    session.check('/about')
-    returned_to = session.login(referer='/about')
-    print returned_to
+    original = '/about'
+    session.check(original)
+    returned_to = session.login(referer=original)
+    assert '/about' in returned_to.url, "Did not come back to the original page after log in"
 
     session.logout()
 
