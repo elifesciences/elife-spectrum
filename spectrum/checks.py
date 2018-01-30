@@ -834,7 +834,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
         return list(set(resources))
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
-    LOGGER.info("Found resources %s", pformat(resources), extra=extra)
+    LOGGER.debug("Found resources %s", pformat(resources), extra=extra)
     _assert_all_load(resources, host, resource_checking_method, **extra)
     return soup
 
