@@ -3,8 +3,7 @@ from sys import argv, exit
 import fileinput
 import requests
 
-# TODO: with_resource_checking_method('GET')
-JOURNAL = checks.JOURNAL.with_query_string("open-sesame")
+JOURNAL = checks.JOURNAL.with_resource_checking_method('get').with_query_string("open-sesame")
 
 
 if __name__ == '__main__':
