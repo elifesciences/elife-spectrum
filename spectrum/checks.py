@@ -598,7 +598,10 @@ class JournalCheck:
 
     def _persistently_get(self, url):
         if self._query_string:
-            url = "%s?%s" % (url, self._query_string)
+            if "?" in url:
+                url = "%s&%s" % (url, self._query_string)
+            else:
+                url = "%s?%s" % (url, self._query_string)
         response = requests.get(url)
         # intended behavior at the moment: if the page is too slow to load,
         # timeouts will cut it (a CDN may serve a stale version if it has it)
