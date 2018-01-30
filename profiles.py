@@ -7,6 +7,9 @@ JOURNAL = checks.JOURNAL.with_resource_checking_method('get').with_query_string(
 
 
 if __name__ == '__main__':
+    limit = load.Limit(argv[1] if len(argv) > 1 else None)
+    load.LOGGER.info("Setting iterations limit %s", limit)
+
     pages = []
     for line in fileinput.input():
         profile_id = line.strip("\n")
@@ -19,11 +22,8 @@ if __name__ == '__main__':
         checks.API.annotations(profile_id)
 
         pages.append((load.JournalProfile(JOURNAL, "/profiles/%s" % profile_id), 1))
+
     load_strategy = load.AllOf(pages)
-    while True:
-        try:
-            load_strategy.run()
-        except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError, requests.exceptions.ConnectionError) as e:
-            load.LOGGER.exception("Error in loading (%s)", e.message)
+    limit.run(load_strategy)
 
 
