@@ -495,6 +495,7 @@ class JournalCheck:
     CSS_TEASER_LINK = '.teaser__header_text_link'
     CSS_CAROUSEL_LINK = '.carousel-item__title_link'
     CSS_BLOCK_LINK = '.block-link .block-link__link'
+    # only valid for non-JavaScript pages
     CSS_ANNOTATION_LINK = '.annotation-teaser'
     CSS_PAGER_LINK = '.pager a'
     CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
@@ -586,7 +587,6 @@ class JournalCheck:
     def profile(self, path):
         body = self.generic(path)
         soup = BeautifulSoup(body, "html.parser")
-        print body
         annotation_li_tags = soup.select(self.CSS_ANNOTATION_LINK)
         annotation_links = [a['data-in-context-uri'] for a in annotation_li_tags]
         LOGGER.info("Loaded listing %s, found annotation links: %s", path, annotation_links)
