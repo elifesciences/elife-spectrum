@@ -246,6 +246,7 @@ class JournalSession:
         assert profile is None, ("Found %s in %s response\n%s" % (profile_selector, logged_in_page.status_code, logged_in_page.content))
 
     def check(self, page_path):
+        LOGGER.info("Loading page %s", page_path)
         page = self._browser.get("%s/%s" % (self._host, page_path.lstrip('/')))
         _assert_html_response(page)
 
