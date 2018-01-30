@@ -495,6 +495,7 @@ class JournalCheck:
     CSS_TEASER_LINK = '.teaser__header_text_link'
     CSS_CAROUSEL_LINK = '.carousel-item__title_link'
     CSS_BLOCK_LINK = '.block-link .block-link__link'
+    CSS_ANNOTATION_LINK = '.annotation-teaser'
     CSS_PAGER_LINK = '.pager a'
     CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
     CSS_DOWNLOAD_LINK = '#downloads a'
@@ -567,9 +568,10 @@ class JournalCheck:
         soup = BeautifulSoup(body, "html.parser")
         teaser_a_tags = soup.select(self.CSS_TEASER_LINK)
         teaser_links = [a['href'] for a in teaser_a_tags]
-        LOGGER.info("Loaded listing %s, found links: %s", path, teaser_links)
+        LOGGER.info("Loaded listing %s, found teaser links: %s", path, teaser_links)
         pager_a_tags = soup.select(self.CSS_PAGER_LINK)
         pager_links = [a['href'] for a in pager_a_tags]
+        LOGGER.info("Loaded listing %s, found page links: %s", path, pager_links)
         return teaser_links, pager_links
 
     def listing_of_listing(self, path):
@@ -579,6 +581,20 @@ class JournalCheck:
         links = [a['href'] for a in a_tags]
         LOGGER.info("Loaded listing of listing %s, found links: %s", path, links)
         return links
+
+    # TODO: use elsewhere than spectrum.load?
+    def profile(self, path):
+        body = self.generic(path)
+        soup = BeautifulSoup(body, "html.parser")
+        print body
+        annotation_li_tags = soup.select(self.CSS_ANNOTATION_LINK)
+        annotation_links = [a['data-in-context-uri'] for a in annotation_li_tags]
+        LOGGER.info("Loaded listing %s, found annotation links: %s", path, annotation_links)
+        pager_a_tags = soup.select(self.CSS_PAGER_LINK)
+        pager_links = [a['href'] for a in pager_a_tags]
+        LOGGER.info("Loaded listing %s, found page links: %s", path, pager_links)
+        return annotation_links, pager_links
+
 
     def _persistently_get(self, url):
         if self._query_string:
