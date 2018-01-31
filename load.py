@@ -13,7 +13,7 @@ if __name__ == '__main__':
     except AttributeError:
         load.LOGGER.error("Unknown strategy %s", strategy)
         exit(2)
-    limit = load.Limit(argv[2] if len(argv) > 2 else None)
+    limit = load.Limit(int(argv[2]) if len(argv) > 2 else None)
     load.LOGGER.info("Setting iterations limit %s", limit)
 
     limit.run(load_strategy)

@@ -35,7 +35,7 @@ class Queue():
 
 class Limit():
     def __init__(self, number):
-        self._number = number
+        self._number = int(number)
 
     def run(self, strategy):
         iterations = 0
@@ -43,7 +43,7 @@ class Limit():
             if self._number is not None:
                 if iterations >= self._number:
                     LOGGER.info("Stopping at %s iterations limit", self._number)
-                    break
+                    return
             LOGGER.info("New iteration")
             try:
                 strategy.run()
