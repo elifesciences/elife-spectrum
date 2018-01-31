@@ -260,11 +260,6 @@ class JournalSession:
 
         return page
 
-    def enable_feature_flag(self):
-        feature_flag = "%s/?open-sesame" % self._host
-        flagged_page = self._browser.get(feature_flag)
-        _assert_html_response(flagged_page)
-
 def invented_word(length=30, characters=None):
     if not characters:
         characters = string.ascii_lowercase + string.digits
