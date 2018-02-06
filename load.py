@@ -1,35 +1,20 @@
+from argparse import ArgumentParser
 from spectrum import load, checks
 from sys import argv, exit
 import requests
 
 if __name__ == '__main__':
-    if len(argv) < 2:
-        load.LOGGER.error("No strategy specified. Usage: load.py STRATEGY [ITERATIONS]")
-        exit(1)
-    strategy = argv[1]
-    load.LOGGER.info("Loading strategy %s", strategy)
+    parser = ArgumentParser(description="Load tests Journal")
+    parser.add_argument('strategy', type=str, help='Strategy to use e.g. JOURNAL_ALL')
+    parser.add_argument('--limit', type=int, default=None, help='The maximum number of checks to make before stopping')
+    arguments = parser.parse_args()
+    load.LOGGER.info("Loading strategy %s", arguments.strategy)
     try:
-        load_strategy = getattr(load, strategy)
+        load_strategy = getattr(load, arguments.strategy)
     except AttributeError:
-        load.LOGGER.error("Unknown strategy %s", strategy)
+        load.LOGGER.error("Unknown strategy %s", arguments.strategy)
         exit(2)
-    if len(argv) >= 3:
-        limit = int(argv[2])
-        load.LOGGER.info("Setting iterations limit %s", limit)
-    else:
-        limit = None
-        load.LOGGER.info("No limit set")
+    limit = load.Limit(arguments.limit)
+    load.LOGGER.info("Setting iterations limit %s", limit)
 
-    iterations = 0
-    while True:
-        if limit is not None:
-            if iterations >= limit:
-                load.LOGGER.info("Stopping at %s iterations limit", limit)
-                break
-        load.LOGGER.info("New iteration")
-        try:
-            load_strategy.run()
-        except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError, requests.exceptions.ConnectionError) as e:
-            load.LOGGER.exception("Error in loading (%s)", e.message)
-        iterations = iterations + 1
-
+    limit.run(load_strategy)

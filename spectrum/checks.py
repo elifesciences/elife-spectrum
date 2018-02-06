@@ -495,16 +495,22 @@ class JournalCheck:
     CSS_TEASER_LINK = '.teaser__header_text_link'
     CSS_CAROUSEL_LINK = '.carousel-item__title_link'
     CSS_BLOCK_LINK = '.block-link .block-link__link'
+    # only valid for non-JavaScript pages
+    CSS_ANNOTATION_LINK = '.annotation-teaser'
     CSS_PAGER_LINK = '.pager a'
     CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
     CSS_DOWNLOAD_LINK = '#downloads a'
 
-    def __init__(self, host, resource_checking_method='head'):
+    def __init__(self, host, resource_checking_method='head', query_string=None):
         self._host = host
         self._resource_checking_method = resource_checking_method
+        self._query_string = query_string
 
     def with_resource_checking_method(self, method):
-        return JournalCheck(self._host, method)
+        return JournalCheck(self._host, method, self._query_string)
+
+    def with_query_string(self, query_string):
+        return JournalCheck(self._host, self._resource_checking_method, query_string)
 
     def article(self, id, volume, has_figures=False, version=None):
         url = _build_url("/content/%s/e%s" % (volume, id), self._host)
@@ -563,9 +569,10 @@ class JournalCheck:
         soup = BeautifulSoup(body, "html.parser")
         teaser_a_tags = soup.select(self.CSS_TEASER_LINK)
         teaser_links = [a['href'] for a in teaser_a_tags]
-        LOGGER.info("Loaded listing %s, found links: %s", path, teaser_links)
+        LOGGER.info("Loaded listing %s, found teaser links: %s", path, teaser_links)
         pager_a_tags = soup.select(self.CSS_PAGER_LINK)
         pager_links = [a['href'] for a in pager_a_tags]
+        LOGGER.info("Loaded listing %s, found page links: %s", path, pager_links)
         return teaser_links, pager_links
 
     def listing_of_listing(self, path):
@@ -576,7 +583,25 @@ class JournalCheck:
         LOGGER.info("Loaded listing of listing %s, found links: %s", path, links)
         return links
 
+    # TODO: use elsewhere than spectrum.load?
+    def profile(self, path):
+        body = self.generic(path)
+        soup = BeautifulSoup(body, "html.parser")
+        annotation_li_tags = soup.select(self.CSS_ANNOTATION_LINK)
+        annotation_links = [a['data-in-context-uri'] for a in annotation_li_tags]
+        LOGGER.info("Loaded listing %s, found annotation links: %s", path, annotation_links)
+        pager_a_tags = soup.select(self.CSS_PAGER_LINK)
+        pager_links = [a['href'] for a in pager_a_tags]
+        LOGGER.info("Loaded listing %s, found page links: %s", path, pager_links)
+        return annotation_links, pager_links
+
+
     def _persistently_get(self, url):
+        if self._query_string:
+            if "?" in url:
+                url = "%s&%s" % (url, self._query_string)
+            else:
+                url = "%s?%s" % (url, self._query_string)
         response = requests.get(url)
         # intended behavior at the moment: if the page is too slow to load,
         # timeouts will cut it (a CDN may serve a stale version if it has it)
@@ -801,7 +826,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
             if script.get("src"):
                 resources.append(script.get("src"))
         for link in soup.find_all("link"):
-            if "canonical" not in link.get("rel"):
+            if " ".join(link.get("rel")) not in ["canonical", "next", "prev", "shortlink"]:
                 resources.append(link.get("href"))
         for video in soup.find_all("video"):
             resources.append(video.get("poster"))
@@ -812,7 +837,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
         return list(set(resources))
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
-    LOGGER.info("Found resources %s", pformat(resources), extra=extra)
+    LOGGER.debug("Found resources %s", pformat(resources), extra=extra)
     _assert_all_load(resources, host, resource_checking_method, **extra)
     return soup
 
