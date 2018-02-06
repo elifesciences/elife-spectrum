@@ -1,6 +1,7 @@
 import string
 from random import randint
 from spectrum import logger, input, checks
+import requests.exceptions
 
 LOGGER = logger.logger(__name__)
 
@@ -31,6 +32,28 @@ class Queue():
 
     def __len__(self):
         return len(self._contents)
+
+class Limit():
+    def __init__(self, number):
+        self._number = int(number)
+
+    def run(self, strategy):
+        iterations = 0
+        while True:
+            if self._number is not None:
+                if iterations >= self._number:
+                    LOGGER.info("Stopping at %s iterations limit", self._number)
+                    return
+            LOGGER.info("New iteration")
+            try:
+                strategy.run()
+            except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError, requests.exceptions.ConnectionError) as e:
+                LOGGER.exception("Error in loading (%s)", e.message)
+            iterations = iterations + 1
+
+    def __str__(self):
+        return "Limit(%s)" % self._number
+
 
 class JournalSearch():
     def __init__(self, journal, length=3, characters=string.ascii_lowercase):
@@ -94,6 +117,29 @@ class JournalListingOfListing():
 
     def __str__(self):
         return "JournalListingOfListing(%s, listings queue length %s)" % (self._path, len(self._listings))
+
+class JournalProfile():
+    def __init__(self, journal, path):
+        self._journal = journal
+        self._path = path
+        self._pages = Queue([path])
+        self._items = Queue()
+
+    def run(self):
+        if len(self._items):
+            item = self._items.dequeue()
+            LOGGER.info("Loading annotation %s", item)
+            self._journal.generic(item)
+            return
+        self._pages.restart_if_empty()
+        path = self._pages.dequeue()
+        LOGGER.info("Loading profile %s", path)
+        items, links = self._journal.profile(path)
+        self._items.enqueue_all(items)
+        self._pages.enqueue_all(links)
+
+    def __str__(self):
+        return "JournalProfile(%s, pages queue length %s, annotations queue length %s)" % (self._path, len(self._pages), len(self._items))
 
 class JournalPage():
     def __init__(self, journal, path):
