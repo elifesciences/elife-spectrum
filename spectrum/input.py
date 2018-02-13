@@ -115,9 +115,9 @@ class JournalCmsSession:
             LOGGER.info("Attaching image")
 
         LOGGER.info("Saving form")
-        self._choose_submit(form, 'op', value='Save and publish')
+        self._choose_submit(form, 'op', value='Save')
         # not sure why, but `data` here is necessary
-        response = self._browser.submit(form, create_page.url, data={'op': 'Save and publish'})
+        response = self._browser.submit(form, create_page.url, data={'op': 'Save'})
         # requests follows redirects by default
         _assert_html_response(response)
         assert _journal_cms_page_title(response.soup) == title
