@@ -416,7 +416,7 @@ class ApiCheck:
         item_check can be used to verify the only result satisfies a condition"""
         search_url = "%s/search?for=%s" % (self._host, word)
         def _is_ready():
-            response = requests.get(search_url, headers=self._base_headers())
+            response = _persistently_get(search_url, headers=self._base_headers())
             body = self._ensure_sane_response(response, search_url)
             LOGGER.debug("Search result: %s", body)
             if len(body['items']) == 0:
@@ -559,8 +559,13 @@ class JournalCheck:
 
     def just_load(self, path):
         url = _build_url(path, self._host)
+        if self._query_string:
+            if "?" in url:
+                url = "%s&%s" % (url, self._query_string)
+            else:
+                url = "%s?%s" % (url, self._query_string)
         LOGGER.info("Loading %s", url)
-        response = self._persistently_get(url)
+        response = _persistently_get(url)
         _assert_status_code(response, 200, url)
         return response
 
@@ -595,19 +600,6 @@ class JournalCheck:
         LOGGER.info("Loaded listing %s, found page links: %s", path, pager_links)
         return annotation_links, pager_links
 
-
-    def _persistently_get(self, url):
-        if self._query_string:
-            if "?" in url:
-                url = "%s&%s" % (url, self._query_string)
-            else:
-                url = "%s?%s" % (url, self._query_string)
-        response = requests.get(url)
-        # intended behavior at the moment: if the page is too slow to load,
-        # timeouts will cut it (a CDN may serve a stale version if it has it)
-        if response.status_code == 504:
-            response = requests.get(url)
-        return response
 
     def _link(self, body, class_name):
         """Finds out where the link selected with CSS class_name points to.
@@ -775,6 +767,14 @@ def _poll(action_fn, error_message, *error_message_args):
                 built_error_message = built_error_message + ("\nHost: %s" % host)
                 built_error_message = built_error_message + ("\nIp: %s" % _get_host_ip(host))
         raise TimeoutError.giving_up_on(built_error_message)
+
+def _persistently_get(url, **kwargs):
+    response = requests.get(url, **kwargs)
+    # intended behavior at the moment: if the page is too slow to load,
+    # timeouts will cut it (a CDN may serve a stale version if it has it)
+    if response.status_code == 504:
+        response = requests.get(url, **kwargs)
+    return response
 
 def _get_host_ip(host):
     try:
