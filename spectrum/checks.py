@@ -11,6 +11,7 @@ from ssl import SSLError
 import socket
 from urlparse import urlparse
 
+import backoff
 from bs4 import BeautifulSoup
 import polling
 import requests
@@ -23,8 +24,6 @@ from spectrum.config import SETTINGS
 
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
 requests.packages.urllib3.disable_warnings()
-
-
 GLOBAL_TIMEOUT = int(os.environ['SPECTRUM_TIMEOUT']) if 'SPECTRUM_TIMEOUT' in os.environ else 600
 HTTP_TIMEOUT = 30
 LOGGER = logger.logger(__name__)
@@ -768,12 +767,14 @@ def _poll(action_fn, error_message, *error_message_args):
                 built_error_message = built_error_message + ("\nIp: %s" % _get_host_ip(host))
         raise TimeoutError.giving_up_on(built_error_message)
 
+# intended behavior at the moment: if the page is too slow to load,
+# timeouts will cut it (a CDN may serve a stale version if it has it)
+@backoff.on_predicate(backoff.expo, max_tries=3)
 def _persistently_get(url, **kwargs):
     response = requests.get(url, **kwargs)
-    # intended behavior at the moment: if the page is too slow to load,
-    # timeouts will cut it (a CDN may serve a stale version if it has it)
     if response.status_code == 504:
-        response = requests.get(url, **kwargs)
+        LOGGER.debug("504, will retry: %s", url)
+        return None
     return response
 
 def _get_host_ip(host):
@@ -982,7 +983,6 @@ JOURNAL_LISTING_OF_LISTING_PATHS = [
 CDN_XML = HttpCheck(
     str(SETTINGS['generic_cdn_host']) + '/articles/{id}/elife-{id}-v{version}.xml'
 )
-
 GITHUB_XML = GithubCheck(
     repo_url=SETTINGS['github_article_xml_repository_url']
 )
@@ -994,7 +994,6 @@ PEERSCOUT = PeerscoutCheck(
 OBSERVER = ObserverCheck(
     host=SETTINGS['observer_host']
 )
-
 PUBMED = HttpCheck(
     str(SETTINGS['bot_host']) + '/pubmed/{xml}'
 )
