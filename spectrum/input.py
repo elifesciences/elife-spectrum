@@ -15,8 +15,10 @@ class InputBucket:
         self._s3 = s3
         self._bucket_name = bucket_name
 
-    def upload(self, filename, id):
-        self._s3.meta.client.upload_file(filename, self._bucket_name, path.basename(filename))
+    def upload(self, filename, destination_filename=None, id=None):
+        if not destination_filename:
+            destination_filename = path.basename(filename)
+        self._s3.meta.client.upload_file(filename, self._bucket_name, destination_filename)
         LOGGER.info("Uploaded %s to %s", filename, self._bucket_name, extra={'id': id})
 
     def clean(self, prefix=None):
@@ -298,3 +300,5 @@ BOT_WORKFLOWS = BotWorkflowStarter(
     SETTINGS['region_name'],
     SETTINGS['queue_workflow_starter']
 )
+
+BOT_CONFIGURATION = InputBucket(aws.S3, SETTINGS['bucket_configuration'])

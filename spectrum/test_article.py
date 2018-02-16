@@ -89,6 +89,21 @@ def test_article_silent_correction(generate_article, modify_article):
     checks.ARCHIVE.of(id=article.id(), version=article.version(), last_modified_after=silent_correction_start)
     checks.CDN_XML.of(text_match='CYTOMEGALOVIRUS', id=article.id(), version=article.version())
 
+@pytest.mark.journal
+@pytest.mark.continuum
+@pytest.mark.bot
+@pytest.mark.lax
+def test_article_subject_change(generate_article, modify_article):
+    template_id = 15893
+    article = generate_article(template_id)
+    #_ingest_and_publish_and_wait_for_published(article)
+    ## TODO: for stability, wait until all the publishing workflows have finished. Github xml is enough
+    #checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
+
+    subjects_configuration = generator.article_subjects({article.id(): "Immunology"})
+    input.BOT_CONFIGURATION.upload(subjects_configuration.filename())
+    #input.BOT_WORKFLOWS.change_subject_bad_name({article.id()})
+
 @pytest.mark.continuum
 @pytest.mark.bot
 @pytest.mark.lax
