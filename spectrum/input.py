@@ -19,7 +19,7 @@ class InputBucket:
         if not destination_filename:
             destination_filename = path.basename(filename)
         self._s3.meta.client.upload_file(filename, self._bucket_name, destination_filename)
-        LOGGER.info("Uploaded %s to %s", filename, self._bucket_name, extra={'id': id})
+        LOGGER.info("Uploaded %s to %s/%s", filename, self._bucket_name, destination_filename, extra={'id': id})
 
     def clean(self, prefix=None):
         aws.clean_bucket(self._bucket_name, prefix)
