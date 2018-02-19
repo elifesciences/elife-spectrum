@@ -101,7 +101,7 @@ def test_article_subject_change(generate_article):
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
 
     subjects_configuration = generator.article_subjects({article.id(): "Immunology"})
-    input.BOT_CONFIGURATION.upload(subjects_configuration.filename(), 'article_subjects.csv')
+    input.BOT_CONFIGURATION.upload(subjects_configuration.filename(), 'article_subjects_data/article_subjects.csv')
     _feed_silent_correction(article)
     input.SILENT_CORRECTION.article(os.path.basename(article.filename()))
     #checks.API.wait_article(id=article.id(), subjects='...')
