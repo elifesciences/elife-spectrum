@@ -104,7 +104,7 @@ def test_article_subject_change(generate_article):
     input.BOT_CONFIGURATION.upload(subjects_configuration.filename(), 'article_subjects_data/article_subjects.csv')
     _feed_silent_correction(article)
     input.SILENT_CORRECTION.article(os.path.basename(article.filename()))
-    #checks.API.wait_article(id=article.id(), subjects='...')
+    checks.API.wait_article(id=article.id(), subjects=[{'name':'Immunology', 'id': 'immunology'}])
 
 @pytest.mark.continuum
 @pytest.mark.bot
