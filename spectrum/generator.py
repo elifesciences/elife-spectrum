@@ -177,3 +177,20 @@ class ArticleZip:
         else:
             LOGGER.info("Not deleted directory %s because it doesn't exist", self._directory)
 
+def article_subjects(ids_to_subjects):
+    maximum_suffix = 999999999
+    suffix = random.randrange(1, maximum_suffix + 1)
+    generated_file_name = '%s/article_subjects_%s.csv' % (COMMON['tmp'], suffix)
+    with open(generated_file_name, 'w') as generated_file:
+        generated_file.write('DOI,subj-group-type,subject\n')
+        for id, subject in ids_to_subjects.items():
+            generated_file.write('10.7554/eLife.%s,heading,%s\n' % (id, subject))
+    return ArticleSubjects(generated_file_name)
+
+class ArticleSubjects:
+    def __init__(self, filename):
+        self._filename = filename
+
+    def filename(self):
+        return self._filename
+
