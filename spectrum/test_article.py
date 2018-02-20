@@ -89,6 +89,23 @@ def test_article_silent_correction(generate_article, modify_article):
     checks.ARCHIVE.of(id=article.id(), version=article.version(), last_modified_after=silent_correction_start)
     checks.CDN_XML.of(text_match='CYTOMEGALOVIRUS', id=article.id(), version=article.version())
 
+@pytest.mark.journal
+@pytest.mark.continuum
+@pytest.mark.bot
+@pytest.mark.lax
+def test_article_subject_change(generate_article):
+    template_id = 15893
+    article = generate_article(template_id)
+    _ingest_and_publish_and_wait_for_published(article)
+    # TODO: for stability, wait until all the publishing workflows have finished. Github xml is enough
+    checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
+
+    subjects_configuration = generator.article_subjects({article.id(): "Immunology"})
+    input.BOT_CONFIGURATION.upload(subjects_configuration.filename(), 'article_subjects_data/article_subjects.csv')
+    _feed_silent_correction(article)
+    input.SILENT_CORRECTION.article(os.path.basename(article.filename()))
+    checks.API.wait_article(id=article.id(), subjects=[{'name':'Immunology', 'id': 'immunology'}])
+
 @pytest.mark.continuum
 @pytest.mark.bot
 @pytest.mark.lax
@@ -214,10 +231,10 @@ def test_rss_feed_contains_new_article(generate_article):
     checks.OBSERVER.latest_article(article.id())
 
 def _ingest(article):
-    input.PRODUCTION_BUCKET.upload(article.filename(), article.id())
+    input.PRODUCTION_BUCKET.upload(article.filename(), id=article.id())
 
 def _feed_silent_correction(article):
-    input.SILENT_CORRECTION_BUCKET.upload(article.filename(), article.id())
+    input.SILENT_CORRECTION_BUCKET.upload(article.filename(), id=article.id())
 
 def _wait_for_publishable(article, run_after):
     article_on_dashboard = checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run_after)
