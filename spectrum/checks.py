@@ -767,15 +767,14 @@ def _poll(action_fn, error_message, *error_message_args):
                 built_error_message = built_error_message + ("\nIp: %s" % _get_host_ip(host))
         raise TimeoutError.giving_up_on(built_error_message)
 
+def _retry_request(response):
+    return response.status_code == 504
+
 # intended behavior at the moment: if the page is too slow to load,
 # timeouts will cut it (a CDN may serve a stale version if it has it)
-@backoff.on_predicate(backoff.expo, max_tries=3)
+@backoff.on_predicate(backoff.expo, predicate=_retry_request, max_tries=3)
 def _persistently_get(url, **kwargs):
-    response = requests.get(url, **kwargs)
-    if response.status_code == 504:
-        LOGGER.debug("504, will retry: %s", url)
-        return None
-    return response
+    return requests.get(url, **kwargs)
 
 def _get_host_ip(host):
     try:
