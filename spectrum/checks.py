@@ -770,9 +770,12 @@ def _poll(action_fn, error_message, *error_message_args):
 def _retry_request(response):
     return response.status_code == 504
 
+def _retrying_request(details):
+    LOGGER.debug("%s, will retry: %s", details.value.status_code, details.args[0])
+
 # intended behavior at the moment: if the page is too slow to load,
 # timeouts will cut it (a CDN may serve a stale version if it has it)
-@backoff.on_predicate(backoff.expo, predicate=_retry_request, max_tries=3)
+@backoff.on_predicate(backoff.expo, predicate=_retry_request, max_tries=3, on_backoff=_retrying_request)
 def _persistently_get(url, **kwargs):
     return requests.get(url, **kwargs)
 
