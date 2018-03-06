@@ -20,6 +20,7 @@ from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
+from spectrum.checks import exceptions
 
 
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
@@ -27,28 +28,6 @@ requests.packages.urllib3.disable_warnings()
 GLOBAL_TIMEOUT = int(os.environ['SPECTRUM_TIMEOUT']) if 'SPECTRUM_TIMEOUT' in os.environ else 600
 HTTP_TIMEOUT = 30
 LOGGER = logger.logger(__name__)
-
-class TimeoutError(RuntimeError):
-    @staticmethod
-    def giving_up_on(what):
-        timestamp = datetime.today().isoformat()
-        return TimeoutError(
-            "Cannot find '%s'; Giving up at %s" \
-                    % (what, timestamp)
-        )
-
-class UnrecoverableError(RuntimeError):
-    def __init__(self, details):
-        super(UnrecoverableError, self).__init__(self, details)
-        self._details = details
-
-    def __str__(self):
-        if isinstance(self._details, requests.Response):
-            return "RESPONSE CODE: %d\nRESPONSE BODY:\n%s\n" \
-                    % (self._details.status_code, self._details.text)
-        else:
-            return "DETAILS: %s" % pformat(self._details)
-
 
 class BucketFileCheck:
     def __init__(self, s3, bucket_name, key, prefix=None):
@@ -166,7 +145,7 @@ class DashboardArticleCheck:
             if response.status_code != 200:
                 return False, "Response code: %s" % response.status_code
             if response.status_code >= 500:
-                raise UnrecoverableError(response)
+                raise exceptions.UnrecoverableError(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
             if not version_contents:
@@ -226,7 +205,7 @@ class DashboardArticleCheck:
     def _check_correctness(self, run_contents):
         errors = [e for e in run_contents['events'] if e['event-status'] == 'error']
         if errors:
-            raise UnrecoverableError("At least one error event was reported for the run.\n%s" % pformat(errors))
+            raise exceptions.UnrecoverableError("At least one error event was reported for the run.\n%s" % pformat(errors))
 
     def _is_last_event_error(self, id, version, run):
         url = self._article_api(id)
@@ -234,7 +213,7 @@ class DashboardArticleCheck:
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
             if response.status_code >= 500:
-                raise UnrecoverableError(response)
+                raise exceptions.UnrecoverableError(response)
             article = response.json()
             version_runs = article['versions'][version_key]['runs']
             run_key = str(run)
@@ -281,7 +260,7 @@ class LaxArticleCheck:
             if response.status_code != 200:
                 return False
             if response.status_code >= 500:
-                raise UnrecoverableError(response)
+                raise exceptions.UnrecoverableError(response)
             LOGGER.info("Found article version %s in lax: %s", version, url, extra={'id': id})
             return response.json()
         except ConnectionError as e:
@@ -499,6 +478,7 @@ class JournalCheck:
     CSS_PAGER_LINK = '.pager a'
     CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
     CSS_DOWNLOAD_LINK = '#downloads a'
+    CSS_SUBJECT_LINK = 'content-header__subject_list_item a'
 
     def __init__(self, host, resource_checking_method='head', query_string=None):
         self._host = host
@@ -524,6 +504,15 @@ class JournalCheck:
             LOGGER.info("Loading figures page %s", figures_url, extra={'id':id})
             self.generic(url)
         return body
+
+    def article_only_subject(self, id, href, version=None):
+        url = _build_url("/articles/%s" % id, self._host)
+        if version:
+            url = "%sv%s" % (url, version)
+        LOGGER.info("Loading %s", url, extra={'id':id})
+        body = self.generic(url)
+        subject_link = self._link(body, self.CSS_SUBJECT_LINK)
+        assert subject_link == href, "Incorrect subject linked from article page %s" % url
 
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
@@ -692,7 +681,7 @@ class PeerscoutCheck:
         response = requests.get(url, params=query, auth=(self._user, self._password))
         LOGGER.info("Found recommendations at %s for query %s", url, query)
         if response.status_code > 299:
-            raise UnrecoverableError(response)
+            raise exceptions.UnrecoverableError(response)
         return response.json()
 
 class ObserverCheck:
@@ -715,7 +704,7 @@ class ObserverCheck:
             response = requests.get(url)
             LOGGER.debug("Loaded %s (%s)", url, response.status_code, extra={'id':id})
             if response.status_code > 299:
-                raise UnrecoverableError(response)
+                raise exceptions.UnrecoverableError(response)
             soup = BeautifulSoup(response.content, "lxml-xml")
             target_guid = "https://dx.doi.org/10.7554/eLife.%s" % id
             guids = {item.guid.string:item for item in soup.rss.channel.find_all("item")}
@@ -765,7 +754,7 @@ def _poll(action_fn, error_message, *error_message_args):
                 host = urlparse(details['last_seen'].request.url).netloc
                 built_error_message = built_error_message + ("\nHost: %s" % host)
                 built_error_message = built_error_message + ("\nIp: %s" % _get_host_ip(host))
-        raise TimeoutError.giving_up_on(built_error_message)
+        raise exceptions.TimeoutError.giving_up_on(built_error_message)
 
 # intended behavior at the moment: if the page is too slow to load,
 # timeouts will cut it (a CDN may serve a stale version if it has it)

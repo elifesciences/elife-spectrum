@@ -1,6 +1,7 @@
 import string
 from random import randint
 from spectrum import logger, input, checks
+from spectrum.checks import exceptions
 import requests.exceptions
 
 LOGGER = logger.logger(__name__)
@@ -47,7 +48,7 @@ class Limit():
             LOGGER.info("New iteration")
             try:
                 strategy.run()
-            except (AssertionError, RuntimeError, ValueError, checks.UnrecoverableError, requests.exceptions.ConnectionError) as e:
+            except (AssertionError, RuntimeError, ValueError, exceptions.UnrecoverableError, requests.exceptions.ConnectionError) as e:
                 LOGGER.exception("Error in loading (%s)", e.message)
             iterations = iterations + 1
 
