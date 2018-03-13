@@ -20,7 +20,7 @@ from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
-from spectrum.checks import exceptions
+from spectrum.exceptions import TimeoutError, UnrecoverableError
 
 
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
@@ -145,7 +145,7 @@ class DashboardArticleCheck:
             if response.status_code != 200:
                 return False, "Response code: %s" % response.status_code
             if response.status_code >= 500:
-                raise exceptions.UnrecoverableError(response)
+                raise UnrecoverableError(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
             if not version_contents:
@@ -205,7 +205,7 @@ class DashboardArticleCheck:
     def _check_correctness(self, run_contents):
         errors = [e for e in run_contents['events'] if e['event-status'] == 'error']
         if errors:
-            raise exceptions.UnrecoverableError("At least one error event was reported for the run.\n%s" % pformat(errors))
+            raise UnrecoverableError("At least one error event was reported for the run.\n%s" % pformat(errors))
 
     def _is_last_event_error(self, id, version, run):
         url = self._article_api(id)
@@ -213,7 +213,7 @@ class DashboardArticleCheck:
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
             if response.status_code >= 500:
-                raise exceptions.UnrecoverableError(response)
+                raise UnrecoverableError(response)
             article = response.json()
             version_runs = article['versions'][version_key]['runs']
             run_key = str(run)
@@ -260,7 +260,7 @@ class LaxArticleCheck:
             if response.status_code != 200:
                 return False
             if response.status_code >= 500:
-                raise exceptions.UnrecoverableError(response)
+                raise UnrecoverableError(response)
             LOGGER.info("Found article version %s in lax: %s", version, url, extra={'id': id})
             return response.json()
         except ConnectionError as e:
@@ -681,7 +681,7 @@ class PeerscoutCheck:
         response = requests.get(url, params=query, auth=(self._user, self._password))
         LOGGER.info("Found recommendations at %s for query %s", url, query)
         if response.status_code > 299:
-            raise exceptions.UnrecoverableError(response)
+            raise UnrecoverableError(response)
         return response.json()
 
 class ObserverCheck:
@@ -704,7 +704,7 @@ class ObserverCheck:
             response = requests.get(url)
             LOGGER.debug("Loaded %s (%s)", url, response.status_code, extra={'id':id})
             if response.status_code > 299:
-                raise exceptions.UnrecoverableError(response)
+                raise UnrecoverableError(response)
             soup = BeautifulSoup(response.content, "lxml-xml")
             target_guid = "https://dx.doi.org/10.7554/eLife.%s" % id
             guids = {item.guid.string:item for item in soup.rss.channel.find_all("item")}
@@ -754,7 +754,7 @@ def _poll(action_fn, error_message, *error_message_args):
                 host = urlparse(details['last_seen'].request.url).netloc
                 built_error_message = built_error_message + ("\nHost: %s" % host)
                 built_error_message = built_error_message + ("\nIp: %s" % _get_host_ip(host))
-        raise exceptions.TimeoutError.giving_up_on(built_error_message)
+        raise TimeoutError.giving_up_on(built_error_message)
 
 # intended behavior at the moment: if the page is too slow to load,
 # timeouts will cut it (a CDN may serve a stale version if it has it)
