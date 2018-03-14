@@ -12,4 +12,5 @@ git fetch
 git checkout ${revision}
 git reset --hard
 git lfs pull
+find . -name '*.pyc' -exec rm {} \;
 ./install.sh
