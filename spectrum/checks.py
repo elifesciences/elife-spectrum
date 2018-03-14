@@ -510,8 +510,8 @@ class JournalCheck:
     def with_query_string(self, query_string):
         return JournalCheck(self._host, self._resource_checking_method, query_string)
 
-    def article(self, id, volume, has_figures=False, version=None):
-        url = _build_url("/content/%s/e%s" % (volume, id), self._host)
+    def article(self, id, has_figures=False, version=None):
+        url = _build_url("/articles/%s" % id, self._host)
         if version:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
