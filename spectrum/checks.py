@@ -11,14 +11,13 @@ from ssl import SSLError
 import socket
 from urlparse import urlparse
 
-import backoff
 from bs4 import BeautifulSoup
 import polling
 import requests
 from requests.exceptions import ConnectionError
 from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
-from spectrum import aws, logger
+from spectrum import aws, logger, retries
 from spectrum.config import SETTINGS
 
 
@@ -415,7 +414,7 @@ class ApiCheck:
         item_check can be used to verify the only result satisfies a condition"""
         search_url = "%s/search?for=%s" % (self._host, word)
         def _is_ready():
-            response = _persistently_get(search_url, headers=self._base_headers())
+            response = retries.persistently_get(search_url, headers=self._base_headers())
             body = self._ensure_sane_response(response, search_url)
             LOGGER.debug("Search result: %s", body)
             if len(body['items']) == 0:
@@ -564,7 +563,7 @@ class JournalCheck:
             else:
                 url = "%s?%s" % (url, self._query_string)
         LOGGER.info("Loading %s", url)
-        response = _persistently_get(url)
+        response = retries.persistently_get(url)
         _assert_status_code(response, 200, url)
         return response
 
@@ -766,16 +765,6 @@ def _poll(action_fn, error_message, *error_message_args):
                 built_error_message = built_error_message + ("\nHost: %s" % host)
                 built_error_message = built_error_message + ("\nIp: %s" % _get_host_ip(host))
         raise TimeoutError.giving_up_on(built_error_message)
-
-# intended behavior at the moment: if the page is too slow to load,
-# timeouts will cut it (a CDN may serve a stale version if it has it)
-@backoff.on_predicate(backoff.expo, max_tries=3)
-def _persistently_get(url, **kwargs):
-    response = requests.get(url, **kwargs)
-    if response.status_code == 504:
-        LOGGER.debug("504, will retry: %s", url)
-        return None
-    return response
 
 def _get_host_ip(host):
     try:
