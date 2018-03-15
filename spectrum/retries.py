@@ -10,7 +10,7 @@ def _retry_request(response):
 
 
 def _retrying_request(details):
-    LOGGER.debug("%s, will retry: %s", details.value.status_code, details.args[0])
+    LOGGER.debug("%s, will retry: %s", details['value'].status_code, details['args'][0])
 
 
 # intended behavior at the moment: if the page is too slow to load,
