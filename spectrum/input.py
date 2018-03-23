@@ -4,7 +4,7 @@ import string
 import requests
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
-from econtools import econ_article_feeder, econ_workflow
+from econtools import econ_workflow
 from pollute import modified_environ
 import mechanicalsoup
 
@@ -47,25 +47,6 @@ class Dashboard:
             run,
             extra={'id': id}
         )
-
-class SilentCorrectionWorkflowStarter:
-    def __init__(self, aws_access_key_id, aws_secret_access_key, region_name, input_bucket_name, queue_name, workflow_name):
-        self._aws_access_key_id = aws_access_key_id
-        self._aws_secret_access_key = aws_secret_access_key
-        self._region_name = region_name
-        self._input_bucket_name = input_bucket_name
-        self._queue_name = queue_name
-        self._workflow_name = workflow_name
-
-    def article(self, filename):
-        with modified_environ(added={'AWS_ACCESS_KEY_ID': self._aws_access_key_id, 'AWS_SECRET_ACCESS_KEY': self._aws_secret_access_key, 'AWS_DEFAULT_REGION': self._region_name}):
-            econ_article_feeder.feed_econ(
-                self._input_bucket_name,
-                self._queue_name,
-                rate=1,
-                prefix=filename,
-                workflow_name='SilentCorrectionsIngest'
-            )
 
 class BotWorkflowStarter:
     def __init__(self, aws_access_key_id, aws_secret_access_key, region_name, queue_name):
@@ -273,15 +254,6 @@ DASHBOARD = Dashboard(
     SETTINGS['dashboard_host'],
     SETTINGS['dashboard_user'],
     SETTINGS['dashboard_password']
-)
-
-SILENT_CORRECTION = SilentCorrectionWorkflowStarter(
-    SETTINGS['aws_access_key_id'],
-    SETTINGS['aws_secret_access_key'],
-    SETTINGS['region_name'],
-    SILENT_CORRECTION_BUCKET.name(),
-    SETTINGS['queue_workflow_starter'],
-    'SilentCorrectionsIngest'
 )
 
 JOURNAL_CMS = JournalCms(
