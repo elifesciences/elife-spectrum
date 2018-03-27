@@ -1,6 +1,5 @@
 "Test that involve publishing articles and checking their visibility and correctness throughout different systems"
 from datetime import datetime
-import os
 import re
 import pytest
 import requests
@@ -83,7 +82,6 @@ def test_article_silent_correction(generate_article, modify_article):
     silent_correction_start = datetime.now()
     silently_corrected_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
     _feed_silent_correction(silently_corrected_article)
-    input.SILENT_CORRECTION.article(os.path.basename(silently_corrected_article.filename()))
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='CYTOMEGALOVIRUS')
     checks.ARCHIVE.of(id=article.id(), version=article.version(), last_modified_after=silent_correction_start)
@@ -103,7 +101,6 @@ def test_article_subject_change(generate_article):
     subjects_configuration = generator.article_subjects({article.id(): "Immunology"})
     input.BOT_CONFIGURATION.upload(subjects_configuration.filename(), 'article_subjects_data/article_subjects.csv')
     _feed_silent_correction(article)
-    input.SILENT_CORRECTION.article(os.path.basename(article.filename()))
     checks.API.wait_article(id=article.id(), subjects=[{'name':'Immunology', 'id': 'immunology'}])
 
 @pytest.mark.continuum
