@@ -469,7 +469,6 @@ class ApiCheck:
         return final_headers
 
 class JournalCheck:
-    CSS_FIGURES_LINK = 'view-selector__link--figures'
     CSS_TEASER_LINK = '.teaser__header_text_link'
     CSS_CAROUSEL_LINK = '.carousel-item__title_link'
     CSS_BLOCK_LINK = '.block-link .block-link__link'
@@ -478,7 +477,8 @@ class JournalCheck:
     CSS_PAGER_LINK = '.pager a'
     CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
     CSS_DOWNLOAD_LINK = '#downloads a'
-    CSS_SUBJECT_LINK = 'content-header__subject_list_item a'
+    CLASS_FIGURES_LINK = 'view-selector__link--figures'
+    CLASS_SUBJECT_LINK = 'content-header__subject_link'
 
     def __init__(self, host, resource_checking_method='head', query_string=None):
         self._host = host
@@ -497,9 +497,9 @@ class JournalCheck:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
         body = self.generic(url)
-        figures_link = self._link(body, self.CSS_FIGURES_LINK)
+        figures_link = self._link(body, self.CLASS_FIGURES_LINK)
         if has_figures:
-            assert figures_link is not None, "Cannot find figures link with selector %s" % self.CSS_FIGURES_LINK
+            assert figures_link is not None, "Cannot find figures link with selector %s" % self.CLASS_FIGURES_LINK
             figures_url = _build_url(figures_link, self._host)
             LOGGER.info("Loading figures page %s", figures_url, extra={'id':id})
             self.generic(url)
@@ -511,8 +511,9 @@ class JournalCheck:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
         body = self.generic(url)
-        subject_link = self._link(body, self.CSS_SUBJECT_LINK)
-        assert subject_link == href, "Incorrect subject linked from article page %s" % url
+        subject_link = self._link(body, self.CLASS_SUBJECT_LINK)
+        assert subject_link is not None, "Cannot find subject link at %s" % self.CLASS_SUBJECT_LINK
+        assert subject_link == href, "Incorrect subject `%s` linked from article page %s (expected `%s`)" % (subject_link, url, href)
 
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
