@@ -505,7 +505,7 @@ class JournalCheck:
             self.generic(url)
         return body
 
-    def article_only_subject(self, id, href, version=None):
+    def article_only_subject(self, id, subject_id, version=None):
         url = _build_url("/articles/%s" % id, self._host)
         if version:
             url = "%sv%s" % (url, version)
@@ -513,7 +513,7 @@ class JournalCheck:
         body = self.generic(url)
         subject_link = self._link(body, self.CLASS_SUBJECT_LINK)
         assert subject_link is not None, "Cannot find subject link at %s" % self.CLASS_SUBJECT_LINK
-        assert subject_link == href, "Incorrect subject `%s` linked from article page %s (expected `%s`)" % (subject_link, url, href)
+        assert subject_link == ('/subjects/%s' % subject_id), "Incorrect subject `%s` linked from article page %s (expected subject id `%s`)" % (subject_link, url, subject_id)
 
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
