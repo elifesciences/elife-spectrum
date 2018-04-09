@@ -591,7 +591,7 @@ class JournalCheck:
     def _links(self, body, class_name):
         """Finds out where 0 or more links selected with CSS class_name point to.
 
-        May return [] if there is no actual link with this class on the page"""
+        Will return [] if there are no actual links with this class on the page"""
         soup = BeautifulSoup(body, "html.parser")
         links = soup.find_all("a", class_=class_name)
         return [l['href'] for l in links]
