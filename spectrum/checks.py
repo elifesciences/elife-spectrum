@@ -19,6 +19,7 @@ from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
 from spectrum import aws, logger, retries
 from spectrum.config import SETTINGS
+from spectrum.exceptions import TimeoutError, UnrecoverableError
 
 
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
@@ -26,28 +27,6 @@ requests.packages.urllib3.disable_warnings()
 GLOBAL_TIMEOUT = int(os.environ['SPECTRUM_TIMEOUT']) if 'SPECTRUM_TIMEOUT' in os.environ else 600
 HTTP_TIMEOUT = 30
 LOGGER = logger.logger(__name__)
-
-class TimeoutError(RuntimeError):
-    @staticmethod
-    def giving_up_on(what):
-        timestamp = datetime.today().isoformat()
-        return TimeoutError(
-            "Cannot find '%s'; Giving up at %s" \
-                    % (what, timestamp)
-        )
-
-class UnrecoverableError(RuntimeError):
-    def __init__(self, details):
-        super(UnrecoverableError, self).__init__(self, details)
-        self._details = details
-
-    def __str__(self):
-        if isinstance(self._details, requests.Response):
-            return "RESPONSE CODE: %d\nRESPONSE BODY:\n%s\n" \
-                    % (self._details.status_code, self._details.text)
-        else:
-            return "DETAILS: %s" % pformat(self._details)
-
 
 class BucketFileCheck:
     def __init__(self, s3, bucket_name, key, prefix=None):
@@ -489,7 +468,6 @@ class ApiCheck:
         return final_headers
 
 class JournalCheck:
-    CSS_FIGURES_LINK = 'view-selector__link--figures'
     CSS_TEASER_LINK = '.teaser__header_text_link'
     CSS_CAROUSEL_LINK = '.carousel-item__title_link'
     CSS_BLOCK_LINK = '.block-link .block-link__link'
@@ -498,6 +476,8 @@ class JournalCheck:
     CSS_PAGER_LINK = '.pager a'
     CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
     CSS_DOWNLOAD_LINK = '#downloads a'
+    CLASS_FIGURES_LINK = 'view-selector__link--figures'
+    CLASS_SUBJECT_LINK = 'content-header__subject_link'
 
     def __init__(self, host, resource_checking_method='head', query_string=None):
         self._host = host
@@ -516,13 +496,22 @@ class JournalCheck:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
         body = self.generic(url)
-        figures_link = self._link(body, self.CSS_FIGURES_LINK)
+        figures_page_links = self._links(body, self.CLASS_FIGURES_LINK)
         if has_figures:
-            assert figures_link is not None, "Cannot find figures link with selector %s" % self.CSS_FIGURES_LINK
-            figures_url = _build_url(figures_link, self._host)
+            assert len(figures_page_links) == 1, "Expected a single figures page link with selector %s, found %s" % (self.CLASS_FIGURES_LINK, figures_page_links)
+            figures_url = _build_url(figures_page_links[0], self._host)
             LOGGER.info("Loading figures page %s", figures_url, extra={'id':id})
             self.generic(url)
         return body
+
+    def article_only_subject(self, id, subject_id, version=None):
+        url = _build_url("/articles/%s" % id, self._host)
+        if version:
+            url = "%sv%s" % (url, version)
+        LOGGER.info("Loading %s", url, extra={'id':id})
+        body = self.generic(url)
+        subjects_links = self._links(body, self.CLASS_SUBJECT_LINK)
+        assert subjects_links == ['/subjects/%s' % subject_id], "Incorrect subjects `%s` linked from article page %s (expected subject id `%s`)" % (subjects_links, url, subject_id)
 
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
@@ -598,16 +587,13 @@ class JournalCheck:
         LOGGER.info("Loaded listing %s, found page links: %s", path, pager_links)
         return annotation_links, pager_links
 
+    def _links(self, body, class_name):
+        """Finds out where 0 or more links selected with CSS class_name point to.
 
-    def _link(self, body, class_name):
-        """Finds out where the link selected with CSS class_name points to.
-
-        May return None if there is no actual link with this class on the page"""
+        Will return [] if there are no actual links with this class on the page"""
         soup = BeautifulSoup(body, "html.parser")
         links = soup.find_all("a", class_=class_name)
-        assert len(links) <= 1, \
-               ("Found too many links for the class name %s: %s" % (class_name, links))
-        return links[0]['href'] if len(links) == 1 else None
+        return [l['href'] for l in links]
 
     def _assert_all_resources_of_page_load(self, body, **extra):
         return _assert_all_resources_of_page_load(body, self._host, resource_checking_method=self._resource_checking_method, **extra)
