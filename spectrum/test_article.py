@@ -102,6 +102,8 @@ def test_article_subject_change(generate_article):
     input.BOT_CONFIGURATION.upload(subjects_configuration.filename(), 'article_subjects_data/article_subjects.csv')
     _feed_silent_correction(article)
     checks.API.wait_article(id=article.id(), subjects=[{'name':'Immunology', 'id': 'immunology'}])
+    # are there caches that need to expire first?
+    checks.JOURNAL.article_only_subject(id=article.id(), version=article.version(), subject_id='immunology')
 
 @pytest.mark.continuum
 @pytest.mark.bot
