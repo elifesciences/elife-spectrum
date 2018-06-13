@@ -192,12 +192,17 @@ def _journal_cms_page_title(soup):
     return soup.find("h1", {"class": "page-title"}).text.strip()
 
 class Journal:
-    def __init__(self, host):
+    def __init__(self, host, cdn_host):
         self._host = host
+        self._cdn_host = cdn_host
 
     def session(self):
         browser = mechanicalsoup.Browser()
         return JournalSession(self._host, browser)
+
+    def cdn_session(self):
+        browser = mechanicalsoup.Browser()
+        return JournalSession(self._cdn_host, browser)
 
 class JournalSession:
     PROFILE_LINK = ".login-control__non_js_control_link"
@@ -264,6 +269,7 @@ JOURNAL_CMS = JournalCms(
 
 JOURNAL = Journal(
     SETTINGS['journal_host'],
+    SETTINGS['journal_cdn_host'],
 )
 
 BOT_WORKFLOWS = BotWorkflowStarter(
