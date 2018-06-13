@@ -88,6 +88,16 @@ def test_logged_in_profile():
 @pytest.mark.journal
 @pytest.mark.profiles
 @pytest.mark.annotations
+def test_logged_in_through_cdn():
+    session = input.JOURNAL.cdn_session()
+    session.login()
+
+    id = _find_profile_id_by_orcid(MAGIC_ORCID)
+    session.check('/profiles/%s' % id)
+
+@pytest.mark.journal
+@pytest.mark.profiles
+@pytest.mark.annotations
 def test_public_profile():
     profile_creation_session = input.JOURNAL.session()
     profile_creation_session.login()
