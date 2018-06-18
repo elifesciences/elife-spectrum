@@ -149,7 +149,7 @@ class DashboardArticleCheck:
             version_contents = self._check_for_version(article, version)
             if not version_contents:
                 return False, article
-            if version_contents['details'].get('preview-link'):
+            if not version_contents['details'].get('preview-link'):
                 return False, version_contents
             if version_contents['details']['publication-status'] != status:
                 return False, version_contents
