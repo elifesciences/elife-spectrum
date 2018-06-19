@@ -138,7 +138,7 @@ class DashboardArticleCheck:
         )
 
     def _is_present(self, id, version, status, run=None, run_after=None):
-        def _extract_run_contents(version_contents, run, run_after):
+        def _extract_run_contents(version_contents):
             if not version_contents:
                 return False, article
             if not version_contents['details'].get('preview-link'):
@@ -168,7 +168,7 @@ class DashboardArticleCheck:
                 raise UnrecoverableError(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
-            outcome, dump = _extract_run_contents(version_contents, run, run_after)
+            outcome, dump = _extract_run_contents(version_contents)
             if not outcome:
                 return outcome, dump
             else:
