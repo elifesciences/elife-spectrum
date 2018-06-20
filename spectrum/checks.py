@@ -138,17 +138,11 @@ class DashboardArticleCheck:
         )
 
     def _is_present(self, id, version, status, run=None, run_after=None):
-        url = self._article_api(id)
-        try:
-            response = requests.get(url, auth=(self._user, self._password), verify=False)
-            if response.status_code != 200:
-                return False, "Response code: %s" % response.status_code
-            if response.status_code >= 500:
-                raise UnrecoverableError(response)
-            article = response.json()
-            version_contents = self._check_for_version(article, version)
+        def _extract_run_contents(version_contents):
             if not version_contents:
                 return False, article
+            if not version_contents['details'].get('preview-link'):
+                return False, version_contents
             if version_contents['details']['publication-status'] != status:
                 return False, version_contents
             if run or run_after:
@@ -160,7 +154,25 @@ class DashboardArticleCheck:
                 run_contents = self._check_for_run(version_contents)
             if not run_contents:
                 return False, version_contents
+
             self._check_correctness(run_contents)
+
+            return True, run_contents
+
+        url = self._article_api(id)
+        try:
+            response = requests.get(url, auth=(self._user, self._password), verify=False)
+            if response.status_code != 200:
+                return False, "Response code: %s" % response.status_code
+            if response.status_code >= 500:
+                raise UnrecoverableError(response)
+            article = response.json()
+            version_contents = self._check_for_version(article, version)
+            outcome, dump = _extract_run_contents(version_contents)
+            if not outcome:
+                return outcome, dump
+            else:
+                run_contents = dump
             LOGGER.info(
                 "Found %s version %s in status %s on dashboard with run %s",
                 url,
