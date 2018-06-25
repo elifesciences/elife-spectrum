@@ -28,6 +28,10 @@ def test_magazine():
 def test_various_generic_pages(path):
     checks.JOURNAL.generic(path)
 
+@pytest.mark.journal
+def test_redirects():
+    checks.JOURNAL_CDN.redirect('/content/4/e10627v1?param=value', '/articles/10627v1?param=value')
+
 @pytest.mark.two
 @pytest.mark.journal
 @pytest.mark.journal_cms

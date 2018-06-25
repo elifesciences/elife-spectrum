@@ -568,6 +568,15 @@ class JournalCheck:
         _assert_status_code(response, 200, url)
         return response
 
+    def redirect(self, path, expected, status_code=301):
+        url = _build_url(path, self._host)
+        LOGGER.info("Loading %s", url)
+        response = requests.get(url, allow_redirects=False)
+        _assert_status_code(response, status_code, url)
+        location = response.headers['Location']
+        assert location.startswith(self._host)
+        assert location == ('%s%s' % (self._host, expected))
+
     def listing(self, path):
         body = self.generic(path)
         soup = BeautifulSoup(body, "html.parser")
