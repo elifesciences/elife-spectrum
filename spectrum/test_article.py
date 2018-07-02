@@ -12,10 +12,12 @@ from spectrumprivate import file_paths
 def test_package_poa():
     # TODO: clean buckets first?
 
+    # TODO: these files should be modified to use a new article id?
     csv_files = file_paths("poa/*.csv")
     for csv_file in csv_files:
         input.EJP.upload(csv_file)
 
+    # TODO: this file should be modified to use a new article id?
     zip_file = file_paths("poa/*.zip")[0]
     input.POA_DELIVERY.upload(zip_file)
 
