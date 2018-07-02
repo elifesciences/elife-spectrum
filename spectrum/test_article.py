@@ -6,20 +6,21 @@ import requests
 from spectrum import generator
 from spectrum import input
 from spectrum import checks
+from spectrumprivate import file_paths
 
-@pytest.mark.continuum
-@pytest.mark.article
-@pytest.mark.journal
 @pytest.mark.bot
-@pytest.mark.lax
-@pytest.mark.parametrize("template_id", generator.all_stored_articles())
-def test_article_first_version(template_id, article_id_filter, generate_article):
-    if article_id_filter:
-        if template_id != article_id_filter:
-            pytest.skip("Filtered out through the article_id_filter")
+def test_package_poa():
+    # TODO: clean buckets first?
 
-    article = generate_article(template_id)
-    _ingest_and_publish_and_wait_for_published(article)
+    csv_files = file_paths("poa/*.csv")
+    for csv_file in csv_files:
+        input.EJP.upload(csv_file)
+
+    zip_file = file_paths("poa/*.zip")[0]
+    input.POA_DELIVERY.upload(zip_file)
+
+    input.BOT_WORKFLOWS.package_poa()
+
 
 @pytest.mark.journal
 @pytest.mark.continuum

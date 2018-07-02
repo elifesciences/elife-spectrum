@@ -62,6 +62,13 @@ class BotWorkflowStarter:
                 workflow_name='PubmedArticleDeposit'
             )
 
+    def package_poa(self):
+        with modified_environ(added={'AWS_ACCESS_KEY_ID': self._aws_access_key_id, 'AWS_SECRET_ACCESS_KEY': self._aws_secret_access_key, 'AWS_DEFAULT_REGION': self._region_name}):
+            econ_workflow.start_workflow(
+                self._queue_name,
+                workflow_name='PackagePOA'
+            )
+
 class JournalCms:
     def __init__(self, host, user, password):
         self._host = host
@@ -255,6 +262,8 @@ def invented_word(length=30, characters=None):
 PRODUCTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_input'])
 SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_silent_corrections'])
 PACKAGING_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_packaging'])
+POA_DELIVERY = InputBucket(aws.S3, SETTINGS['bucket_ejp_poa_delivery'])
+EJP = InputBucket(aws.S3, SETTINGS['bucket_ejp_ftp'])
 DASHBOARD = Dashboard(
     SETTINGS['dashboard_host'],
     SETTINGS['dashboard_user'],
