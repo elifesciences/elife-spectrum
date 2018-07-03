@@ -66,7 +66,10 @@ class BotWorkflowStarter:
         with modified_environ(added={'AWS_ACCESS_KEY_ID': self._aws_access_key_id, 'AWS_SECRET_ACCESS_KEY': self._aws_secret_access_key, 'AWS_DEFAULT_REGION': self._region_name}):
             econ_workflow.start_workflow(
                 self._queue_name,
-                workflow_name='PackagePOA'
+                workflow_name='PackagePOA',
+                workflow_data={
+                    'last_updated_since': '2018-06-20T00:00:00.000Z',
+                }
             )
 
 class JournalCms:
