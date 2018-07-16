@@ -19,7 +19,7 @@ from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
 from spectrum import aws, logger, retries
 from spectrum.config import SETTINGS
-from spectrum.exceptions import TimeoutError, UnrecoverableError
+from spectrum.exceptions import TimeoutError, UnrecoverableError, assert_status_code
 
 
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
@@ -565,14 +565,14 @@ class JournalCheck:
                 url = "%s?%s" % (url, self._query_string)
         LOGGER.info("Loading %s", url)
         response = retries.persistently_get(url)
-        _assert_status_code(response, 200, url)
+        assert_status_code(response, 200, url)
         return response
 
     def redirect(self, path, expected, status_code=301):
         url = _build_url(path, self._host)
         LOGGER.info("Loading %s", url)
         response = requests.get(url, allow_redirects=False)
-        _assert_status_code(response, status_code, url)
+        assert_status_code(response, status_code, url)
         location = response.headers['Location']
         assert location.startswith(self._host)
         assert location == ('%s%s' % (self._host, expected))
@@ -783,20 +783,6 @@ def _get_host_ip(host):
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
 
-def _assert_status_code(response, expected_status_code, url):
-    try:
-        assert response.status_code == expected_status_code, \
-                "Response from %s had status %d\nHeaders: %s\nAssertion, not request, performed at %s" % (url, response.status_code, pformat(response.headers), datetime.now().isoformat())
-            #"Response from %s had status %d, body %s" % (url, response.status_code, response.content)
-    except UnicodeDecodeError:
-        LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
-        LOGGER.error("(%s): type of content %s", url, type(response.content))
-        LOGGER.error("(%s): apparent_encoding %s", url, response.apparent_encoding)
-        with open("/tmp/response_content.txt", "w") as dump:
-            dump.write(response.content)
-        LOGGER.error("(%s): written response.content to /tmp")
-        LOGGER.error("(%s): headers %s)", url, response.headers)
-        raise RuntimeError("Could not decode response from %s (status code %s, headers %s)" % (url, response.status_code, response.headers))
 
 RESOURCE_CACHE = {}
 
@@ -868,7 +854,7 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
             LOGGER.warning("Loading (%s) resource %s again due to 504 timeout", resource_checking_method, url, extra=extra)
             response = requests.get(url)
 
-        _assert_status_code(response, 200, url)
+        assert_status_code(response, 200, url)
         RESOURCE_CACHE[url] = response.status_code
 
 def _build_url(path, host):
