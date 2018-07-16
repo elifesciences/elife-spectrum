@@ -1,5 +1,6 @@
 "Test that involve publishing articles and checking their visibility and correctness throughout different systems"
 from datetime import datetime
+from os import path
 import re
 import pytest
 import requests
@@ -21,7 +22,7 @@ def test_package_poa():
     zip_file = file_paths("poa/*.zip")[0]
     input.POA_DELIVERY.upload(zip_file)
 
-    input.BOT_WORKFLOWS.package_poa()
+    input.BOT_WORKFLOWS.package_poa(path.basename(zip_file))
 
 
 @pytest.mark.journal
