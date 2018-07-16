@@ -928,6 +928,24 @@ PACKAGING_BUCKET_BATCH = BucketFileCheck(
     '{vendor}/published/20[0-9]{{6}}/batch/(elife-.*\\.xml)',
     '{vendor}/published/'
 )
+PACKAGING_BUCKET_POA_ZIP = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_packaging'],
+    'outbox/elife_poa_e{id}_ds.zip'
+    'outbox/elife_poa_e{id}_ds.zip'
+)
+PACKAGING_BUCKET_POA_XML = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_packaging'],
+    'outbox/elife_poa_e{id}.xml'
+    'outbox/elife_poa_e{id}.xml'
+)
+PACKAGING_BUCKET_POA_PDF = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_packaging'],
+    'outbox/decap_elife_poa_e{id}.pdf'
+    'outbox/decap_elife_poa_e{id}.pdf'
+)
 DASHBOARD = DashboardArticleCheck(
     host=SETTINGS['dashboard_host'],
     user=SETTINGS['dashboard_user'],
