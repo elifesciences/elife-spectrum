@@ -33,17 +33,16 @@ def test_package_poa():
     csv_files = file_paths("poa/*.csv")
     # TODO: cleanup of generated files
     for csv_file in csv_files:
-        generator.article_ejp_csv(csv_file, source_article_id=template_id, target_article_id=article_id)
-        input.EJP.upload(csv_file)
+        generated_csv_file = generator.article_ejp_csv(csv_file, source_article_id=template_id, target_article_id=article_id)
+        input.EJP.upload(generated_csv_file)
 
     # TODO: this file should be modified to use a new article id?
-    zip_file = file_paths("poa/*.zip")[0]
-    generator.article_ejp_zip(zip_file, source_article_id=50142, target_article_id=article_id)
-    input.POA_DELIVERY.upload(zip_file)
+    source_zip_file = file_paths("poa/*.zip")[0]
+    generated_zip_file = generator.article_ejp_zip(source_zip_file, source_article_id=50142, target_article_id=article_id)
+    input.POA_DELIVERY.upload(generated_zip_file)
 
-    input.BOT_WORKFLOWS.package_poa(path.basename(zip_file))
+    input.BOT_WORKFLOWS.package_poa(path.basename(generated_zip_file))
 
-    article_id = '36157'
     checks.PACKAGING_BUCKET_POA_ZIP.of(id=article_id)
     checks.PACKAGING_BUCKET_POA_XML.of(id=article_id)
     checks.PACKAGING_BUCKET_POA_PDF.of(id=article_id)
