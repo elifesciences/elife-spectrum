@@ -60,17 +60,11 @@ def article_ejp_csv(source_csv, target_article_id, source_article_id=36157):
 
 def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
     def _substitute_article_id(text):
-        text = re.sub(
-            r"\b%s_" % source_article_id, 
-            "%s_" % str(target_article_id),
-            text
-        )
-        text = re.sub(
+        return re.sub(
             r"eLife\.%s\b" % source_article_id, 
             "eLife.%s" % str(target_article_id),
             text
         )
-        return text
 
     generated_ejp_zip_directory = '%s/poa-zip-%s' % (COMMON['tmp'], target_article_id)
     generated_ejp_zip_filename = path.join(COMMON['tmp'], _substitute_article_id(path.basename(source_zip)))

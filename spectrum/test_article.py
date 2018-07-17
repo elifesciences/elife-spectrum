@@ -31,14 +31,15 @@ def test_package_poa():
     article_id = generator.generate_article_id(00000)
 
     csv_files = file_paths("poa/*.csv")
+    sample_article_id = 36157
     # TODO: cleanup of generated files
     for csv_file in csv_files:
-        generated_csv_file = generator.article_ejp_csv(csv_file, source_article_id=36157, target_article_id=article_id)
+        generated_csv_file = generator.article_ejp_csv(csv_file, source_article_id=sample_article_id, target_article_id=article_id)
         input.EJP.upload(generated_csv_file)
 
     # TODO: this file should be modified to use a new article id?
     source_zip_file = file_paths("poa/*.zip")[0]
-    generated_zip_file = generator.article_ejp_zip(source_zip_file, source_article_id=50142, target_article_id=article_id)
+    generated_zip_file = generator.article_ejp_zip(source_zip_file, source_article_id=sample_article_id, target_article_id=article_id)
     input.POA_DELIVERY.upload(generated_zip_file)
 
     input.BOT_WORKFLOWS.package_poa(path.basename(generated_zip_file))
