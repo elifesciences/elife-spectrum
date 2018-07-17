@@ -66,8 +66,9 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
             text
         )
 
-    generated_ejp_zip_directory = '%s/poa-zip-%s' % (COMMON['tmp'], target_article_id)
     generated_ejp_zip_filename = path.join(COMMON['tmp'], _substitute_article_id(path.basename(source_zip)))
+    # begin delete
+    generated_ejp_zip_directory = '%s/poa-zip-%s' % (COMMON['tmp'], target_article_id)
     if not path.exists(generated_ejp_zip_directory):
         os.mkdir(generated_ejp_zip_directory)
     with zipfile.ZipFile(source_zip, 'r') as source_zip_file:
@@ -79,10 +80,13 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
             with source_zip_file.open(source_archived_filename, 'r') as source_archived_file:
                 with open(target_archived_filename, 'w') as target_archived_file:
                     target_archived_file.write(_substitute_article_id(source_archived_file.read()))
+    # end delete
 
-    with zipfile.ZipFile(generated_ejp_zip_filename, 'w') as zip_file:
-        for generated_filename in glob.glob(generated_ejp_zip_directory + "/*"):
-            zip_file.write(generated_filename, path.basename(generated_filename))
+    with zipfile.ZipFile(source_zip, 'r') as source_zip_file:
+        with zipfile.ZipFile(generated_ejp_zip_filename, 'w') as zip_file:
+            for source_archived_filename in source_zip_file.namelist():
+                with source_zip_file.open(source_archived_filename, 'r') as source_archived_file:
+                    zip_file.writestr(source_archived_filename, _substitute_article_id(source_archived_file.read()))
 
     LOGGER.info("Generated EJP POA zip %s", generated_ejp_zip_filename, extra={'id': target_article_id})
 
