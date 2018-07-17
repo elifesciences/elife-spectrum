@@ -54,6 +54,10 @@ def article_ejp_csv(source_csv, target_article_id, source_article_id=36157):
                 target_article_id
             ))
 
+    LOGGER.info("Generated EJP POA csv %s", generated_csv, extra={'id': target_article_id})
+
+    return generated_csv
+
 def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
     def _substitute_article_id(text):
         return re.sub(r"\b%s_" % source_article_id, str(target_article_id), text)
@@ -74,8 +78,11 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
 
     with zipfile.ZipFile(generated_ejp_zip_filename, 'w') as zip_file:
         for generated_filename in glob.glob(generated_ejp_zip_directory + "/*"):
-            with open(generated_filename) as generated_file:
-                zip_file.write(generated_filename, path.basename(generated_filename))
+            zip_file.write(generated_filename, path.basename(generated_filename))
+
+    LOGGER.info("Generated EJP POA zip %s", generated_ejp_zip_filename, extra={'id': target_article_id})
+
+    return generated_ejp_zip_filename
 
 
 def clean():
