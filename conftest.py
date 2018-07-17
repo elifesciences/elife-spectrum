@@ -1,3 +1,4 @@
+import os
 import sys
 
 import pytest
@@ -62,15 +63,15 @@ def poa_csvs():
                 source_article_id=source_article_id,
                 target_article_id=target_article_id
             ))
-            created_files.extend(csv_files)
+        created_files.extend(csv_files)
 
-            return csv_files
+        return csv_files
 
     yield create_csv_files
 
     for filename in created_files:
         os.remove(filename)
-        LOGGER.info("Deleted %s", filename)
+        generator.LOGGER.info("Deleted %s", filename)
 
 def _clean_all(created_articles):
     for article in created_articles:
