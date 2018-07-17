@@ -44,7 +44,7 @@ def test_package_poa():
     input.BOT_WORKFLOWS.package_poa(path.basename(generated_zip_file))
 
     checks.PACKAGING_BUCKET_POA_ZIP.of(id=article_id)
-    checks.PACKAGING_BUCKET_POA_XML.of(id=article_id)
+    #checks.PACKAGING_BUCKET_POA_XML.of(id=article_id)
     checks.PACKAGING_BUCKET_POA_PDF.of(id=article_id)
 
 

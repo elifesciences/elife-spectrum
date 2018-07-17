@@ -61,7 +61,7 @@ def article_ejp_csv(source_csv, target_article_id, source_article_id=36157):
 def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
     def _substitute_article_id(text):
         return re.sub(
-            r"eLife\.%s\b" % source_article_id, 
+            r"eLife\.%s\b" % source_article_id,
             "eLife.%s" % str(target_article_id),
             text
         )
