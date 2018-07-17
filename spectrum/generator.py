@@ -66,7 +66,12 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
             text
         )
 
-    generated_ejp_zip_filename = path.join(COMMON['tmp'], _substitute_article_id(path.basename(source_zip)))
+    # 50142_1_supp_mat_highwire_zip_853595_pxvg3m.zip
+    zip_prefix = random.randrange(1000000000, 9999999999 + 1)
+    generated_ejp_zip_filename = path.join(
+        COMMON['tmp'],
+        "%s_1_supp_mat_highwire_zip_853595_abcdef.zip" % zip_prefix
+    )
 
     with zipfile.ZipFile(source_zip, 'r') as source_zip_file:
         with zipfile.ZipFile(generated_ejp_zip_filename, 'w') as zip_file:

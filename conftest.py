@@ -59,7 +59,7 @@ def poa_csvs():
         csv_files = []
         for csv_file in file_paths("poa/*.csv"):
             csv_files.append(generator.article_ejp_csv(
-                csv_file, 
+                csv_file,
                 source_article_id=source_article_id,
                 target_article_id=target_article_id
             ))
@@ -69,6 +69,28 @@ def poa_csvs():
 
     yield create_csv_files
 
+    _remove_all(created_files)
+
+@pytest.yield_fixture
+def poa_zip():
+    created_files = []
+
+    def create_zip_file(source_article_id, target_article_id):
+        source_zip_file = file_paths("poa/*.zip")[0]
+        generated_zip_file = generator.article_ejp_zip(
+            source_zip_file,
+            source_article_id=source_article_id,
+            target_article_id=target_article_id
+        )
+        created_files.append(generated_zip_file)
+
+        return generated_zip_file
+
+    yield create_zip_file
+
+    _remove_all(created_files)
+
+def _remove_all(created_files):
     for filename in created_files:
         os.remove(filename)
         generator.LOGGER.info("Deleted %s", filename)
