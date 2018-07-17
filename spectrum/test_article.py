@@ -24,16 +24,16 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
     _ingest_and_publish_and_wait_for_published(article)
 
 @pytest.mark.bot
-def test_package_poa():
+def test_package_poa(poa_csvs):
     sample_article_id = 36157
     article_id = generator.generate_article_id(sample_article_id)
 
     csv_files = file_paths("poa/*.csv")
-    # TODO: cleanup of generated files
-    for csv_file in csv_files:
-        generated_csv_file = generator.article_ejp_csv(csv_file, source_article_id=sample_article_id, target_article_id=article_id)
-        input.EJP.upload(generated_csv_file)
+    for csv_file in poa_csvs(source_article_id=sample_article_id, target_article_id=article_id):
+        input.EJP.upload(csv_file)
 
+    # TODO: cleanup of generated zip file
+    # TODO: zip must have a random name too
     source_zip_file = file_paths("poa/*.zip")[0]
     generated_zip_file = generator.article_ejp_zip(source_zip_file, source_article_id=sample_article_id, target_article_id=article_id)
     input.POA_DELIVERY.upload(generated_zip_file)
