@@ -42,17 +42,36 @@ def article_zip(template_id, template_variables=None):
     has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
     return ArticleZip(id, zip_filename, generated_article_directory, revision=1, version=1, figure_names=figure_names, has_pdf=has_pdf)
 
-def article_ejp_csv(sample_csv, target_article_id, source_article_id=36157):
+def article_ejp_csv(source_csv, target_article_id, source_article_id=36157):
     generated_ejp_directory = '%s/poa-%s' % (COMMON['tmp'], target_article_id)
     if not path.exists(generated_ejp_directory):
         os.mkdir(generated_ejp_directory)
-    generated_csv = path.join(generated_ejp_directory, path.basename(sample_csv))
-    with open(sample_csv) as source:
+    generated_csv = path.join(generated_ejp_directory, path.basename(source_csv))
+    with open(source_csv) as source:
         with open(generated_csv, 'w') as target:
             target.write(source.read().replace(
                 str(source_article_id),
                 target_article_id
             ))
+
+def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
+    def _substitute_article_id(text):
+        return re.sub(r"\b%s_" % source_article_id, str(target_article_id), text)
+
+    generated_ejp_zip_directory = '%s/poa-zip-%s' % (COMMON['tmp'], target_article_id)
+    if not path.exists(generated_ejp_zip_directory):
+        os.mkdir(generated_ejp_zip_directory)
+    with zipfile.ZipFile(source_zip, 'r') as source_zip_file:
+        for source_archived_filename in source_zip_file.namelist():
+            target_archived_filename = path.join(
+                generated_ejp_zip_directory,
+                _substitute_article_id(source_archived_filename)
+            )
+            with source_zip_file.open(source_archived_filename, 'r') as source_archived_file:
+                with open(target_archived_filename, 'w') as target_archived_file:
+                    target_archived_file.write(_substitute_article_id(source_archived_file.read()))
+
+
 
 def clean():
     for entry in glob.glob('%s/elife*' % COMMON['tmp']):

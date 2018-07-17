@@ -38,6 +38,7 @@ def test_package_poa():
 
     # TODO: this file should be modified to use a new article id?
     zip_file = file_paths("poa/*.zip")[0]
+    generator.article_ejp_zip(zip_file, source_article_id=50142, target_article_id=article_id)
     input.POA_DELIVERY.upload(zip_file)
 
     input.BOT_WORKFLOWS.package_poa(path.basename(zip_file))
