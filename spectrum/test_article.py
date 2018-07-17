@@ -27,11 +27,10 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
 def test_package_poa():
     # TODO: clean buckets first?
 
-    # use a clearly fake base id
-    article_id = generator.generate_article_id(00000)
+    sample_article_id = 36157
+    article_id = generator.generate_article_id(sample_article_id)
 
     csv_files = file_paths("poa/*.csv")
-    sample_article_id = 36157
     # TODO: cleanup of generated files
     for csv_file in csv_files:
         generated_csv_file = generator.article_ejp_csv(csv_file, source_article_id=sample_article_id, target_article_id=article_id)
