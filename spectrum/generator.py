@@ -42,6 +42,18 @@ def article_zip(template_id, template_variables=None):
     has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
     return ArticleZip(id, zip_filename, generated_article_directory, revision=1, version=1, figure_names=figure_names, has_pdf=has_pdf)
 
+def article_ejp_csv(sample_csv, target_article_id, source_article_id=36157):
+    generated_ejp_directory = '%s/poa-%s' % (COMMON['tmp'], target_article_id)
+    if not path.exists(generated_ejp_directory):
+        os.mkdir(generated_ejp_directory)
+    generated_csv = path.join(generated_ejp_directory, path.basename(sample_csv))
+    with open(sample_csv) as source:
+        with open(generated_csv, 'w') as target:
+            target.write(source.read().replace(
+                str(source_article_id),
+                target_article_id
+            ))
+
 def clean():
     for entry in glob.glob('%s/elife*' % COMMON['tmp']):
         if path.isdir(entry):

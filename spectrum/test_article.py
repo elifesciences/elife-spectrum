@@ -28,8 +28,12 @@ def test_package_poa():
     # TODO: clean buckets first?
 
     # TODO: these files should be modified to use a new article id?
+    template_id = 36157
+    article_id = generator.generate_article_id(template_id)
     csv_files = file_paths("poa/*.csv")
+    # TODO: cleanup of generated files
     for csv_file in csv_files:
+        generator.article_ejp_csv(csv_file, source_article_id=template_id, target_article_id=article_id)
         input.EJP.upload(csv_file)
 
     # TODO: this file should be modified to use a new article id?
