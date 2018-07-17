@@ -9,6 +9,20 @@ from spectrum import input
 from spectrum import checks
 from spectrumprivate import file_paths
 
+@pytest.mark.continuum
+@pytest.mark.article
+@pytest.mark.journal
+@pytest.mark.bot
+@pytest.mark.lax
+@pytest.mark.parametrize("template_id", generator.all_stored_articles())
+def test_article_first_version(template_id, article_id_filter, generate_article):
+    if article_id_filter:
+        if template_id != article_id_filter:
+            pytest.skip("Filtered out through the article_id_filter")
+
+    article = generate_article(template_id)
+    _ingest_and_publish_and_wait_for_published(article)
+
 @pytest.mark.bot
 def test_package_poa():
     # TODO: clean buckets first?
