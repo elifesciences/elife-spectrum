@@ -59,6 +59,7 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
         return re.sub(r"\b%s_" % source_article_id, str(target_article_id), text)
 
     generated_ejp_zip_directory = '%s/poa-zip-%s' % (COMMON['tmp'], target_article_id)
+    generated_ejp_zip_filename = path.join(COMMON['tmp'], _substitute_article_id(path.basename(source_zip)))
     if not path.exists(generated_ejp_zip_directory):
         os.mkdir(generated_ejp_zip_directory)
     with zipfile.ZipFile(source_zip, 'r') as source_zip_file:
@@ -71,6 +72,10 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
                 with open(target_archived_filename, 'w') as target_archived_file:
                     target_archived_file.write(_substitute_article_id(source_archived_file.read()))
 
+    with zipfile.ZipFile(generated_ejp_zip_filename, 'w') as zip_file:
+        for generated_filename in glob.glob(generated_ejp_zip_directory + "/*"):
+            with open(generated_filename) as generated_file:
+                zip_file.write(generated_filename, path.basename(generated_filename))
 
 
 def clean():
