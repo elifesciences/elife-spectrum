@@ -132,6 +132,19 @@ def test_article_with_unicode_content(generate_article):
 
 @pytest.mark.journal
 @pytest.mark.continuum
+@pytest.mark.bot
+@pytest.mark.lax
+def test_article_google_scholar_metadata(generate_article):
+    article = generate_article(template_id=15893)
+    _ingest_and_publish(article)
+    checks.API.wait_article(id=article.id())
+    google_scholar_page = checks.JOURNAL_CDN.article(id=article.id(), headers={'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'})
+    general_page = checks.JOURNAL.article(id=article.id())
+    assert "<meta name=\"citation_" in google_scholar_page
+    assert "<meta name=\"citation_" not in general_page
+
+@pytest.mark.journal
+@pytest.mark.continuum
 @pytest.mark.search
 @pytest.mark.lax
 def test_searching_for_a_new_article(generate_article, modify_article):
