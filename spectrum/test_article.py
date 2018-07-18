@@ -138,7 +138,7 @@ def test_googlebot_sees_citation_metadata(generate_article):
     page = checks.JOURNAL_GOOGLEBOT.article(id=article.id())
 
     soup = BeautifulSoup(page, "html.parser")
-    citation_metadata = soup.find('meta', name=re.compile("^citation_"))
+    citation_metadata = soup.find_all("meta", {"name": re.compile("^citation_")})
 
     assert len(citation_metadata) > 0, "Expected citation metadata, found none"
 
@@ -151,7 +151,7 @@ def test_public_does_not_see_citation_metadata(generate_article):
     page = checks.JOURNAL_CDN.article(id=article.id())
 
     soup = BeautifulSoup(page, "html.parser")
-    citation_metadata = soup.find('meta', name=re.compile("^citation_"))
+    citation_metadata = soup.find_all("meta", {"name": re.compile("^citation_")})
 
     assert len(citation_metadata) == 0, "Expected no citation metadata, found %d meta elements" % (len(citation_metadata))
 
