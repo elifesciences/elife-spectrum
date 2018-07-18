@@ -17,7 +17,7 @@ import requests
 from requests.exceptions import ConnectionError
 from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
-from spectrum import aws, logger, retries
+from spectrum import aws, config, logger, retries
 from spectrum.config import SETTINGS
 from spectrum.exceptions import TimeoutError, UnrecoverableError
 
@@ -491,10 +491,11 @@ class JournalCheck:
     CLASS_FIGURES_LINK = 'view-selector__link--figures'
     CLASS_SUBJECT_LINK = 'content-header__subject_link'
 
-    def __init__(self, host, resource_checking_method='head', query_string=None):
+    def __init__(self, host, resource_checking_method='head', query_string=None, headers=None):
         self._host = host
         self._resource_checking_method = resource_checking_method
         self._query_string = query_string
+        self._headers = headers
 
     def with_resource_checking_method(self, method):
         return JournalCheck(self._host, method, self._query_string)
@@ -502,12 +503,15 @@ class JournalCheck:
     def with_query_string(self, query_string):
         return JournalCheck(self._host, self._resource_checking_method, query_string)
 
-    def article(self, id, has_figures=False, version=None, headers=None):
+    def with_headers(self, headers):
+        return JournalCheck(self._host, self._resource_checking_method, self._query_string, headers)
+
+    def article(self, id, has_figures=False, version=None):
         url = _build_url("/articles/%s" % id, self._host)
         if version:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
-        body = self.generic(url, headers)
+        body = self.generic(url)
         figures_page_links = self._links(body, self.CLASS_FIGURES_LINK)
         if has_figures:
             assert len(figures_page_links) == 1, "Expected a single figures page link with selector %s, found %s" % (self.CLASS_FIGURES_LINK, figures_page_links)
@@ -546,8 +550,8 @@ class JournalCheck:
     def magazine(self):
         return self.generic("/magazine")
 
-    def generic(self, path, headers=None):
-        response = self.just_load(path, headers=headers)
+    def generic(self, path):
+        response = self.just_load(path)
         match = re.match("^"+self._host, response.url)
         if match:
             self._assert_all_resources_of_page_load(response.content)
@@ -556,7 +560,7 @@ class JournalCheck:
         self._assert_all_load(download_links)
         return response.content
 
-    def just_load(self, path, headers=None):
+    def just_load(self, path):
         url = _build_url(path, self._host)
         if self._query_string:
             if "?" in url:
@@ -564,7 +568,7 @@ class JournalCheck:
             else:
                 url = "%s?%s" % (url, self._query_string)
         LOGGER.info("Loading %s", url)
-        response = retries.persistently_get(url, headers=headers or {})
+        response = retries.persistently_get(url, headers=self._headers)
         _assert_status_code(response, 200, url)
         return response
 
@@ -950,6 +954,7 @@ JOURNAL = JournalCheck(
 JOURNAL_CDN = JournalCheck(
     host=SETTINGS['journal_cdn_host']
 )
+JOURNAL_GOOGLEBOT = JOURNAL_CDN.with_headers({'User-Agent': config.GOOGLEBOT_USER_AGENT})
 JOURNAL_GENERIC_PATHS = [
     '/about',
     '/about/early-career',
