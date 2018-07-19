@@ -135,25 +135,24 @@ def test_googlebot_sees_citation_metadata(generate_article):
     _ingest_and_publish(article)
     checks.API.wait_article(id=article.id())
 
+    def find_citation_metadata(html):
+        soup = BeautifulSoup(html, "html.parser")
+
+        return soup.find_all("meta", {"name": re.compile("^citation_")})
+
+    # As Googlebot
+
     page = checks.JOURNAL_GOOGLEBOT.article(id=article.id())
+    citation_metadata = find_citation_metadata(page)
 
-    soup = BeautifulSoup(page, "html.parser")
-    citation_metadata = soup.find_all("meta", {"name": re.compile("^citation_")})
+    assert len(citation_metadata) > 0, "Expected citation metadata for Googlebot, found none"
 
-    assert len(citation_metadata) > 0, "Expected citation metadata, found none"
-
-@pytest.mark.journal
-def test_public_does_not_see_citation_metadata(generate_article):
-    article = generate_article(template_id=SIMPLEST_ARTICLE_ID)
-    _ingest_and_publish(article)
-    checks.API.wait_article(id=article.id())
+    # As public
 
     page = checks.JOURNAL_CDN.article(id=article.id())
+    citation_metadata = find_citation_metadata(page)
 
-    soup = BeautifulSoup(page, "html.parser")
-    citation_metadata = soup.find_all("meta", {"name": re.compile("^citation_")})
-
-    assert len(citation_metadata) == 0, "Expected no citation metadata, found %d meta elements" % (len(citation_metadata))
+    assert len(citation_metadata) == 0, "Expected no citation metadata publically, found %d meta elements" % (len(citation_metadata))
 
 @pytest.mark.journal
 @pytest.mark.continuum
