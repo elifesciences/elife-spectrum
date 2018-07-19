@@ -498,10 +498,10 @@ class JournalCheck:
         self._headers = headers
 
     def with_resource_checking_method(self, method):
-        return JournalCheck(self._host, method, self._query_string)
+        return JournalCheck(self._host, method, self._query_string, self._headers)
 
     def with_query_string(self, query_string):
-        return JournalCheck(self._host, self._resource_checking_method, query_string)
+        return JournalCheck(self._host, self._resource_checking_method, query_string, self._headers)
 
     def with_headers(self, headers):
         return JournalCheck(self._host, self._resource_checking_method, self._query_string, headers)
