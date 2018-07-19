@@ -3,9 +3,13 @@ from datetime import datetime
 import re
 import pytest
 import requests
+from bs4 import BeautifulSoup
+
 from spectrum import generator
 from spectrum import input
 from spectrum import checks
+
+SIMPLEST_ARTICLE_ID = 15893
 
 @pytest.mark.continuum
 @pytest.mark.article
@@ -26,9 +30,8 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
 @pytest.mark.bot
 @pytest.mark.lax
 def test_article_multiple_ingests_of_the_same_version(generate_article, modify_article):
-    template_id = 15893
     run1_start = datetime.now()
-    article = generate_article(template_id)
+    article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest(article)
     run1 = _wait_for_publishable(article, run_after=run1_start)
     checks.CDN_XML.of(text_match='cytomegalovirus', id=article.id(), version=article.version())
@@ -49,8 +52,7 @@ def test_article_multiple_ingests_of_the_same_version(generate_article, modify_a
 @pytest.mark.bot
 @pytest.mark.lax
 def test_article_multiple_versions(generate_article, modify_article):
-    template_id = 15893
-    article = generate_article(template_id)
+    article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
     new_article = modify_article(article, new_version=2, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
@@ -71,8 +73,7 @@ def test_article_multiple_versions(generate_article, modify_article):
 @pytest.mark.bot
 @pytest.mark.lax
 def test_article_silent_correction(generate_article, modify_article):
-    template_id = 15893
-    article = generate_article(template_id)
+    article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
 
     # TODO: for stability, wait until all the publishing workflows have finished. Github xml is enough
@@ -92,8 +93,7 @@ def test_article_silent_correction(generate_article, modify_article):
 @pytest.mark.bot
 @pytest.mark.lax
 def test_article_subject_change(generate_article):
-    template_id = 15893
-    article = generate_article(template_id)
+    article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
     # TODO: for stability, wait until all the publishing workflows have finished. Github xml is enough
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
@@ -109,8 +109,7 @@ def test_article_subject_change(generate_article):
 @pytest.mark.bot
 @pytest.mark.lax
 def test_article_already_present_version(generate_article, version_article):
-    template_id = 15893
-    article = generate_article(template_id)
+    article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
     new_article = version_article(article, new_version=1)
     _ingest(new_article)
@@ -129,6 +128,31 @@ def test_article_with_unicode_content(generate_article):
     checks.API.wait_article(id=article.id())
     journal_page = checks.JOURNAL.article(id=article.id(), has_figures=article.has_figures())
     assert "Szymon \xc5\x81\xc4\x99ski" in journal_page
+
+@pytest.mark.journal
+def test_googlebot_sees_citation_metadata(generate_article):
+    article = generate_article(template_id=SIMPLEST_ARTICLE_ID)
+    _ingest_and_publish(article)
+    checks.API.wait_article(id=article.id())
+
+    def find_citation_metadata(html):
+        soup = BeautifulSoup(html, "html.parser")
+
+        return soup.find_all("meta", {"name": re.compile("^citation_")})
+
+    # As Googlebot
+
+    page = checks.JOURNAL_GOOGLEBOT.article(id=article.id())
+    citation_metadata = find_citation_metadata(page)
+
+    assert len(citation_metadata) > 0, "Expected citation metadata for Googlebot, found none"
+
+    # As public
+
+    page = checks.JOURNAL_CDN.article(id=article.id())
+    citation_metadata = find_citation_metadata(page)
+
+    assert len(citation_metadata) == 0, "Expected no citation metadata publically, found %d meta elements" % (len(citation_metadata))
 
 @pytest.mark.journal
 @pytest.mark.continuum
@@ -177,7 +201,7 @@ def test_recommendations_for_new_articles(generate_article):
 @pytest.mark.article
 @pytest.mark.bot
 def test_article_propagates_to_github(generate_article):
-    article = generate_article(15893)
+    article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
 
@@ -186,9 +210,8 @@ def test_article_propagates_to_github(generate_article):
 @pytest.mark.lax
 def test_adding_article_fragment(generate_article, modify_article):
     journal_cms_session = input.JOURNAL_CMS.login()
-    template_id = 15893
     invented_word = input.invented_word()
-    article = modify_article(generate_article(template_id), replacements={'cytomegalovirus':invented_word})
+    article = modify_article(generate_article(SIMPLEST_ARTICLE_ID), replacements={'cytomegalovirus':invented_word})
     _ingest_and_publish_and_wait_for_published(article)
 
     journal_cms_session.create_article_fragment(id=article.id(), image='./spectrum/fixtures/king_county.jpg')
@@ -201,7 +224,7 @@ def test_adding_article_fragment(generate_article, modify_article):
 
 @pytest.mark.bot
 def test_downstream_upload_to_pubmed(generate_article):
-    article = generate_article(15893)
+    article = generate_article(SIMPLEST_ARTICLE_ID)
     input.PACKAGING_BUCKET.clean("pubmed/outbox/")
     test_start = datetime.now()
 
@@ -216,7 +239,7 @@ def test_downstream_upload_to_pubmed(generate_article):
 @pytest.mark.continuum
 @pytest.mark.bot
 def test_personalised_covers_for_new_articles(generate_article):
-    article = generate_article(15893)
+    article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
     checks.PERSONALISED_COVERS_A4.of(id=article.id())
     checks.PERSONALISED_COVERS_LETTER.of(id=article.id())
@@ -224,7 +247,7 @@ def test_personalised_covers_for_new_articles(generate_article):
 @pytest.mark.observer
 @pytest.mark.lax
 def test_rss_feed_contains_new_article(generate_article):
-    article = generate_article(15893)
+    article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
     checks.OBSERVER.latest_article(article.id())
 
