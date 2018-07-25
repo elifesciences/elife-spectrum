@@ -277,6 +277,8 @@ class LaxArticleCheck:
             _log_connection_error(e)
             return False
 
+# The API is large, hence many methods to test it
+# pylint: disable=too-many-public-methods
 class ApiCheck:
     def __init__(self, host, authorization=None):
         self._host = host
