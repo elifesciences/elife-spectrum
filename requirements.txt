@@ -35,4 +35,5 @@ requests==2.10.0
 requests-futures==0.9.7
 s3transfer==0.1.9
 six==1.10.0
+git+ssh://git@github.com/elifesciences/elife-spectrum-private.git@91371987bee96747b9cef6dfb7f63d0b04d4a048#egg=spectrumprivate
 wrapt==1.10.8

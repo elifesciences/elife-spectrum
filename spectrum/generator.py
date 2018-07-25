@@ -42,6 +42,48 @@ def article_zip(template_id, template_variables=None):
     has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
     return ArticleZip(id, zip_filename, generated_article_directory, revision=1, version=1, figure_names=figure_names, has_pdf=has_pdf)
 
+def article_ejp_csv(source_csv, target_article_id, source_article_id=36157):
+    generated_ejp_directory = '%s/poa-%s' % (COMMON['tmp'], target_article_id)
+    if not path.exists(generated_ejp_directory):
+        os.mkdir(generated_ejp_directory)
+    generated_csv = path.join(generated_ejp_directory, path.basename(source_csv))
+    with open(source_csv) as source:
+        with open(generated_csv, 'w') as target:
+            target.write(source.read().replace(
+                str(source_article_id),
+                target_article_id
+            ))
+
+    LOGGER.info("Generated EJP POA csv %s", generated_csv, extra={'id': target_article_id})
+
+    return generated_csv
+
+def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
+    def _substitute_article_id(text):
+        return re.sub(
+            r"eLife\.%s\b" % source_article_id,
+            "eLife.%s" % str(target_article_id),
+            text
+        )
+
+    # 50142_1_supp_mat_highwire_zip_853595_pxvg3m.zip
+    zip_prefix = random.randrange(1000000000, 9999999999 + 1)
+    generated_ejp_zip_filename = path.join(
+        COMMON['tmp'],
+        "%s_1_supp_mat_highwire_zip_853595_abcdef.zip" % zip_prefix
+    )
+
+    with zipfile.ZipFile(source_zip, 'r') as source_zip_file:
+        with zipfile.ZipFile(generated_ejp_zip_filename, 'w') as zip_file:
+            for source_archived_filename in source_zip_file.namelist():
+                with source_zip_file.open(source_archived_filename, 'r') as source_archived_file:
+                    zip_file.writestr(source_archived_filename, _substitute_article_id(source_archived_file.read()))
+
+    LOGGER.info("Generated EJP POA zip %s", generated_ejp_zip_filename, extra={'id': target_article_id})
+
+    return generated_ejp_zip_filename
+
+
 def clean():
     for entry in glob.glob('%s/elife*' % COMMON['tmp']):
         if path.isdir(entry):

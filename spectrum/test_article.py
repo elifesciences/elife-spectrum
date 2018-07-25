@@ -1,5 +1,6 @@
 "Test that involve publishing articles and checking their visibility and correctness throughout different systems"
 from datetime import datetime
+from os import path
 import re
 import pytest
 import requests
@@ -24,6 +25,25 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
 
     article = generate_article(template_id)
     _ingest_and_publish_and_wait_for_published(article)
+
+@pytest.mark.bot
+@pytest.mark.skip(reason="unstable due to memoization in CSV parsing not picking up new files")
+def test_package_poa(poa_csvs, poa_zip):
+    sample_article_id = 36157
+    article_id = generator.generate_article_id(sample_article_id)
+
+    for csv_file in poa_csvs(source_article_id=sample_article_id, target_article_id=article_id):
+        input.EJP.upload(csv_file)
+
+    zip_file = poa_zip(source_article_id=sample_article_id, target_article_id=article_id)
+    input.POA_DELIVERY.upload(zip_file)
+
+    input.BOT_WORKFLOWS.package_poa(path.basename(zip_file))
+
+    checks.PACKAGING_BUCKET_POA_ZIP.of(id=article_id)
+    checks.PACKAGING_BUCKET_POA_XML.of(id=article_id)
+    checks.PACKAGING_BUCKET_POA_PDF.of(id=article_id)
+
 
 @pytest.mark.journal
 @pytest.mark.continuum
