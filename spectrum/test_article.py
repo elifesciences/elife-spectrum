@@ -23,6 +23,7 @@ def test_article_first_version(template_id, article_id_filter, generate_article)
     _ingest_and_publish_and_wait_for_published(article)
 
 @pytest.mark.bot
+@pytest.mark.skip(reason="unstable due to memoization in CSV parsing not picking up new files")
 def test_package_poa(poa_csvs, poa_zip):
     sample_article_id = 36157
     article_id = generator.generate_article_id(sample_article_id)
