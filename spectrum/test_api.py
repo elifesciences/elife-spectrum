@@ -31,8 +31,7 @@ def test_list_based_apis_annotations():
 
 @pytest.mark.digests
 def test_list_based_apis_digests():
-    #checks.API.digests()
-    pass
+    checks.API.digests()
 
 @pytest.mark.two
 @pytest.mark.search
