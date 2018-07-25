@@ -8,7 +8,6 @@ from pprint import pformat
 import os
 import re
 from ssl import SSLError
-import socket
 from urlparse import urlparse
 
 from bs4 import BeautifulSoup
@@ -17,9 +16,9 @@ import requests
 from requests.exceptions import ConnectionError
 from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
-from spectrum import aws, config, logger, retries
+from spectrum import aws, config, debug, logger, retries
 from spectrum.config import SETTINGS
-from spectrum.exceptions import TimeoutError, UnrecoverableError
+from spectrum.exceptions import TimeoutError, UnrecoverableError, assert_status_code
 
 
 # TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
@@ -569,14 +568,14 @@ class JournalCheck:
                 url = "%s?%s" % (url, self._query_string)
         LOGGER.info("Loading %s", url)
         response = retries.persistently_get(url, headers=self._headers)
-        _assert_status_code(response, 200, url)
+        assert_status_code(response, 200, url)
         return response
 
     def redirect(self, path, expected, status_code=301):
         url = _build_url(path, self._host)
         LOGGER.info("Loading %s", url)
         response = requests.get(url, allow_redirects=False)
-        _assert_status_code(response, status_code, url)
+        assert_status_code(response, status_code, url)
         location = response.headers['Location']
         assert location.startswith(self._host)
         assert location == ('%s%s' % (self._host, expected))
@@ -774,33 +773,11 @@ def _poll(action_fn, error_message, *error_message_args):
             if isinstance(details['last_seen'], ConnectionError):
                 host = urlparse(details['last_seen'].request.url).netloc
                 built_error_message = built_error_message + ("\nHost: %s" % host)
-                built_error_message = built_error_message + ("\nIp: %s" % _get_host_ip(host))
+                built_error_message = built_error_message + ("\nIp: %s" % debug.get_host_ip(host))
         raise TimeoutError.giving_up_on(built_error_message)
-
-def _get_host_ip(host):
-    try:
-        return socket.gethostbyname(host)
-    except socket.gaierror:
-        LOGGER.exception("Cannot lookup host: %s", host)
-        return None
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
-
-def _assert_status_code(response, expected_status_code, url):
-    try:
-        assert response.status_code == expected_status_code, \
-                "Response from %s had status %d\nHeaders: %s\nAssertion, not request, performed at %s" % (url, response.status_code, pformat(response.headers), datetime.now().isoformat())
-            #"Response from %s had status %d, body %s" % (url, response.status_code, response.content)
-    except UnicodeDecodeError:
-        LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
-        LOGGER.error("(%s): type of content %s", url, type(response.content))
-        LOGGER.error("(%s): apparent_encoding %s", url, response.apparent_encoding)
-        with open("/tmp/response_content.txt", "w") as dump:
-            dump.write(response.content)
-        LOGGER.error("(%s): written response.content to /tmp")
-        LOGGER.error("(%s): headers %s)", url, response.headers)
-        raise RuntimeError("Could not decode response from %s (status code %s, headers %s)" % (url, response.status_code, response.headers))
 
 RESOURCE_CACHE = {}
 
@@ -872,7 +849,7 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
             LOGGER.warning("Loading (%s) resource %s again due to 504 timeout", resource_checking_method, url, extra=extra)
             response = requests.get(url)
 
-        _assert_status_code(response, 200, url)
+        assert_status_code(response, 200, url)
         RESOURCE_CACHE[url] = response.status_code
 
 def _build_url(path, host):
@@ -931,6 +908,24 @@ PACKAGING_BUCKET_BATCH = BucketFileCheck(
     # could probably pass in the date as {date}
     '{vendor}/published/20[0-9]{{6}}/batch/(elife-.*\\.xml)',
     '{vendor}/published/'
+)
+PACKAGING_BUCKET_POA_ZIP = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_packaging'],
+    'outbox/elife_poa_e{id}_ds.zip',
+    'outbox/elife_poa_e{id}_ds.zip'
+)
+PACKAGING_BUCKET_POA_XML = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_packaging'],
+    'outbox/elife_poa_e{id}.xml',
+    'outbox/elife_poa_e{id}.xml'
+)
+PACKAGING_BUCKET_POA_PDF = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_packaging'],
+    'outbox/decap_elife_poa_e{id}.pdf',
+    'outbox/decap_elife_poa_e{id}.pdf'
 )
 DASHBOARD = DashboardArticleCheck(
     host=SETTINGS['dashboard_host'],
