@@ -29,6 +29,11 @@ def test_list_based_apis_annotations():
     super_user_version = checks.API_SUPER_USER.annotations(any_profile, access='restricted')
     assert super_user_version['total'] > public_version['total']
 
+@pytest.mark.digests
+def test_list_based_apis_digests():
+    #checks.API.digests()
+    pass
+
 @pytest.mark.two
 @pytest.mark.search
 def test_search():
