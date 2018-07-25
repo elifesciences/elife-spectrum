@@ -277,6 +277,8 @@ class LaxArticleCheck:
             _log_connection_error(e)
             return False
 
+# The API is large, hence many methods to test it
+# pylint: disable=too-many-public-methods
 class ApiCheck:
     def __init__(self, host, authorization=None):
         self._host = host
@@ -324,6 +326,9 @@ class ApiCheck:
 
     def annotations(self, profile_id, access='public'):
         return self._list_api('/annotations?by=%s&access=%s' % (profile_id, access), 'annotation')
+
+    def digests(self):
+        return self._list_api('/digests', 'digest')
 
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
