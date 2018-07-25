@@ -8,7 +8,6 @@ from pprint import pformat
 import os
 import re
 from ssl import SSLError
-import socket
 from urlparse import urlparse
 
 from bs4 import BeautifulSoup
@@ -17,7 +16,7 @@ import requests
 from requests.exceptions import ConnectionError
 from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
-from spectrum import aws, config, logger, retries
+from spectrum import aws, config, debug, logger, retries
 from spectrum.config import SETTINGS
 from spectrum.exceptions import TimeoutError, UnrecoverableError, assert_status_code
 
@@ -774,19 +773,11 @@ def _poll(action_fn, error_message, *error_message_args):
             if isinstance(details['last_seen'], ConnectionError):
                 host = urlparse(details['last_seen'].request.url).netloc
                 built_error_message = built_error_message + ("\nHost: %s" % host)
-                built_error_message = built_error_message + ("\nIp: %s" % _get_host_ip(host))
+                built_error_message = built_error_message + ("\nIp: %s" % debug.get_host_ip(host))
         raise TimeoutError.giving_up_on(built_error_message)
-
-def _get_host_ip(host):
-    try:
-        return socket.gethostbyname(host)
-    except socket.gaierror:
-        LOGGER.exception("Cannot lookup host: %s", host)
-        return None
 
 def _log_connection_error(e):
     LOGGER.debug("Connection error, will retry: %s", e)
-
 
 RESOURCE_CACHE = {}
 
