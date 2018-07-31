@@ -1,4 +1,5 @@
 import pytest
+from spectrum import checks
 from spectrum import input
 
 SIMPLEST_ARTICLE_ID = 15893
@@ -8,3 +9,4 @@ SIMPLEST_ARTICLE_ID = 15893
 def test_digest_lifecycle(generate_digest):
     digest = generate_digest(SIMPLEST_ARTICLE_ID)
     input.DIGESTS_BUCKET.upload(digest.filename(), id=digest.article_id())
+    print checks.BOT_EMAILS
