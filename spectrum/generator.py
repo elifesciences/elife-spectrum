@@ -83,6 +83,16 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
 
     return generated_ejp_zip_filename
 
+def digest_doc(template_id):
+    STANDARD_INPUT = 'spectrum/templates/DIGEST 99999.docx'
+    article_id = generate_article_id(template_id)
+    target_filename = '%s/DIGEST %s.docx' % (COMMON['tmp'], article_id)
+    shutil.copy(STANDARD_INPUT, target_filename)
+    digest_doc = DigestDoc(article_id, target_filename)
+    LOGGER.info("Generated digest %s", digest_doc.filename(), extra={'id': digest_doc.article_id()})
+
+    return digest_doc
+
 
 def clean():
     for entry in glob.glob('%s/elife*' % COMMON['tmp']):
@@ -236,3 +246,13 @@ class ArticleSubjects:
     def filename(self):
         return self._filename
 
+class DigestDoc:
+    def __init__(self, article_id, filename):
+        self._article_id = article_id
+        self._filename = filename
+
+    def filename(self):
+        return self._filename
+
+    def article_id(self):
+        return self._article_id
