@@ -960,4 +960,4 @@ OBSERVER = ObserverCheck(
 PUBMED = HttpCheck(
     str(SETTINGS['bot_host']) + '/pubmed/{xml}'
 )
-BOT_EMAILS = MailcatcherCheck(SETTINGS['bot_host'] + ':1080')
+BOT_EMAILS = MailcatcherCheck(SETTINGS['bot_mailcatcher'])
