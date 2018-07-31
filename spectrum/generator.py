@@ -85,20 +85,20 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
     return generated_ejp_zip_filename
 
 def digest_doc(template_id):
-    STANDARD_INPUT = 'spectrum/templates/DIGEST 99999.docx'
+    standard_input = 'spectrum/templates/DIGEST 99999.docx'
     article_id = generate_article_id(template_id)
     target_filename = '%s/DIGEST %s.docx' % (COMMON['tmp'], article_id)
 
-    d = docx.Document(STANDARD_INPUT)
-    doi_paragraphs = [p for p in d.paragraphs if p.runs[0].text == 'FULL ARTICLE DOI\n']
-    assert len(doi_paragraphs) == 1, "Wrong number of FULL ARTICLE DOI paragraphs: %s" % [p.text for p in d.paragraphs]
+    word_document = docx.Document(standard_input)
+    doi_paragraphs = [p for p in word_document.paragraphs if p.runs[0].text == 'FULL ARTICLE DOI\n']
+    assert len(doi_paragraphs) == 1, "Wrong number of FULL ARTICLE DOI paragraphs: %s" % [p.text for p in word_document.paragraphs]
     doi_paragraphs[0].runs[1].text = 'https://doi.org/10.7554/eLife.%s' % article_id
-    d.save(target_filename)
+    word_document.save(target_filename)
 
-    digest_doc = DigestDoc(article_id, target_filename)
-    LOGGER.info("Generated digest %s", digest_doc.filename(), extra={'id': digest_doc.article_id()})
+    doc = DigestDoc(article_id, target_filename)
+    LOGGER.info("Generated digest %s", doc.filename(), extra={'id': doc.article_id()})
 
-    return digest_doc
+    return doc
 
 
 def clean():
