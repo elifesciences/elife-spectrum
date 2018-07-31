@@ -6,6 +6,7 @@ import re
 import shutil
 import zipfile
 
+import docx
 import jinja2
 from spectrum import logger
 from spectrum.config import COMMON
@@ -87,7 +88,13 @@ def digest_doc(template_id):
     STANDARD_INPUT = 'spectrum/templates/DIGEST 99999.docx'
     article_id = generate_article_id(template_id)
     target_filename = '%s/DIGEST %s.docx' % (COMMON['tmp'], article_id)
-    shutil.copy(STANDARD_INPUT, target_filename)
+
+    d = docx.Document(STANDARD_INPUT)
+    doi_paragraphs = [p for p in d.paragraphs if p.runs[0].text == 'FULL ARTICLE DOI\n']
+    assert len(doi_paragraphs) == 1, "Wrong number of FULL ARTICLE DOI paragraphs: %s" % [p.text for p in d.paragraphs]
+    doi_paragraphs[0].runs[1].text = 'https://doi.org/10.7554/eLife.%s' % article_id
+    d.save(target_filename)
+
     digest_doc = DigestDoc(article_id, target_filename)
     LOGGER.info("Generated digest %s", digest_doc.filename(), extra={'id': digest_doc.article_id()})
 
