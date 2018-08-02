@@ -265,6 +265,7 @@ def invented_word(length=30, characters=None):
     return ''.join(random.choice(characters) for _ in range(length))
 
 PRODUCTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_input'])
+DIGESTS_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_digests_input'])
 SILENT_CORRECTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_silent_corrections'])
 PACKAGING_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_packaging'])
 POA_DELIVERY = InputBucket(aws.S3, SETTINGS['bucket_ejp_poa_delivery'])

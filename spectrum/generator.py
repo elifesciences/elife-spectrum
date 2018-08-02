@@ -6,6 +6,7 @@ import re
 import shutil
 import zipfile
 
+import docx
 import jinja2
 from spectrum import logger
 from spectrum.config import COMMON
@@ -82,6 +83,22 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
     LOGGER.info("Generated EJP POA zip %s", generated_ejp_zip_filename, extra={'id': target_article_id})
 
     return generated_ejp_zip_filename
+
+def digest_doc(template_id):
+    standard_input = 'spectrum/templates/DIGEST 99999.docx'
+    article_id = generate_article_id(template_id)
+    target_filename = '%s/DIGEST %s.docx' % (COMMON['tmp'], article_id)
+
+    word_document = docx.Document(standard_input)
+    doi_paragraphs = [p for p in word_document.paragraphs if p.runs[0].text == 'FULL ARTICLE DOI\n']
+    assert len(doi_paragraphs) == 1, "Wrong number of FULL ARTICLE DOI paragraphs: %s" % [p.text for p in word_document.paragraphs]
+    doi_paragraphs[0].runs[1].text = 'https://doi.org/10.7554/eLife.%s' % article_id
+    word_document.save(target_filename)
+
+    doc = DigestDoc(article_id, target_filename)
+    LOGGER.info("Generated digest %s", doc.filename(), extra={'id': doc.article_id()})
+
+    return doc
 
 
 def clean():
@@ -236,3 +253,13 @@ class ArticleSubjects:
     def filename(self):
         return self._filename
 
+class DigestDoc:
+    def __init__(self, article_id, filename):
+        self._article_id = article_id
+        self._filename = filename
+
+    def filename(self):
+        return self._filename
+
+    def article_id(self):
+        return self._article_id

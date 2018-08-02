@@ -90,6 +90,17 @@ def poa_zip():
 
     _remove_all(created_files)
 
+@pytest.yield_fixture
+#@pytest.fixture in pytest>=2.10
+def generate_digest():
+    created_digests = []
+    def from_template_id(template_id):
+        digest = generator.digest_doc(str(template_id))
+        created_digests.append(digest.filename())
+        return digest
+    yield from_template_id
+    _remove_all(created_digests)
+
 def _remove_all(created_files):
     for filename in created_files:
         os.remove(filename)
