@@ -881,6 +881,12 @@ PDF_PUBLISHED_CDN_BUCKET = BucketFileCheck(
     'articles/{id}/elife-{id}-v{version}.pdf',
     'articles/{id}/elife-{id}-v{version}.pdf'
 )
+DIGEST_JPG_PUBLISHED_CDN_BUCKET = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_published'],
+    'digests/{id}/digest-{id}.jpg',
+    'digests/{id}/digest-{id}.jpg'
+)
 PACKAGING_BUCKET_OUTBOX = BucketFileCheck(
     aws.S3,
     SETTINGS['bucket_packaging'],
