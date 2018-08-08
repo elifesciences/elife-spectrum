@@ -912,6 +912,18 @@ PACKAGING_BUCKET_POA_PDF = BucketFileCheck(
     'outbox/decap_elife_poa_e{id}.pdf',
     'outbox/decap_elife_poa_e{id}.pdf'
 )
+BOT_INTERNAL_DIGEST_OUTBOX_DOC = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_configuration'],
+    'digests/outbox/{id}/digest-{id}.docx',
+    'digests/outbox/{id}/digest-{id}.docx',
+)
+BOT_INTERNAL_DIGEST_OUTBOX_JPG = BucketFileCheck(
+    aws.S3,
+    SETTINGS['bucket_configuration'],
+    'digests/outbox/{id}/digest-{id}.jpg',
+    'digests/outbox/{id}/digest-{id}.jpg',
+)
 DASHBOARD = DashboardArticleCheck(
     host=SETTINGS['dashboard_host'],
     user=SETTINGS['dashboard_user'],
@@ -979,3 +991,4 @@ PUBMED = HttpCheck(
     str(SETTINGS['bot_host']) + '/pubmed/{xml}'
 )
 BOT_EMAILS = MailcatcherCheck(SETTINGS['bot_mailcatcher'])
+BOT_INTERNAL = (SETTINGS['bot_mailcatcher'])
