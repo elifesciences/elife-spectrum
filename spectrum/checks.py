@@ -102,7 +102,14 @@ class DashboardArticleCheck:
         self._password = password
 
     def ready_to_publish(self, id, version, run=None, run_after=None):
-        article_on_dashboard = self._wait_for_status(id, version, run=run, status="ready to publish", run_after=run_after)
+        # it is not enough to wait for the "ready to publish" state because
+        # when ingesting a run 2 for a particular version, the article is still
+        # in "ready to publish" from run 1. This is a problem of the dashboard
+        # that should change into "not ready to publish, if you press the button
+        # now it will break everything".
+        # We can't change the dashboard easily because it's a warzone
+        # so we will pass an additional check on the current run instead.
+        article_on_dashboard = self._wait_for_status(id, version, run=run, status="ready to publish", run_after=run_after, run_contains_events=['Ready To Publish'])
         current_version = article_on_dashboard['versions'][str(version)]
         preview_link = current_version['details']['preview-link']
         LOGGER.info("Found preview-link on dashboard: %s", preview_link)
@@ -122,9 +129,9 @@ class DashboardArticleCheck:
             version, self._host, id
         )
 
-    def _wait_for_status(self, id, version, status, run=None, run_after=None):
+    def _wait_for_status(self, id, version, status, run=None, run_after=None, run_contains_events=None):
         return _poll(
-            lambda: self._is_present(id, version, status, run=run, run_after=run_after),
+            lambda: self._is_present(id, version, status, run=run, run_after=run_after, run_contains_events=run_contains_events),
             lambda: "article version %s in status %s on dashboard (run filter %s, run_after filter %s): %s/api/article/%s",
             version,
             status,
@@ -134,28 +141,7 @@ class DashboardArticleCheck:
             id
         )
 
-    def _is_present(self, id, version, status, run=None, run_after=None):
-        def _extract_run_contents(version_contents):
-            if not version_contents:
-                return False, article
-            if not version_contents['details'].get('preview-link'):
-                return False, version_contents
-            if version_contents['details']['publication-status'] != status:
-                return False, version_contents
-            if run or run_after:
-                if run:
-                    run_contents = self._check_for_run(version_contents, run)
-                elif run_after:
-                    run_contents = self._check_for_run_after(version_contents, run_after)
-            else:
-                run_contents = self._check_for_run(version_contents)
-            if not run_contents:
-                return False, version_contents
-
-            self._check_correctness(run_contents)
-
-            return True, run_contents
-
+    def _is_present(self, id, version, status, run=None, run_after=None, run_contains_events=None):
         url = self._article_api(id)
         try:
             response = requests.get(url, auth=(self._user, self._password), verify=False)
@@ -165,23 +151,47 @@ class DashboardArticleCheck:
                 raise UnrecoverableError(response)
             article = response.json()
             version_contents = self._check_for_version(article, version)
-            outcome, dump = _extract_run_contents(version_contents)
+            outcome, dump = self._extract_run_contents(article, version_contents, status, run, run_after, run_contains_events)
             if not outcome:
                 return outcome, dump
             else:
                 run_contents = dump
             LOGGER.info(
-                "Found %s version %s in status %s on dashboard with run %s",
+                "Found %s version %s in status %s on dashboard with run %s (required: events: %s)",
                 url,
                 version,
                 status,
                 run_contents['run-id'],
+                run_contains_events,
                 extra={'id': id}
             )
             return article
         except ConnectionError as e:
             _log_connection_error(e)
             return False, e
+
+    def _extract_run_contents(self, article, version_contents, status, run, run_after, run_contains_events):
+        if not version_contents:
+            return False, article
+        if not version_contents['details'].get('preview-link'):
+            return False, version_contents
+        if version_contents['details']['publication-status'] != status:
+            return False, version_contents
+        if run or run_after:
+            if run:
+                run_contents = self._check_for_run(version_contents, run)
+            elif run_after:
+                run_contents = self._check_for_run_after(version_contents, run_after)
+        else:
+            run_contents = self._check_for_run(version_contents)
+        if not run_contents:
+            return False, version_contents
+        if not self._check_run_events(run_contents, run_contains_events):
+            return False, run_contents
+
+        self._ensure_no_unrecoverable_errors(run_contents)
+
+        return True, run_contents
 
     def _check_for_version(self, article, version):
         version_key = str(version)
@@ -210,7 +220,15 @@ class DashboardArticleCheck:
             return False
         return matching_runs[0]
 
-    def _check_correctness(self, run_contents):
+    def _check_run_events(self, run_contents, run_contains_events):
+        if run_contains_events:
+            for important_event in run_contains_events:
+                if important_event not in [e['event-type'] for e in run_contents['events']]:
+                    return False
+
+        return True
+
+    def _ensure_no_unrecoverable_errors(self, run_contents):
         errors = [e for e in run_contents['events'] if e['event-status'] == 'error']
         if errors:
             raise UnrecoverableError("At least one error event was reported for the run.\n%s" % pformat(errors))
