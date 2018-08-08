@@ -84,21 +84,29 @@ def article_ejp_zip(source_zip, target_article_id, source_article_id=36157):
 
     return generated_ejp_zip_filename
 
-def digest_doc(template_id):
-    standard_input = 'spectrum/templates/DIGEST 99999.docx'
+def digest_zip(template_id):
+    standard_input = 'spectrum/templates/digests/DIGEST 99999.docx'
     article_id = generate_article_id(template_id)
-    target_filename = '%s/DIGEST %s.docx' % (COMMON['tmp'], article_id)
+    target_doc_filename = '%s/DIGEST %s.docx' % (COMMON['tmp'], article_id)
 
     word_document = docx.Document(standard_input)
     doi_paragraphs = [p for p in word_document.paragraphs if p.runs[0].text == 'FULL ARTICLE DOI\n']
     assert len(doi_paragraphs) == 1, "Wrong number of FULL ARTICLE DOI paragraphs: %s" % [p.text for p in word_document.paragraphs]
     doi_paragraphs[0].runs[1].text = 'https://doi.org/10.7554/eLife.%s' % article_id
-    word_document.save(target_filename)
+    word_document.save(target_doc_filename)
 
-    doc = DigestDoc(article_id, target_filename)
-    LOGGER.info("Generated digest %s", doc.filename(), extra={'id': doc.article_id()})
+    LOGGER.info("Generated digest doc %s", target_doc_filename, extra={'id': article_id})
 
-    return doc
+    generated_files = [target_doc_filename, 'spectrum/templates/digests/alligator.jpg']
+    target_zip_filename = '%s/DIGEST %s.zip' % (COMMON['tmp'], article_id)
+    with zipfile.ZipFile(target_zip_filename, 'w') as zip_file:
+        for generated_file in generated_files:
+            zip_file.write(generated_file, path.basename(generated_file))
+
+    LOGGER.info("Generated digest zip %s", target_zip_filename, extra={'id': article_id})
+    os.remove(target_doc_filename)
+
+    return DigestZip(article_id, target_zip_filename)
 
 
 def clean():
@@ -253,7 +261,7 @@ class ArticleSubjects:
     def filename(self):
         return self._filename
 
-class DigestDoc:
+class DigestZip:
     def __init__(self, article_id, filename):
         self._article_id = article_id
         self._filename = filename

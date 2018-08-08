@@ -95,7 +95,7 @@ def poa_zip():
 def generate_digest():
     created_digests = []
     def from_template_id(template_id):
-        digest = generator.digest_doc(str(template_id))
+        digest = generator.digest_zip(str(template_id))
         created_digests.append(digest.filename())
         return digest
     yield from_template_id
