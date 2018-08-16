@@ -90,9 +90,9 @@ def digest_zip(template_id):
     target_doc_filename = '%s/DIGEST %s.docx' % (COMMON['tmp'], article_id)
 
     word_document = docx.Document(standard_input)
-    doi_paragraphs = [p for p in word_document.paragraphs if p.runs[0].text == 'FULL ARTICLE DOI\n']
-    assert len(doi_paragraphs) == 1, "Wrong number of FULL ARTICLE DOI paragraphs: %s" % [p.text for p in word_document.paragraphs]
-    doi_paragraphs[0].runs[1].text = 'https://doi.org/10.7554/eLife.%s' % article_id
+    doi_paragraphs = [p for p in word_document.paragraphs if p.runs[0].text == 'MANUSCRIPT NUMBER\n']
+    assert len(doi_paragraphs) == 1, "Wrong number of MANUSCRIPT NUMBER paragraphs: %s" % [p.text for p in word_document.paragraphs]
+    doi_paragraphs[0].runs[1].text = '%s' % article_id
     word_document.save(target_doc_filename)
 
     LOGGER.info("Generated digest doc %s", target_doc_filename, extra={'id': article_id})
