@@ -14,17 +14,13 @@ def test_content_type_propagates_to_other_services():
     journal_cms_session = input.JOURNAL_CMS.login()
 
     invented_word = input.invented_word()
-    title = 'Spectrum blog article: %s' % invented_word
-    text = 'Lorem ipsum... %s' % title
-    journal_cms_session.create_blog_article(title=title, text=text, image='./spectrum/fixtures/king_county.jpg')
+    title = 'Spectrum annual report: %s' % invented_word
+    year = 2018
+    journal_cms_session.create_annual_report(title=title, year=year, url='https://2018.elifesciences.org')
     result = checks.API.wait_search(invented_word)
     assert result['total'] == 1, "There should only be one result containing this word"
-    assert result['items'][0]['title'] == title, "The title of the blog article found through search is incorrect"
-    id = result['items'][0]['id']
-    blog_article = checks.API.blog_article(id)
-    # TODO: transition to IIIF and use a IiifCheck object
-    image_url = blog_article['image']['banner']['source']['uri']
-    response = requests.head(image_url)
-    checks.LOGGER.info("Found %s: %s", image_url, response.status_code)
-    assert response.status_code == 200, "Image %s is not loading" % image_url
+    assert result['items'][0]['title'] == title, "The title of the annual report found through search is incorrect"
+    id = result['items'][0]['year']
+    annual_report = checks.API.annual_report(id)
+    assert annual_report['year'] == year, "The year of the annual report is incorrect"
 

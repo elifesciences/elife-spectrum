@@ -319,6 +319,12 @@ class ApiCheck:
     def medium_articles(self):
         self._list_api('/medium-articles', 'medium-article')
 
+    def annual_reports(self):
+        self._list_api('/annual-reports', 'annual-report')
+
+    def annual_report(self, year):
+        return self._item_api('/annual-reports/%s' % year, 'annual-report')
+
     def blog_articles(self):
         self._list_api('/blog-articles', 'blog-article')
 

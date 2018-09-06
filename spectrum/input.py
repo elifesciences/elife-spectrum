@@ -95,6 +95,25 @@ class JournalCmsSession:
         self._host = host
         self._browser = browser
 
+    def create_annual_report(self, title, year, url, pdf=None):
+        create_url = "%s/node/add/annual_report" % self._host
+        create_page = self._browser.get(create_url)
+        form = mechanicalsoup.Form(create_page.soup.form)
+        form.input({'title[0][value]': title})
+        form.input({'field_annual_report_year[0][value]': year})
+        form.input({'field_annual_report_uri[0][uri]': url})
+        if pdf:
+            form.input({'field_pdf[0][uri]': pdf})
+
+        LOGGER.info("Saving form")
+        self._choose_submit(form, 'op', value='Save')
+        # not sure why, but `data` here is necessary
+        response = self._browser.submit(form, create_page.url, data={'op': 'Same'})
+        # requests follows redirects by default
+        _assert_html_response(response)
+        assert _journal_cms_page_title(response.soup) == title
+
+    # TODO: refactor to work with new interface
     def create_blog_article(self, title, text='Lorem ipsum', image=None):
         create_url = "%s/node/add/blog_article" % self._host
         create_page = self._browser.get(create_url)
