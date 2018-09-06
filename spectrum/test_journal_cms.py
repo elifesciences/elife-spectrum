@@ -1,6 +1,5 @@
 "Tests that go through Journal CMS and propagate content to the rest of the system"
 import pytest
-import requests
 from spectrum import input
 from spectrum import checks
 
