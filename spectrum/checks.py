@@ -317,10 +317,10 @@ class ApiCheck:
         self._list_api('/people', 'person')
 
     def medium_articles(self):
-        self._list_api('/medium-articles', 'medium-article')
+        self._list_api('/medium-articles', 'medium-article', 2)
 
     def annual_reports(self):
-        self._list_api('/annual-reports', 'annual-report')
+        self._list_api('/annual-reports', 'annual-report', 2)
 
     def annual_report(self, year):
         return self._item_api('/annual-reports/%s' % year, 'annual-report')
@@ -349,15 +349,15 @@ class ApiCheck:
     def digests(self):
         return self._list_api('/digests', 'digest')
 
-    def _list_api(self, path, entity):
+    def _list_api(self, path, entity, version=1):
         url = "%s%s" % (self._host, path)
-        response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity}))
+        response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s-list+json; version=%d' % (entity, version)}))
         LOGGER.info("Found %s: %s", url, response.status_code)
         return self._ensure_sane_response(response, url)
 
-    def _item_api(self, path, entity):
+    def _item_api(self, path, entity, version=1):
         url = "%s%s" % (self._host, path)
-        response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s+json; version=1' % entity}))
+        response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s+json; version=%d' % (entity, version)}))
         LOGGER.info("Found %s: %s", url, response.status_code)
         return self._ensure_sane_response(response, url)
 
