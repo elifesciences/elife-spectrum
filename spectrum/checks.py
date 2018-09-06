@@ -328,9 +328,6 @@ class ApiCheck:
     def blog_articles(self):
         self._list_api('/blog-articles', 'blog-article')
 
-    def blog_article(self, id):
-        return self._item_api('/blog-articles/%s' % id, 'blog-article')
-
     def events(self):
         self._list_api('/events', 'event')
 
