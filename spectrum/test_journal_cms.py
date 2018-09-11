@@ -23,7 +23,7 @@ def test_content_type_propagates_to_other_services():
     number = result['items'][0]['number']
     podcast_episode = checks.API.podcast_episode(number)
     # TODO: transition to IIIF and use a IiifCheck object
-    image_url = blog_article['image']['banner']['source']['uri']
+    image_url = podcast_episode['image']['banner']['source']['uri']
     response = requests.head(image_url)
     checks.LOGGER.info("Found %s: %s", image_url, response.status_code)
     assert response.status_code == 200, "Image %s is not loading" % image_url
