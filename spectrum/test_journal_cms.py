@@ -1,6 +1,7 @@
 "Tests that go through Journal CMS and propagate content to the rest of the system"
 import pytest
 from spectrum import input
+from spectrum import checks
 
 @pytest.mark.journal_cms
 def test_login():
