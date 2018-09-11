@@ -120,6 +120,20 @@ class JournalCmsSession:
         # but in checks module
         # TODO: return id and/or node id
 
+    def create_job_advert(self, title, text='Lorem ipsum'):
+        create_url = "%s/node/add/job_advert" % self._host
+        create_page = self._browser.get(create_url)
+        form = mechanicalsoup.Form(create_page.soup.form)
+        form.input({'title[0][value]': title})
+        form.textarea({'field_job_advert_role_summary[0][value]': text})
+
+        LOGGER.info("Saving form")
+        # not sure why, but `data` here is necessary
+        response = self._browser.submit(form, create_page.url, data={'op': 'Save'})
+        # requests follows redirects by default
+        _assert_html_response(response)
+        assert _journal_cms_page_title(response.soup) == title
+
     def create_article_fragment(self, id, image):
         filtered_content_url = "%s/admin/content?status=All&type=article&title=%s" % (self._host, id)
         filtered_content_page = self._browser.get(filtered_content_url)
