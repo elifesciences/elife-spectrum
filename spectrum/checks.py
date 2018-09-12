@@ -310,6 +310,9 @@ class ApiCheck:
         self._list_api('/subjects', 'subject')
         #self._ensure_list_has_at_least_1_element(body)
 
+    def podcast_episode(self, number):
+        return self._item_api('/podcast-episodes/%d' % number, 'podcast-episode')
+
     def podcast_episodes(self):
         self._list_api('/podcast-episodes', 'podcast-episode')
 

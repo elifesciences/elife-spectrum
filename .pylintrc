@@ -4,3 +4,4 @@ disable=missing-docstring,redefined-builtin,old-style-class,too-few-public-metho
 good-names=id,s3,of,e,_
 function-rgx=[a-z_][a-z0-9_]{2,60}$
 method-rgx=[a-z_][a-z0-9_]{2,60}$
+max-module-lines=1500
