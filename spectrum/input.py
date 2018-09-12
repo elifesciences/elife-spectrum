@@ -95,31 +95,6 @@ class JournalCmsSession:
         self._host = host
         self._browser = browser
 
-    def create_blog_article(self, title, text='Lorem ipsum', image=None):
-        create_url = "%s/node/add/blog_article" % self._host
-        create_page = self._browser.get(create_url)
-        form = mechanicalsoup.Form(create_page.soup.form)
-        form.input({'title[0][value]': title})
-        LOGGER.info("Adding paragraph")
-        self._choose_submit(form, 'field_content_paragraph_add_more')
-        response = self._browser.submit(form, create_page.url)
-        form = mechanicalsoup.Form(response.soup.form)
-        form.textarea({'field_content[0][subform][field_block_html][0][value]': text})
-        if image:
-            form.attach({'files[field_image_0]': image})
-            LOGGER.info("Attaching image")
-
-        LOGGER.info("Saving form")
-        self._choose_submit(form, 'op', value='Save')
-        # not sure why, but `data` here is necessary
-        response = self._browser.submit(form, create_page.url, data={'op': 'Save'})
-        # requests follows redirects by default
-        _assert_html_response(response)
-        assert _journal_cms_page_title(response.soup) == title
-        #check https://end2end--journal-cms.elifesciences.org/admin/content?status=All&type=All&title=b9djvu04y6v1t4kug4ts8kct5pagf8&langcode=All
-        # but in checks module
-        # TODO: return id and/or node id
-
     def create_podcast_episode(self, title, image, uri, chapter_title):
         create_url = "%s/node/add/podcast_episode" % self._host
         create_page = self._browser.get(create_url)
