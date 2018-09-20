@@ -6,6 +6,7 @@ import pytest
 import requests
 from bs4 import BeautifulSoup
 
+from spectrum import articles
 from spectrum import generator
 from spectrum import input
 from spectrum import checks
@@ -272,7 +273,7 @@ def test_rss_feed_contains_new_article(generate_article):
     checks.OBSERVER.latest_article(article.id())
 
 def _ingest(article):
-    input.PRODUCTION_BUCKET.upload(article.filename(), id=article.id())
+    articles.ingest(article)
 
 def _feed_silent_correction(article):
     input.SILENT_CORRECTION_BUCKET.upload(article.filename(), id=article.id())
