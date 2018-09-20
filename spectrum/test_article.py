@@ -53,13 +53,13 @@ def test_package_poa(poa_csvs, poa_zip):
 def test_article_multiple_ingests_of_the_same_version(generate_article, modify_article):
     run1_start = datetime.now()
     article = generate_article(SIMPLEST_ARTICLE_ID)
-    _ingest(article)
-    run1 = _wait_for_publishable(article, run_after=run1_start)
+    articles.ingest(article)
+    run1 = articles.wait_for_publishable(article, run_after=run1_start)
     checks.CDN_XML.of(text_match='cytomegalovirus', id=article.id(), version=article.version())
 
     run2_start = datetime.now()
     modified_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
-    _ingest(modified_article)
+    articles.ingest(modified_article)
     article_on_dashboard = checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run2_start)
     run2 = article_on_dashboard['versions'][str(article.version())]['runs']['2']['run-id']
     assert run2 != run1, "A new run should have been triggered"
@@ -133,7 +133,7 @@ def test_article_already_present_version(generate_article, version_article):
     article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
     new_article = version_article(article, new_version=1)
-    _ingest(new_article)
+    articles.ingest(new_article)
     # article stops sometimes in this state, sometimes in 'published'?
     #checks.DASHBOARD.publication_in_progress(id=article.id(), version=article.version())
     error = checks.DASHBOARD.error(id=article.id(), version=1, run=2)
@@ -272,14 +272,8 @@ def test_rss_feed_contains_new_article(generate_article):
     _ingest_and_publish_and_wait_for_published(article)
     checks.OBSERVER.latest_article(article.id())
 
-def _ingest(article):
-    articles.ingest(article)
-
 def _feed_silent_correction(article):
     input.SILENT_CORRECTION_BUCKET.upload(article.filename(), id=article.id())
-
-def _wait_for_publishable(article, run_after):
-    return articles.wait_for_publishable(article, run_after)
 
 def _wait_for_published(article):
     checks.DASHBOARD.published(id=article.id(), version=article.version())
@@ -292,7 +286,7 @@ def _wait_for_published(article):
     return article_from_api
 
 def _publish(article, run_after):
-    run = _wait_for_publishable(article, run_after)
+    run = articles.wait_for_publishable(article, run_after)
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
 
 def _ingest_and_publish_and_wait_for_published(article):
@@ -301,5 +295,5 @@ def _ingest_and_publish_and_wait_for_published(article):
 
 def _ingest_and_publish(article):
     ingestion_start = datetime.now()
-    _ingest(article)
+    articles.ingest(article)
     _publish(article, run_after=ingestion_start)
