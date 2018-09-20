@@ -1,3 +1,4 @@
+from datetime import datetime
 import pytest
 from spectrum import articles
 from spectrum import checks
@@ -16,4 +17,6 @@ def test_digest_lifecycle(generate_digest, generate_article):
     #checks.DIGEST_JPG_PUBLISHED_CDN_BUCKET.of(id=digest.article_id())
 
     article = generate_article(template_id=SIMPLEST_ARTICLE_ID, article_id=digest.article_id())
+    ingestion_start = datetime.now()
     articles.ingest(article)
+    articles.wait_for_publishable(article, ingestion_start)
