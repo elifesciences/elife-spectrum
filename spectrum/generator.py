@@ -20,16 +20,17 @@ def generate_article_id(template_id):
     # good until template_id reaches 100000
     return str(prefix * 100000 + int(template_id))
 
-def article_zip(template_id, template_variables=None):
+def article_zip(template_id, article_id=None, template_variables=None):
     if template_variables is None:
         template_variables = {}
     (template, kind) = _choose_template(template_id)
-    id = generate_article_id(template_id)
-    generated_article_directory = '%s/elife-%s-%s-r1' % (COMMON['tmp'], id, kind)
+    if article_id is None:
+        article_id = generate_article_id(template_id)
+    generated_article_directory = '%s/elife-%s-%s-r1' % (COMMON['tmp'], article_id, kind)
     os.mkdir(generated_article_directory)
     generated_files = []
     for file in glob.glob(template + "/*"):
-        generated_file = _generate(file, id, generated_article_directory, template_id, template_variables)
+        generated_file = _generate(file, article_id, generated_article_directory, template_id, template_variables)
         generated_files.append(generated_file)
     zip_filename = generated_article_directory + '.zip'
     figure_names = []
@@ -39,9 +40,9 @@ def article_zip(template_id, template_variables=None):
             match = re.match(r".*/elife-\d+-(.+).tif", generated_file)
             if match:
                 figure_names.append(match.groups()[0])
-    LOGGER.info("Generated %s with figures %s", zip_filename, figure_names, extra={'id': id})
+    LOGGER.info("Generated %s with figures %s", zip_filename, figure_names, extra={'id': article_id})
     has_pdf = len(glob.glob(template + "/*.pdf")) >= 1
-    return ArticleZip(id, zip_filename, generated_article_directory, revision=1, version=1, figure_names=figure_names, has_pdf=has_pdf)
+    return ArticleZip(article_id, zip_filename, generated_article_directory, revision=1, version=1, figure_names=figure_names, has_pdf=has_pdf)
 
 def article_ejp_csv(source_csv, target_article_id, source_article_id=36157):
     generated_ejp_directory = '%s/poa-%s' % (COMMON['tmp'], target_article_id)
@@ -138,6 +139,7 @@ def all_stored_articles():
 def _choose_template(template_id):
     templates_pattern = './spectrum/templates/elife-%s-*-*' % template_id
     templates_found = glob.glob(templates_pattern)
+    assert len(templates_found) > 0, "No candidate templates found for: %s" % templates_pattern
     assert len(templates_found) == 1, "Found multiple candidate templates: %s" % templates_found
     chosen = templates_found[0]
     match = re.match(r'.*/elife-\d+-(vor|poa)-(r|v)\d+', chosen)

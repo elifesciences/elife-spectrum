@@ -349,6 +349,9 @@ class ApiCheck:
     def digests(self):
         return self._list_api('/digests', 'digest')
 
+    def digest(self, id):
+        return self._item_api('/digests/%s' % id, 'digest')
+
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
         response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity}))
