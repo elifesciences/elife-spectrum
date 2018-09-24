@@ -139,6 +139,7 @@ def all_stored_articles():
 def _choose_template(template_id):
     templates_pattern = './spectrum/templates/elife-%s-*-*' % template_id
     templates_found = glob.glob(templates_pattern)
+    assert len(templates_found) > 0, "No candidate templates found for: %s" % templates_pattern
     assert len(templates_found) == 1, "Found multiple candidate templates: %s" % templates_found
     chosen = templates_found[0]
     match = re.match(r'.*/elife-\d+-(vor|poa)-(r|v)\d+', chosen)
