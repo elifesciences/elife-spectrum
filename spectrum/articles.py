@@ -18,3 +18,6 @@ def wait_for_publishable(article, run_after):
         checks.PDF_PUBLISHED_CDN_BUCKET.of(id=article.id(), version=article.version())
     checks.API_SUPER_USER.article(id=article.id(), version=article.version())
     return run
+
+def publish(article, run):
+    input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)

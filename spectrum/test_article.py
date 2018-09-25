@@ -287,7 +287,7 @@ def _wait_for_published(article):
 
 def _publish(article, run_after):
     run = articles.wait_for_publishable(article, run_after)
-    input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
+    articles.publish(article, run)
 
 def _ingest_and_publish_and_wait_for_published(article):
     _ingest_and_publish(article)

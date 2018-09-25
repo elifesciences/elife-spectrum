@@ -352,6 +352,22 @@ class ApiCheck:
     def digest(self, id):
         return self._item_api('/digests/%s' % id, 'digest')
 
+    def wait_digest(self, id):
+        latest_url = "%s/digests/%s" % (self._host, id)
+        def _is_ready():
+            response = requests.get(latest_url, headers=self._base_headers())
+            if response.status_code == 404:
+                LOGGER.debug("%s: 404", latest_url)
+                return False
+            body = self._ensure_sane_response(response, latest_url)
+            LOGGER.info("%s present", latest_url)
+            return body
+        return _poll(
+            _is_ready,
+            "%s",
+            latest_url
+        )
+
     def _list_api(self, path, entity):
         url = "%s%s" % (self._host, path)
         response = requests.get(url, headers=self._base_headers({'Accept': 'application/vnd.elife.%s-list+json; version=1' % entity}))
@@ -637,6 +653,11 @@ class JournalCheck:
         pager_links = [a['href'] for a in pager_a_tags]
         LOGGER.info("Loaded listing %s, found page links: %s", path, pager_links)
         return annotation_links, pager_links
+
+    def digest(self, id):
+        url = _build_url("/digests/%s" % id, self._host)
+        LOGGER.info("Loading %s", url, extra={'id':id})
+        return self.generic(url)
 
     def _links(self, body, class_name):
         """Finds out where 0 or more links selected with CSS class_name point to.
