@@ -4,7 +4,7 @@ from spectrum import articles
 from spectrum import checks
 from spectrum import input
 
-DIGEST_ARTICLE_ID = '06847'
+DIGEST_ARTICLE_ID = '00790'
 
 @pytest.mark.bot
 @pytest.mark.digests
