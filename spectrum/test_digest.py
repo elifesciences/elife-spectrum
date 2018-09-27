@@ -4,7 +4,7 @@ from spectrum import articles
 from spectrum import checks
 from spectrum import input
 
-DIGEST_ARTICLE_ID = '06847'
+DIGEST_ARTICLE_ID = '00790'
 
 @pytest.mark.bot
 @pytest.mark.digests
@@ -19,5 +19,8 @@ def test_digest_lifecycle(generate_digest, generate_article):
     article = generate_article(template_id=DIGEST_ARTICLE_ID, article_id=digest.article_id())
     ingestion_start = datetime.now()
     articles.ingest(article)
-    articles.wait_for_publishable(article, ingestion_start)
+    run = articles.wait_for_publishable(article, ingestion_start)
     checks.API_SUPER_USER.digest(id=article.id())
+    articles.publish(article, run)
+    checks.API.wait_digest(id=article.id())
+    checks.JOURNAL.digest(id=article.id())
