@@ -352,7 +352,7 @@ class ApiCheck:
     def digest(self, id):
         return self._item_api('/digests/%s' % id, 'digest')
 
-    def wait_digest(self, id):
+    def wait_digest(self, id, item_check=None):
         latest_url = "%s/digests/%s" % (self._host, id)
         def _is_ready():
             response = requests.get(latest_url, headers=self._base_headers())
@@ -360,7 +360,14 @@ class ApiCheck:
                 LOGGER.debug("%s: 404", latest_url)
                 return False
             body = self._ensure_sane_response(response, latest_url)
-            LOGGER.info("%s present", latest_url)
+
+            item_check_presence = ''
+            if item_check:
+                if not item_check(body):
+                    return False
+                else:
+                    item_check_presence = " and satisfying check %s" % item_check
+            LOGGER.info("%s present%s", latest_url, item_check_presence)
             return body
         return _poll(
             _is_ready,
@@ -482,6 +489,20 @@ class ApiCheck:
             def __str__(self):
                 return "ItemCheckImage(%s)" % self._uri
         return ItemCheckImage(uri)
+
+    def item_check_content(self, contained):
+        class ItemCheckContent():
+            def __init__(self, contained):
+                self._contained = contained
+            def __call__(self, item):
+                for block in item['content']:
+                    if block.get('text'):
+                        if self._contained in block['text']:
+                            return True
+                return False
+            def __str__(self):
+                return "ItemCheckContent(contained=%s)" % self._contained
+        return ItemCheckContent(contained)
 
     def wait_recommendations(self, id):
         "Returns as soon as there is one result"

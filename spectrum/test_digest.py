@@ -30,6 +30,7 @@ def test_digest_lifecycle(generate_digest, generate_article, modify_article):
     checks.JOURNAL.digest(id=article.id())
 
     # silent correction after publication
-    silently_corrected_article = modify_article(article, replacements={'outcompetes': 'OUTCOMPETES'})
+    silently_corrected_article = modify_article(article, replacements={'outcompetes': 'OUTCOMPETES', 'Chitin': 'CHITIN'})
     articles.feed_silent_correction(silently_corrected_article)
     checks.API.wait_article(id=article.id(), title='Fungal effector Ecp6 OUTCOMPETES host immune receptor for chitin binding through intrachain LysM dimerization')
+    checks.API.wait_digest(id=article.id(), item_check=checks.API.item_check_content('CHITIN'))
