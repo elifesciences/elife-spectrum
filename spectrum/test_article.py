@@ -103,7 +103,7 @@ def test_article_silent_correction(generate_article, modify_article):
 
     silent_correction_start = datetime.now()
     silently_corrected_article = modify_article(article, replacements={'cytomegalovirus': 'CYTOMEGALOVIRUS'})
-    _feed_silent_correction(silently_corrected_article)
+    articles.feed_silent_correction(silently_corrected_article)
     checks.API.wait_article(id=article.id(), title='Correction: Human CYTOMEGALOVIRUS IE1 alters the higher-order chromatin structure by targeting the acidic patch of the nucleosome')
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='CYTOMEGALOVIRUS')
     checks.ARCHIVE.of(id=article.id(), version=article.version(), last_modified_after=silent_correction_start)
@@ -121,7 +121,7 @@ def test_article_subject_change(generate_article):
 
     subjects_configuration = generator.article_subjects({article.id(): "Immunology"})
     input.BOT_CONFIGURATION.upload(subjects_configuration.filename(), 'article_subjects_data/article_subjects.csv')
-    _feed_silent_correction(article)
+    articles.feed_silent_correction(article)
     checks.API.wait_article(id=article.id(), subjects=[{'name':'Immunology', 'id': 'immunology'}])
     # are there caches that need to expire first?
     checks.JOURNAL.article_only_subject(id=article.id(), version=article.version(), subject_id='immunology')
@@ -271,9 +271,6 @@ def test_rss_feed_contains_new_article(generate_article):
     article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
     checks.OBSERVER.latest_article(article.id())
-
-def _feed_silent_correction(article):
-    input.SILENT_CORRECTION_BUCKET.upload(article.filename(), id=article.id())
 
 def _wait_for_published(article):
     checks.DASHBOARD.published(id=article.id(), version=article.version())

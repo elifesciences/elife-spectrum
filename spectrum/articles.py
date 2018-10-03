@@ -21,3 +21,6 @@ def wait_for_publishable(article, run_after):
 
 def publish(article, run):
     input.DASHBOARD.publish(id=article.id(), version=article.version(), run=run)
+
+def feed_silent_correction(article):
+    input.SILENT_CORRECTION_BUCKET.upload(article.filename(), id=article.id())
