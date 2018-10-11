@@ -202,13 +202,13 @@ class Journal:
 
     def session(self):
         browser = mechanicalsoup.Browser()
-        return JournalSession(self._host, browser)
+        return JournalHtmlSession(self._host, browser)
 
     def cdn_session(self):
         browser = mechanicalsoup.Browser()
-        return JournalSession(self._cdn_host, browser)
+        return JournalHtmlSession(self._cdn_host, browser)
 
-class JournalSession:
+class JournalHtmlSession:
     PROFILE_LINK = ".login-control__non_js_control_link"
 
     def __init__(self, host, browser):
