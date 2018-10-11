@@ -208,6 +208,36 @@ class Journal:
         browser = mechanicalsoup.Browser()
         return JournalHtmlSession(self._cdn_host, browser)
 
+    # TODO: rename
+    # TODO: allow CDN
+    def javascript_session(self):
+        from selenium import webdriver
+        from selenium.webdriver.common.keys import Keys
+        from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+        driver = webdriver.Remote(
+            command_executor='http://127.0.0.1:4444/wd/hub',
+            desired_capabilities=DesiredCapabilities.CHROME
+        )
+        return JournalJavaScriptSession(driver)
+
+
+class JournalJavaScriptSession:
+    def __init__(self, driver):
+        self._driver = driver
+
+    def submit(self):
+        self._driver.get("https://end2end--journal.elifesciences.org")
+        #assert "Python" in driver.title
+        #elem = driver.find_element_by_name("q")
+        #elem.clear()
+        #elem.send_keys("pycon")
+        #elem.send_keys(Keys.RETURN)
+        #assert "No results found." not in driver.page_source
+        #driver.close()
+
+
+
 class JournalHtmlSession:
     PROFILE_LINK = ".login-control__non_js_control_link"
 
