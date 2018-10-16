@@ -2,10 +2,6 @@
 set -e
 source prerequisites.sh
 
-if [ ! git lfs ]; then
-    echo "could not find git-lfs"
-fi
-
 if [ ! -e "venv/bin/python2.7" ]; then
     echo "could not find venv/bin/python2.7, recreating venv"
     rm -rf venv
