@@ -5,9 +5,8 @@ from spectrum import input
 @pytest.mark.journal
 @pytest.mark.profiles
 @pytest.mark.xpub
-def test_submit_as_anonymous():
-    journal_session = input.JOURNAL.javascript_session()
+def test_submit_as_anonymous(get_selenium_driver):
+    journal_session = input.JOURNAL.javascript_session(get_selenium_driver())
     xpub_session = journal_session.submit()
     xpub_session.login()
-    # TODO: how to close the session (driver)? need a pytest fixture
 
