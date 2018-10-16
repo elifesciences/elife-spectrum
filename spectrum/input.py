@@ -219,22 +219,22 @@ class Journal:
             command_executor='http://127.0.0.1:4444/wd/hub',
             desired_capabilities=DesiredCapabilities.CHROME
         )
-        return JournalJavaScriptSession(driver)
+        return JournalJavaScriptSession(driver, self._host)
 
 
 class JournalJavaScriptSession:
-    def __init__(self, driver):
+    def __init__(self, driver, host):
         self._driver = driver
+        self._host = host
 
     def submit(self):
-        self._driver.get("https://end2end--journal.elifesciences.org")
-        #assert "Python" in driver.title
-        #elem = driver.find_element_by_name("q")
-        #elem.clear()
-        #elem.send_keys("pycon")
-        #elem.send_keys(Keys.RETURN)
-        #assert "No results found." not in driver.page_source
-        #driver.close()
+        self._driver.get(self._host)
+        assert "eLife" in self._driver.title
+        submit_link = self._driver.find_element_by_link_text("SUBMIT MY RESEARCH")
+        submit_link.click()
+        # TODO: assert on presence of login button
+        assert "xpub" in self._driver.title
+        # expand: click on login button, log in, and check final destination
 
 
 
