@@ -25,5 +25,5 @@ class MailcatcherCheck():
         #   "size": "51975",
         #   "created_at": "2018-07-31T13:52:22+00:00"
         # }]
-        (_, matching) = polling.poll(_check, "Cannot find email with subject %s", subject)
+        matching = polling.poll(_check, "Cannot find email with subject %s", subject)
         LOGGER.info("Found matching messages: %s", matching)
