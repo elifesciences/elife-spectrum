@@ -233,13 +233,14 @@ class JournalJavaScriptSession:
     def submit(self):
         LOGGER.info("Loading: %s", self._host)
         self._driver.get(self._host)
-        assert 'eLife' in self._driver.title
+        selenium_title_smoke_test('eLife', self._driver)
+
         submit_link = self._driver.find_element_by_link_text('SUBMIT MY RESEARCH')
         self._log("Found submit button")
         submit_link.click()
         self._log("Clicked submit button")
 
-        assert 'xpub' in self._driver.title
+        selenium_title_smoke_test('xpub', self._driver)
         # expand: click on login button, log in, and check final destination
         return XpubJavaScriptSession(self._driver)
 
@@ -305,6 +306,10 @@ def invented_word(length=30, characters=None):
     if not characters:
         characters = string.ascii_lowercase + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
+
+def selenium_title_smoke_test(portion, driver):
+    title = driver.title
+    assert portion in title, "Title: %s\nCurrent URL: %s" % (title, driver.current_url)
 
 PRODUCTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_input'])
 DIGESTS_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_digests_input'])
