@@ -6,7 +6,8 @@ from spectrum import input
 @pytest.mark.profiles
 @pytest.mark.xpub
 def test_submit_as_anonymous():
-    session = input.JOURNAL.javascript_session()
-    session.submit()
-    # TODO: how to close the session? need a pytest fixture
+    journal_session = input.JOURNAL.javascript_session()
+    xpub_session = journal_session.submit()
+    xpub_session.login()
+    # TODO: how to close the session (driver)? need a pytest fixture
 

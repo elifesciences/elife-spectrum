@@ -229,13 +229,22 @@ class JournalJavaScriptSession:
 
     def submit(self):
         self._driver.get(self._host)
-        assert "eLife" in self._driver.title
-        submit_link = self._driver.find_element_by_link_text("SUBMIT MY RESEARCH")
+        assert 'eLife' in self._driver.title
+        submit_link = self._driver.find_element_by_link_text('SUBMIT MY RESEARCH')
         submit_link.click()
         # TODO: assert on presence of login button
-        assert "xpub" in self._driver.title
+        assert 'xpub' in self._driver.title
         # expand: click on login button, log in, and check final destination
+        return XpubJavaScriptSession(self._driver)
 
+
+class XpubJavaScriptSession:
+    def __init__(self, driver):
+        self._driver = driver
+
+    def login(self):
+        login_button = self._driver.find_element_by_css_selector('button[data-test-id="login"]')
+        login_button.click()
 
 
 class JournalHtmlSession:
