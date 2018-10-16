@@ -14,4 +14,13 @@ elifePipeline {
     stage 'Quick load test', {
         elifeLoad(environmentName: 'end2end', revision: commit)
     }
+    milestone label: 'load-tests'
+
+    elifeMainlineOnly {
+        stage 'Update all nodes', {
+            lock('spectrum') {
+                builderUpdate 'elife-libraries--spectrum'
+            }
+        }
+    }
 }
