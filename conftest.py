@@ -116,9 +116,9 @@ def get_selenium_driver():
         drivers.append(driver)
         return driver
     yield creation
-    for d in drivers:
-        generator.LOGGER.info("Deleting Selenium driver %s", d)
-        d.quit()
+    for driver in drivers:
+        generator.LOGGER.info("Deleting Selenium driver %s", driver)
+        driver.quit()
 
 def _remove_all(created_files):
     for filename in created_files:
