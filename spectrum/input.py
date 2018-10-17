@@ -215,6 +215,8 @@ class Journal:
 
 
 class JournalJavaScriptSession:
+    ID_SUBMIT_MY_RESEARCH = 'submitResearchButton'
+
     def __init__(self, driver, host):
         self._driver = driver
         self._host = host
@@ -227,10 +229,10 @@ class JournalJavaScriptSession:
         self._driver.get(self._host)
         selenium_title_smoke_test('eLife', self._driver)
 
-        submit_link = self._driver.find_element_by_link_text('SUBMIT MY RESEARCH')
-        self._log("Found submit button")
+        submit_link = self._driver.find_element_by_id(self.ID_SUBMIT_MY_RESEARCH)
+        self._log("Found #%s `%s`", self.ID_SUBMIT_MY_RESEARCH, submit_link.text)
         submit_link.click()
-        self._log("Clicked submit button")
+        self._log("Clicked #%s", self.ID_SUBMIT_MY_RESEARCH)
 
         selenium_title_smoke_test('xpub', self._driver)
         # expand: click on login button, log in, and check final destination
@@ -238,6 +240,8 @@ class JournalJavaScriptSession:
 
 
 class XpubJavaScriptSession:
+    CSS_LOGIN_BUTTON = 'button[data-test-id="login"]'
+
     def __init__(self, driver):
         self._driver = driver
 
@@ -245,10 +249,10 @@ class XpubJavaScriptSession:
         LOGGER.info(message, extra={'app':'elife-xpub'}, *args, **kwargs)
 
     def login(self):
-        login_button = self._driver.find_element_by_css_selector('button[data-test-id="login"]')
-        self._log("Found login button")
+        login_button = self._driver.find_element_by_css_selector(self.CSS_LOGIN_BUTTON)
+        self._log("Found login button %s `%s`", self.CSS_LOGIN_BUTTON, login_button.text)
         login_button.click()
-        self._log("Clicked login button")
+        self._log("Clicked login button %s", self.CSS_LOGIN_BUTTON)
 
 
 class JournalHtmlSession:
