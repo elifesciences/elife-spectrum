@@ -1,18 +1,21 @@
 import logging
 import os
 
-class OptionalArticleIdFilter(logging.Filter):
+class OptionalExtraFilter(logging.Filter):
     def filter(self, record):
         if not hasattr(record, 'id'):
             record.id = ''
+        if not hasattr(record, 'app'):
+            record.app = ''
+        record.extra_merged = ','.join([e for e in [record.id, record.app] if e])
         return True
 
-FORMAT = "[%(asctime)-15s][%(levelname)s][%(name)s][%(id)s] %(message)s"
+FORMAT = "[%(asctime)-15s][%(levelname)s][%(name)s][%(extra_merged)s] %(message)s"
 FORMATTER = logging.Formatter(FORMAT)
 
 def configure_handler(handler):
     handler.addFilter(logging.Filter('spectrum'))
-    handler.addFilter(OptionalArticleIdFilter())
+    handler.addFilter(OptionalExtraFilter())
     handler.setFormatter(FORMATTER)
     logging.getLogger().addHandler(handler)
 

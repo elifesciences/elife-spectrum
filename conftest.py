@@ -2,6 +2,9 @@ import os
 import sys
 
 import pytest
+from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
 from spectrum import generator
 from spectrumprivate import file_paths
 # so that other processes run by xdist can still print
@@ -100,6 +103,22 @@ def generate_digest():
         return digest
     yield from_template_id
     _remove_all(created_digests)
+
+@pytest.yield_fixture
+#@pytest.fixture in pytest>=2.10
+def get_selenium_driver():
+    drivers = []
+    def creation():
+        driver = webdriver.Remote(
+            command_executor='http://127.0.0.1:4444/wd/hub',
+            desired_capabilities=DesiredCapabilities.CHROME
+        )
+        drivers.append(driver)
+        return driver
+    yield creation
+    for driver in drivers:
+        generator.LOGGER.info("Deleting Selenium driver %s", driver)
+        driver.quit()
 
 def _remove_all(created_files):
     for filename in created_files:

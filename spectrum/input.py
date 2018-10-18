@@ -202,13 +202,60 @@ class Journal:
 
     def session(self):
         browser = mechanicalsoup.Browser()
-        return JournalSession(self._host, browser)
+        return JournalHtmlSession(self._host, browser)
 
     def cdn_session(self):
         browser = mechanicalsoup.Browser()
-        return JournalSession(self._cdn_host, browser)
+        return JournalHtmlSession(self._cdn_host, browser)
 
-class JournalSession:
+    # TODO: rename
+    # TODO: allow CDN
+    def javascript_session(self, driver):
+        return JournalJavaScriptSession(driver, self._host)
+
+
+class JournalJavaScriptSession:
+    ID_SUBMIT_MY_RESEARCH = 'submitResearchButton'
+
+    def __init__(self, driver, host):
+        self._driver = driver
+        self._host = host
+
+    def _log(self, message, *args, **kwargs):
+        LOGGER.info(message, extra={'app':'journal'}, *args, **kwargs)
+
+    def submit(self):
+        LOGGER.info("Loading: %s", self._host)
+        self._driver.get(self._host)
+        selenium_title_smoke_test('eLife', self._driver)
+
+        submit_link = self._driver.find_element_by_id(self.ID_SUBMIT_MY_RESEARCH)
+        self._log("Found #%s `%s`", self.ID_SUBMIT_MY_RESEARCH, submit_link.text)
+        submit_link.click()
+        self._log("Clicked #%s", self.ID_SUBMIT_MY_RESEARCH)
+
+        selenium_title_smoke_test('xpub', self._driver)
+        # expand: click on login button, log in, and check final destination
+        return XpubJavaScriptSession(self._driver)
+
+
+class XpubJavaScriptSession:
+    CSS_LOGIN_BUTTON = 'button[data-test-id="login"]'
+
+    def __init__(self, driver):
+        self._driver = driver
+
+    def _log(self, message, *args, **kwargs):
+        LOGGER.info(message, extra={'app':'elife-xpub'}, *args, **kwargs)
+
+    def login(self):
+        login_button = self._driver.find_element_by_css_selector(self.CSS_LOGIN_BUTTON)
+        self._log("Found login button %s `%s`", self.CSS_LOGIN_BUTTON, login_button.text)
+        login_button.click()
+        self._log("Clicked login button %s", self.CSS_LOGIN_BUTTON)
+
+
+class JournalHtmlSession:
     PROFILE_LINK = ".login-control__non_js_control_link"
 
     def __init__(self, host, browser):
@@ -255,6 +302,10 @@ def invented_word(length=30, characters=None):
     if not characters:
         characters = string.ascii_lowercase + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
+
+def selenium_title_smoke_test(portion, driver):
+    title = driver.title
+    assert portion in title, "Title: %s\nCurrent URL: %s" % (title, driver.current_url)
 
 PRODUCTION_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_input'])
 DIGESTS_BUCKET = InputBucket(aws.S3, SETTINGS['bucket_digests_input'])

@@ -13,3 +13,5 @@ if pip list | grep econtools; then
     pip uninstall -y econtools
 fi
 pip install -r requirements.txt
+
+docker-compose up -d --force-recreate
