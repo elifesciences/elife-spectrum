@@ -14,7 +14,7 @@ GLOBAL_TIMEOUT = int(os.environ['SPECTRUM_TIMEOUT']) if 'SPECTRUM_TIMEOUT' in os
 
 def poll(action_fn, error_message, *error_message_args):
     """
-    Poll until action_fn returns something truthy. After GLOBAL_TIMEOUT throws an exception.
+    Poll until action_fn returns something truthy. After GLOBAL_TIMEOUT throw an exception.
 
     action_fn may return:
     - a tuple: first element is a result (truthy or falsy), second element any detail
