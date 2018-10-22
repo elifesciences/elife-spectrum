@@ -210,7 +210,7 @@ class DashboardArticleCheck:
             raise RuntimeError("Too many runs matching run-id %s: %s", run, pformat(matching_runs))
         if len(matching_runs) == 0:
             return False
-        return matching_runs[0]
+        return list(matching_runs)[0]
 
     def _check_for_run_after(self, version_contents, run_after):
         matching_runs = [r for _, r in version_contents['runs'].items() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') >= run_after.strftime('%s')]
@@ -218,7 +218,7 @@ class DashboardArticleCheck:
             raise RuntimeError("Too many runs after run_after %s: %s", run_after, matching_runs)
         if len(matching_runs) == 0:
             return False
-        return matching_runs[0]
+        return list(matching_runs)[0]
 
     def _check_run_events(self, run_contents, run_contains_events):
         if run_contains_events:
