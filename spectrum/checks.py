@@ -422,7 +422,7 @@ class ApiCheck:
                     item_check_presence = " and satisfying check %s" % item_check
             constraints_presence = ''
             if constraints:
-                for field, value in constraints.iteritems():
+                for field, value in constraints.items():
                     if body[field] != value:
                         LOGGER.debug("%s: field `%s` is not `%s` but `%s`",
                                      latest_url, field, value, body[field])
