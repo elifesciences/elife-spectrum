@@ -227,7 +227,7 @@ class ArticleZip:
                 if file.endswith('.xml'):
                     with open(file) as xml:
                         contents = xml.read()
-                    for search, replace in replacements.iteritems():
+                    for search, replace in replacements.items():
                         contents = contents.replace(search, replace)
                     with open(file, 'w') as xml:
                         xml.write(contents)
