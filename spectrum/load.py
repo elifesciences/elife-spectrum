@@ -48,7 +48,7 @@ class Limit():
             try:
                 strategy.run()
             except (AssertionError, RuntimeError, ValueError, exceptions.UnrecoverableError, requests.exceptions.ConnectionError) as e:
-                LOGGER.exception("Error in loading (%s)", e.message)
+                LOGGER.exception("Error in loading (%s)", e)
             iterations = iterations + 1
 
     def __str__(self):
