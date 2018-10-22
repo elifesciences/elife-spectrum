@@ -3,6 +3,7 @@ Read-only, headless checks against services under test.
 
 Contains anything from HTTP(S) calls to REST JSON APIs to S3 checks over the presence or recent modification of files.
 """
+from concurrent.futures import ThreadPoolExecutor, wait
 from datetime import datetime
 from pprint import pformat
 import re
@@ -11,7 +12,6 @@ from ssl import SSLError
 from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import ConnectionError
-from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
 from spectrum import aws, config, logger, polling, retries
 from spectrum.config import SETTINGS

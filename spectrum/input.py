@@ -2,11 +2,11 @@ from os import path
 import random
 import string
 import requests
-from spectrum import aws, logger
-from spectrum.config import SETTINGS
 from econtools import econ_workflow
 from pollute import modified_environ
 import mechanicalsoup
+from spectrum import aws, logger
+from spectrum.config import SETTINGS
 
 LOGGER = logger.logger(__name__)
 

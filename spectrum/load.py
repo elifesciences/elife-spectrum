@@ -1,7 +1,7 @@
 import string
 from random import randint
-from spectrum import exceptions, logger, input, checks
 import requests.exceptions
+from spectrum import exceptions, logger, input, checks
 
 LOGGER = logger.logger(__name__)
 
