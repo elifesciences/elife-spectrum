@@ -3,6 +3,7 @@ Read-only, headless checks against services under test.
 
 Contains anything from HTTP(S) calls to REST JSON APIs to S3 checks over the presence or recent modification of files.
 """
+from concurrent.futures import ThreadPoolExecutor, wait
 from datetime import datetime
 from pprint import pformat
 import re
@@ -11,7 +12,6 @@ from ssl import SSLError
 from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import ConnectionError
-from concurrent.futures import ThreadPoolExecutor, wait
 from requests_futures.sessions import FuturesSession
 from spectrum import aws, config, logger, polling, retries
 from spectrum.config import SETTINGS
@@ -203,22 +203,22 @@ class DashboardArticleCheck:
 
     def _check_for_run(self, version_contents, run=None):
         if run:
-            matching_runs = [r for _, r in version_contents['runs'].iteritems() if r['run-id'] == run]
+            matching_runs = [r for _, r in version_contents['runs'].items() if r['run-id'] == run]
         else:
             matching_runs = version_contents['runs'].values()
         if len(matching_runs) > 1:
             raise RuntimeError("Too many runs matching run-id %s: %s", run, pformat(matching_runs))
         if len(matching_runs) == 0:
             return False
-        return matching_runs[0]
+        return list(matching_runs)[0]
 
     def _check_for_run_after(self, version_contents, run_after):
-        matching_runs = [r for _, r in version_contents['runs'].iteritems() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') >= run_after.strftime('%s')]
+        matching_runs = [r for _, r in version_contents['runs'].items() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') >= run_after.strftime('%s')]
         if len(matching_runs) > 1:
             raise RuntimeError("Too many runs after run_after %s: %s", run_after, matching_runs)
         if len(matching_runs) == 0:
             return False
-        return matching_runs[0]
+        return list(matching_runs)[0]
 
     def _check_run_events(self, run_contents, run_contains_events):
         if run_contains_events:
@@ -422,7 +422,7 @@ class ApiCheck:
                     item_check_presence = " and satisfying check %s" % item_check
             constraints_presence = ''
             if constraints:
-                for field, value in constraints.iteritems():
+                for field, value in constraints.items():
                     if body[field] != value:
                         LOGGER.debug("%s: field `%s` is not `%s` but `%s`",
                                      latest_url, field, value, body[field])
@@ -439,7 +439,7 @@ class ApiCheck:
     def related_articles(self, id):
         url = "%s/articles/%s/related" % (self._host, id)
         response = requests.get(url, headers=self._base_headers())
-        assert response.status_code == 200, "%s is not 200 but %s: %s" % (url, response.status_code, response.content)
+        assert response.status_code == 200, "%s is not 200 but %s: %s" % (url, response.status_code, response.text)
         LOGGER.info("Found related articles of %s on api: %s", id, url, extra={'id': id})
         return response.json()
 
@@ -524,11 +524,11 @@ class ApiCheck:
 
     def _ensure_sane_response(self, response, url):
         assert response.status_code is 200, \
-            "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
+            "Response from %s had status %d, body %s" % (url, response.status_code, response.text)
         try:
             return response.json()
         except ValueError:
-            raise ValueError("Response from %s is not JSON: %s" % (url, response.content))
+            raise ValueError("Response from %s is not JSON: %s" % (url, response.text))
 
     def _ensure_list_has_at_least_1_element(self, body):
         assert body['total'] >= 1, \
@@ -617,11 +617,11 @@ class JournalCheck:
         response = self.just_load(path)
         match = re.match("^"+self._host, response.url)
         if match:
-            self._assert_all_resources_of_page_load(response.content)
-        download_links = self._download_links(response.content)
+            self._assert_all_resources_of_page_load(response.text)
+        download_links = self._download_links(response.text)
         LOGGER.info("Found download links: %s", pformat(download_links))
         self._assert_all_load(download_links)
-        return response.content
+        return response.text
 
     def just_load(self, path):
         url = _build_url(path, self._host)
@@ -737,7 +737,7 @@ def _is_content_present(url, text_match=None, **extra):
         response = requests.get(url)
         if response.status_code == 200:
             if text_match:
-                if text_match in response.content:
+                if text_match in response.text:
                     LOGGER.info("Body of %s matches %s", url, text_match, extra=extra)
                     return True
                 else:
@@ -794,7 +794,7 @@ class ObserverCheck:
             LOGGER.debug("Loaded %s (%s)", url, response.status_code, extra={'id':id})
             if response.status_code > 299:
                 raise UnrecoverableError(response)
-            soup = BeautifulSoup(response.content, "lxml-xml")
+            soup = BeautifulSoup(response.text, "lxml-xml")
             target_guid = "https://dx.doi.org/10.7554/eLife.%s" % id
             guids = {item.guid.string:item for item in soup.rss.channel.find_all("item")}
             if not guids:

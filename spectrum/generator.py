@@ -157,12 +157,12 @@ def _generate(filename, id, generated_article_directory, template_id, template_v
     extension = filename_components[1]
     if extension == '.jinja':
         with open(filename, 'r') as template_file:
-            data = template_file.read().decode('UTF-8')
+            data = template_file.read()
         template = jinja2.Template(data)
         content = template.render(article={'id': id}, **template_variables)
         target = target.replace('.jinja', '')
         with open(target, 'w') as target_file:
-            target_file.write(content.encode('utf-8'))
+            target_file.write(content)
     else:
         shutil.copy(filename, target)
     return target
@@ -227,7 +227,7 @@ class ArticleZip:
                 if file.endswith('.xml'):
                     with open(file) as xml:
                         contents = xml.read()
-                    for search, replace in replacements.iteritems():
+                    for search, replace in replacements.items():
                         contents = contents.replace(search, replace)
                     with open(file, 'w') as xml:
                         xml.write(contents)

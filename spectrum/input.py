@@ -2,11 +2,11 @@ from os import path
 import random
 import string
 import requests
-from spectrum import aws, logger
-from spectrum.config import SETTINGS
 from econtools import econ_workflow
 from pollute import modified_environ
 import mechanicalsoup
+from spectrum import aws, logger
+from spectrum.config import SETTINGS
 
 LOGGER = logger.logger(__name__)
 
@@ -188,7 +188,7 @@ class JournalCmsSession:
             del inp['name']
 
 def _assert_html_response(response):
-    assert response.status_code == 200, "Response from saving the from was expected to be 200 from the listing page, but it was %s\nBody: %s" % (response.status_code, response.content)
+    assert response.status_code == 200, "Response from saving the from was expected to be 200 from the listing page, but it was %s\nBody: %s" % (response.status_code, response.text)
 
 def _journal_cms_page_title(soup):
     # <h1 class="js-quickedit-page-title title page-title"><span data-quickedit-field-id="node/1709/title/en/full" class="field field--name-title field--type-string field--label-hidden">Spectrum blog article: jvsfz4oj9vz9hk239fbpq4fbjc9yoh</span></h1>

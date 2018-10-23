@@ -4,9 +4,9 @@ import sys
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from spectrumprivate import file_paths
 
 from spectrum import generator
-from spectrumprivate import file_paths
 # so that other processes run by xdist can still print
 # http://stackoverflow.com/questions/27006884/pytest-xdist-without-capturing-output
 # https://github.com/pytest-dev/pytest/issues/680

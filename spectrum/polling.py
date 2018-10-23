@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import os
 from pprint import pformat
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 import polling
 from requests.exceptions import ConnectionError

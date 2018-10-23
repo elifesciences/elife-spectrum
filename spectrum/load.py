@@ -1,7 +1,7 @@
 import string
 from random import randint
-from spectrum import exceptions, logger, input, checks
 import requests.exceptions
+from spectrum import exceptions, logger, input, checks
 
 LOGGER = logger.logger(__name__)
 
@@ -48,7 +48,7 @@ class Limit():
             try:
                 strategy.run()
             except (AssertionError, RuntimeError, ValueError, exceptions.UnrecoverableError, requests.exceptions.ConnectionError) as e:
-                LOGGER.exception("Error in loading (%s)", e.message)
+                LOGGER.exception("Error in loading (%s)", e)
             iterations = iterations + 1
 
     def __str__(self):

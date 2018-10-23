@@ -148,7 +148,7 @@ def test_article_with_unicode_content(generate_article):
     _ingest_and_publish(article)
     checks.API.wait_article(id=article.id())
     journal_page = checks.JOURNAL.article(id=article.id(), has_figures=article.has_figures())
-    assert "Szymon \xc5\x81\xc4\x99ski" in journal_page
+    assert "Szymon Łęski" in journal_page
 
 @pytest.mark.journal
 def test_googlebot_sees_citation_metadata(generate_article):
