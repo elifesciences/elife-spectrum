@@ -63,9 +63,9 @@ def test_events():
 @pytest.mark.observer
 def test_rss_feeds():
     recent_response = checks.JOURNAL.just_load('/rss/recent.xml')
-    print(recent_response.content)
+    print(recent_response.text)
     ahead_response = checks.JOURNAL.just_load('/rss/ahead.xml')
-    print(ahead_response.content)
+    print(ahead_response.text)
 
 @pytest.mark.journal
 @pytest.mark.profiles

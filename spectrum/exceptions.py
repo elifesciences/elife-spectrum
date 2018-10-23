@@ -30,13 +30,13 @@ def assert_status_code(response, expected_status_code, url):
     try:
         assert response.status_code == expected_status_code, \
                 "Response from %s had status %d\nHeaders: %s\nAssertion, not request, performed at %s" % (url, response.status_code, pformat(response.headers), datetime.now().isoformat())
-            #"Response from %s had status %d, body %s" % (url, response.status_code, response.content)
+            #"Response from %s had status %d, body %s" % (url, response.status_code, response.text)
     except UnicodeDecodeError:
         LOGGER.exception("Unicode error on %s (status code %s)", url, response.status_code)
         LOGGER.error("(%s): type of content %s", url, type(response.content))
         LOGGER.error("(%s): apparent_encoding %s", url, response.apparent_encoding)
-        with open("/tmp/response_content.txt", "w") as dump:
+        with open("/tmp/response.content.txt", "w") as dump:
             dump.write(response.content)
-        LOGGER.error("(%s): written response.content to /tmp")
+        LOGGER.error("(%s): written response.text to /tmp")
         LOGGER.error("(%s): headers %s)", url, response.headers)
         raise RuntimeError("Could not decode response from %s (status code %s, headers %s)" % (url, response.status_code, response.headers))

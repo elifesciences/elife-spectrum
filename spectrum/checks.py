@@ -439,7 +439,7 @@ class ApiCheck:
     def related_articles(self, id):
         url = "%s/articles/%s/related" % (self._host, id)
         response = requests.get(url, headers=self._base_headers())
-        assert response.status_code == 200, "%s is not 200 but %s: %s" % (url, response.status_code, response.content)
+        assert response.status_code == 200, "%s is not 200 but %s: %s" % (url, response.status_code, response.text)
         LOGGER.info("Found related articles of %s on api: %s", id, url, extra={'id': id})
         return response.json()
 
@@ -524,11 +524,11 @@ class ApiCheck:
 
     def _ensure_sane_response(self, response, url):
         assert response.status_code is 200, \
-            "Response from %s had status %d, body %s" % (url, response.status_code, response.content)
+            "Response from %s had status %d, body %s" % (url, response.status_code, response.text)
         try:
             return response.json()
         except ValueError:
-            raise ValueError("Response from %s is not JSON: %s" % (url, response.content))
+            raise ValueError("Response from %s is not JSON: %s" % (url, response.text))
 
     def _ensure_list_has_at_least_1_element(self, body):
         assert body['total'] >= 1, \
@@ -617,11 +617,11 @@ class JournalCheck:
         response = self.just_load(path)
         match = re.match("^"+self._host, response.url)
         if match:
-            self._assert_all_resources_of_page_load(response.content)
-        download_links = self._download_links(response.content)
+            self._assert_all_resources_of_page_load(response.text)
+        download_links = self._download_links(response.text)
         LOGGER.info("Found download links: %s", pformat(download_links))
         self._assert_all_load(download_links)
-        return response.content
+        return response.text
 
     def just_load(self, path):
         url = _build_url(path, self._host)
@@ -737,7 +737,7 @@ def _is_content_present(url, text_match=None, **extra):
         response = requests.get(url)
         if response.status_code == 200:
             if text_match:
-                if text_match in response.content:
+                if text_match in response.text:
                     LOGGER.info("Body of %s matches %s", url, text_match, extra=extra)
                     return True
                 else:
@@ -794,7 +794,7 @@ class ObserverCheck:
             LOGGER.debug("Loaded %s (%s)", url, response.status_code, extra={'id':id})
             if response.status_code > 299:
                 raise UnrecoverableError(response)
-            soup = BeautifulSoup(response.content, "lxml-xml")
+            soup = BeautifulSoup(response.text, "lxml-xml")
             target_guid = "https://dx.doi.org/10.7554/eLife.%s" % id
             guids = {item.guid.string:item for item in soup.rss.channel.find_all("item")}
             if not guids:
