@@ -19,8 +19,6 @@ from spectrum.exceptions import UnrecoverableError, assert_status_code
 from spectrum.mailcatcher import MailcatcherCheck
 
 
-# TODO: install proper SSL certificate on elife-dashboard-develop--end2end to avoid this
-requests.packages.urllib3.disable_warnings()
 GLOBAL_TIMEOUT = polling.GLOBAL_TIMEOUT
 HTTP_TIMEOUT = 30
 LOGGER = logger.logger(__name__)
