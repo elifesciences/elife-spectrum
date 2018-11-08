@@ -242,6 +242,7 @@ class JournalJavaScriptSession:
 class XpubJavaScriptSession:
     CSS_LOGIN_BUTTON = 'button[data-test-id="login"]'
     CSS_PROFILE_MENU = 'button[data-test-id="profile-menu"]'
+    CSS_NEW_SUBMISSION_BUTTON = 'button[data-test-id="desktop-new-submission"]'
 
     def __init__(self, driver):
         self._driver = driver
@@ -258,6 +259,16 @@ class XpubJavaScriptSession:
         self._log("Found profile menu %s", self.CSS_PROFILE_MENU)
         profile_menu.click()
         self._log("Clicked profile menu %s", self.CSS_PROFILE_MENU)
+
+    def dashboard(self):
+        dashboard_button = self._driver.find_element_by_link_text('Dashboard')
+        dashboard_button.click()
+        new_submission_button = self._driver.find_element_by_css_selector(self.CSS_NEW_SUBMISSION_BUTTON)
+        new_submission_button.click()
+        first_name = self._driver.find_element_by_css_selector('input[name="author.firstName"]')
+        first_name.send_keys("Josiah")
+        last_name = self._driver.find_element_by_css_selector('input[name="author.lastName"]')
+        last_name.send_keys("Carberry")
 
 
 class JournalHtmlSession:
