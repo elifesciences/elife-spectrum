@@ -255,7 +255,9 @@ class XpubJavaScriptSession:
         login_button.click()
         self._log("Clicked login button %s", self.CSS_LOGIN_BUTTON)
         profile_menu = self._driver.find_element_by_css_selector(self.CSS_PROFILE_MENU)
+        self._log("Found profile menu %s", self.CSS_PROFILE_MENU)
         profile_menu.click()
+        self._log("Clicked profile menu %s", self.CSS_PROFILE_MENU)
 
 
 class JournalHtmlSession:
