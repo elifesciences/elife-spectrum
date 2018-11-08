@@ -241,6 +241,7 @@ class JournalJavaScriptSession:
 
 class XpubJavaScriptSession:
     CSS_LOGIN_BUTTON = 'button[data-test-id="login"]'
+    CSS_PROFILE_MENU = 'button[data-test-id="profile-menu"]'
 
     def __init__(self, driver):
         self._driver = driver
@@ -253,6 +254,8 @@ class XpubJavaScriptSession:
         self._log("Found login button %s `%s`", self.CSS_LOGIN_BUTTON, login_button.text)
         login_button.click()
         self._log("Clicked login button %s", self.CSS_LOGIN_BUTTON)
+        profile_menu = self._driver.find_element_by_css_selector(self.CSS_PROFILE_MENU)
+        profile_menu.click()
 
 
 class JournalHtmlSession:
