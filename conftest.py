@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import sys
 
@@ -106,7 +107,8 @@ def generate_digest():
 
 @pytest.yield_fixture
 #@pytest.fixture in pytest>=2.10
-def get_selenium_driver():
+def get_selenium_driver(request):
+    test_function = request.function.__name__
     drivers = []
     def creation():
         driver = webdriver.Remote(
@@ -118,6 +120,10 @@ def get_selenium_driver():
         return driver
     yield creation
     for driver in drivers:
+        screenshot_path == 'build/screenshots/%s-%s.png' % (test_function, datetime.utcnow().isoformat())
+        # TODO: temporary LOGGER throughout this file
+        generator.LOGGER.info("Taking final screenshot at %s", screenshot_path)
+        driver.save_screenshot(screenshot_path)
         generator.LOGGER.info("Deleting Selenium driver %s", driver)
         driver.quit()
 
@@ -129,4 +135,7 @@ def _remove_all(created_files):
 def _clean_all(created_articles):
     for article in created_articles:
         article.clean()
+
+def pytest_runtest_makereport(item):
+    # FUTURE: try to customize report
 
