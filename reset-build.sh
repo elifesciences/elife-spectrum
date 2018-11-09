@@ -5,3 +5,4 @@ set -e
 # on further builds picking them up
 rm -f build/junit.xml
 rm -f build/test.log
+rm -f build/screenshots/*.png
