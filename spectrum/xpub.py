@@ -7,10 +7,13 @@ def _log(message, *args, **kwargs):
     LOGGER.info(message, extra={'app':'elife-xpub'}, *args, **kwargs)
 
 class PageObject:
+    def __init__(self, driver):
+        self._driver = driver
+
     def _input(self, css_selector, text, name=None):
         input_element = self._driver.find_element_by_css_selector(css_selector)
         if name:
-            _log("Found %s input %s", name, self.CSS_INPUT_FIRST_NAME)
+            _log("Found %s input %s", name, css_selector)
         input_element.send_keys(text)
 
 
@@ -40,9 +43,6 @@ class XpubJavaScriptSession:
 class XpubDashboardPage(PageObject):
     CSS_NEW_SUBMISSION_BUTTON = 'button[data-test-id="desktop-new-submission"]'
 
-    def __init__(self, driver):
-        self._driver = driver
-
     def create_initial_submission(self):
         new_submission_button = self._driver.find_element_by_css_selector(self.CSS_NEW_SUBMISSION_BUTTON)
         new_submission_button.click()
@@ -52,14 +52,14 @@ class XpubDashboardPage(PageObject):
 class XpubInitialSubmissionAuthorPage(PageObject):
     CSS_INPUT_FIRST_NAME = 'input[name="author.firstName"]'
     CSS_INPUT_LAST_NAME = 'input[name="author.lastName"]'
-
-    def __init__(self, driver):
-        self._driver = driver
+    CSS_INPUT_EMAIL = 'input[name="author.email"]'
+    CSS_INPUT_AFFILIATION = 'input[name="author.aff"]'
+    CSS_NEXT = 'button[data-test-id="next"]'
 
     def next(self):
         self._input(self.CSS_INPUT_FIRST_NAME, 'Josiah', 'first name')
         self._input(self.CSS_INPUT_LAST_NAME, 'Carberry', 'last name')
         self._input(self.CSS_INPUT_EMAIL, 'j.carberry@example.com', 'email')
         self._input(self.CSS_INPUT_AFFILIATION, 'Brown University', 'affiliation')
-        next_button = self._driver.find_element_by_css_selector('button[data-test-id="next"]')
+        next_button = self._driver.find_element_by_css_selector(self.CSS_NEXT)
         next_button.click()
