@@ -3,8 +3,15 @@ from spectrum import logger
 
 LOGGER = logger.logger(__name__)
 
-def _log(self, message, *args, **kwargs):
+def _log(message, *args, **kwargs):
     LOGGER.info(message, extra={'app':'elife-xpub'}, *args, **kwargs)
+
+class PageObject:
+    def _input(self, css_selector, text, name=None):
+        input_element = self._driver.find_element_by_css_selector(css_selector)
+        if name:
+            _log("Found %s input %s", name, self.CSS_INPUT_FIRST_NAME)
+        input_element.send_keys(text)
 
 
 class XpubJavaScriptSession:
@@ -30,7 +37,7 @@ class XpubJavaScriptSession:
         return XpubDashboardPage(self._driver)
 
 
-class XpubDashboardPage:
+class XpubDashboardPage(PageObject):
     CSS_NEW_SUBMISSION_BUTTON = 'button[data-test-id="desktop-new-submission"]'
 
     def __init__(self, driver):
@@ -42,19 +49,17 @@ class XpubDashboardPage:
         return XpubInitialSubmissionAuthorPage(self._driver)
 
 
-class XpubInitialSubmissionAuthorPage:
+class XpubInitialSubmissionAuthorPage(PageObject):
+    CSS_INPUT_FIRST_NAME = 'input[name="author.firstName"]'
+    CSS_INPUT_LAST_NAME = 'input[name="author.lastName"]'
+
     def __init__(self, driver):
         self._driver = driver
 
     def next(self):
-        first_name = self._driver.find_element_by_css_selector('input[name="author.firstName"]')
-        first_name.send_keys("Josiah")
-        last_name = self._driver.find_element_by_css_selector('input[name="author.lastName"]')
-        last_name.send_keys("Carberry")
-        email = self._driver.find_element_by_css_selector('input[name="author.email"]')
-        email.send_keys("j.carberry@example.com")
-        aff = self._driver.find_element_by_css_selector('input[name="author.aff"]')
-        aff.send_keys("Brown University")
-
+        self._input(self.CSS_INPUT_FIRST_NAME, 'Josiah', 'first name')
+        self._input(self.CSS_INPUT_LAST_NAME, 'Carberry', 'last name')
+        self._input(self.CSS_INPUT_EMAIL, 'j.carberry@example.com', 'email')
+        self._input(self.CSS_INPUT_AFFILIATION, 'Brown University', 'affiliation')
         next_button = self._driver.find_element_by_css_selector('button[data-test-id="next"]')
         next_button.click()
