@@ -136,7 +136,6 @@ def _clean_all(created_articles):
     for article in created_articles:
         article.clean()
 
-def pytest_runtest_makereport(item):
-    # FUTURE: try to customize report
-    pass
-
+# FUTURE: try to customize report
+#def pytest_runtest_makereport(item):
+#    pass
