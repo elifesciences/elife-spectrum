@@ -10,7 +10,7 @@ class PageObject:
     def __init__(self, driver):
         self._driver = driver
 
-    def _input(self, css_selector, text, name=None):
+    def _send_input_to(self, css_selector, text, name=None):
         input_element = self._driver.find_element_by_css_selector(css_selector)
         if name:
             _info_log("Found %s input %s", name, css_selector)
@@ -57,9 +57,9 @@ class XpubInitialSubmissionAuthorPage(PageObject):
     CSS_NEXT = 'button[data-test-id="next"]'
 
     def next(self):
-        self._input(self.CSS_INPUT_FIRST_NAME, 'Josiah', 'first name')
-        self._input(self.CSS_INPUT_LAST_NAME, 'Carberry', 'last name')
-        self._input(self.CSS_INPUT_EMAIL, 'j.carberry@example.com', 'email')
-        self._input(self.CSS_INPUT_AFFILIATION, 'Brown University', 'affiliation')
+        self._send_input_to(self.CSS_INPUT_FIRST_NAME, 'Josiah', 'first name')
+        self._send_input_to(self.CSS_INPUT_LAST_NAME, 'Carberry', 'last name')
+        self._send_input_to(self.CSS_INPUT_EMAIL, 'j.carberry@example.com', 'email')
+        self._send_input_to(self.CSS_INPUT_AFFILIATION, 'Brown University', 'affiliation')
         next_button = self._driver.find_element_by_css_selector(self.CSS_NEXT)
         next_button.click()
