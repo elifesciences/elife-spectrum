@@ -3,7 +3,7 @@ from spectrum import logger
 
 LOGGER = logger.logger(__name__)
 
-def _log(message, *args, **kwargs):
+def _info_log(message, *args, **kwargs):
     LOGGER.info(message, extra={'app':'elife-xpub'}, *args, **kwargs)
 
 class PageObject:
@@ -13,7 +13,7 @@ class PageObject:
     def _input(self, css_selector, text, name=None):
         input_element = self._driver.find_element_by_css_selector(css_selector)
         if name:
-            _log("Found %s input %s", name, css_selector)
+            _info_log("Found %s input %s", name, css_selector)
         input_element.send_keys(text)
 
 
@@ -26,13 +26,13 @@ class XpubJavaScriptSession:
 
     def login(self):
         login_button = self._driver.find_element_by_css_selector(self.CSS_LOGIN_BUTTON)
-        _log("Found login button %s `%s`", self.CSS_LOGIN_BUTTON, login_button.text)
+        _info_log("Found login button %s `%s`", self.CSS_LOGIN_BUTTON, login_button.text)
         login_button.click()
-        _log("Clicked login button %s", self.CSS_LOGIN_BUTTON)
+        _info_log("Clicked login button %s", self.CSS_LOGIN_BUTTON)
         profile_menu = self._driver.find_element_by_css_selector(self.CSS_PROFILE_MENU)
-        _log("Found profile menu %s", self.CSS_PROFILE_MENU)
+        _info_log("Found profile menu %s", self.CSS_PROFILE_MENU)
         profile_menu.click()
-        _log("Clicked profile menu %s", self.CSS_PROFILE_MENU)
+        _info_log("Clicked profile menu %s", self.CSS_PROFILE_MENU)
 
     def dashboard(self):
         dashboard_button = self._driver.find_element_by_link_text('Dashboard')
