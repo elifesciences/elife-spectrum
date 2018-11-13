@@ -18,4 +18,5 @@ def test_initial_submission(get_selenium_driver):
     xpub_session = journal_session.submit()
     xpub_session.login()
     author_page = xpub_session.dashboard().create_initial_submission()
+    author_page.populate_required_fields()
     author_page.next()

@@ -56,10 +56,12 @@ class XpubInitialSubmissionAuthorPage(PageObject):
     CSS_INPUT_AFFILIATION = 'input[name="author.aff"]'
     CSS_NEXT = 'button[data-test-id="next"]'
 
-    def next(self):
+    def populate_required_fields(self):
         self._send_input_to(self.CSS_INPUT_FIRST_NAME, 'Josiah', 'first name')
         self._send_input_to(self.CSS_INPUT_LAST_NAME, 'Carberry', 'last name')
         self._send_input_to(self.CSS_INPUT_EMAIL, 'j.carberry@example.com', 'email')
         self._send_input_to(self.CSS_INPUT_AFFILIATION, 'Brown University', 'affiliation')
+
+    def next(self):
         next_button = self._driver.find_element_by_css_selector(self.CSS_NEXT)
         next_button.click()
