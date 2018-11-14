@@ -65,3 +65,14 @@ class XpubInitialSubmissionAuthorPage(PageObject):
     def next(self):
         next_button = self._driver.find_element_by_css_selector(self.CSS_NEXT)
         next_button.click()
+        return XpubInitialSubmissionFilesPage(self._driver)
+    
+class XpubInitialSubmissionFilesPage(PageObject):
+    def populate_required_fields(self):
+        cover_letter = self._driver.find_element_by_css_selector('#coverLetter [contentEditable=true]')
+        LOGGER.info("Editable: %s", cover_letter)
+        cover_letter.send_keys("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
+        input_file = self._driver.find_element_by_css_selector('[data-test-id=upload]>input')
+        input_file.send_keys("/templates/elife-xpub/initial-submission.pdf")
+        instructions = self._driver.find_element_by_css_selector('p[data-test-conversion="completed"]')
+        LOGGER.info("Instructions: %s", instructions.text)
