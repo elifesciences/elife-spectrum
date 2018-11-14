@@ -1,5 +1,5 @@
-from spectrum import logger
 from selenium.webdriver.common.keys import Keys
+from spectrum import logger
 
 
 LOGGER = logger.logger(__name__)
