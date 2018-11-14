@@ -10,6 +10,7 @@ class PageObject:
     def __init__(self, driver):
         self._driver = driver
 
+    # TODO: transform into XpubInput object?
     def _send_input_to(self, css_selector, text, name=None):
         input_element = self._driver.find_element_by_css_selector(css_selector)
         if name:
@@ -54,7 +55,6 @@ class XpubInitialSubmissionAuthorPage(PageObject):
     CSS_INPUT_LAST_NAME = 'input[name="author.lastName"]'
     CSS_INPUT_EMAIL = 'input[name="author.email"]'
     CSS_INPUT_AFFILIATION = 'input[name="author.aff"]'
-    CSS_NEXT = 'button[data-test-id="next"]'
 
     def populate_required_fields(self):
         self._send_input_to(self.CSS_INPUT_FIRST_NAME, 'Josiah', 'first name')
@@ -63,5 +63,31 @@ class XpubInitialSubmissionAuthorPage(PageObject):
         self._send_input_to(self.CSS_INPUT_AFFILIATION, 'Brown University', 'affiliation')
 
     def next(self):
-        next_button = self._driver.find_element_by_css_selector(self.CSS_NEXT)
-        next_button.click()
+        XpubNextButton(self._driver).follow()
+        return XpubInitialSubmissionFilesPage(self._driver)
+
+class XpubInitialSubmissionFilesPage(PageObject):
+    CSS_EDITOR_COVER_LETTER = '#coverLetter [contentEditable=true]'
+    CSS_INPUT_MANUSCRIPT = '[data-test-id=upload]>input'
+    CSS_UPLOAD_INSTRUCTIONS = 'p[data-test-conversion="completed"]'
+
+    def populate_required_fields(self):
+        self._send_input_to(self.CSS_EDITOR_COVER_LETTER, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'cover letter')
+        self._send_input_to(self.CSS_INPUT_MANUSCRIPT, '/templates/elife-xpub/initial-submission.pdf', 'manuscript file')
+        self._wait_for_upload_and_conversion()
+
+    def next(self):
+        XpubNextButton(self._driver).follow()
+
+    def _wait_for_upload_and_conversion(self):
+        instructions = self._driver.find_element_by_css_selector(self.CSS_UPLOAD_INSTRUCTIONS)
+        LOGGER.info("Found instructions: %s", instructions.text)
+
+class XpubNextButton():
+    CSS_NEXT = 'button[data-test-id="next"]'
+
+    def __init__(self, driver):
+        self._element = driver.find_element_by_css_selector(self.CSS_NEXT)
+
+    def follow(self):
+        self._element.click()

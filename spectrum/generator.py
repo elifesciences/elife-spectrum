@@ -125,9 +125,9 @@ def all_stored_articles():
     However, excludes some blacklisted articles that we prefer to use with a specific test rather than the standard ingest-and-publish"""
     blacklist = ['19532', '06847', '22661']
     articles = []
-    for template_directory in glob.glob('spectrum/templates/elife-*'):
+    for template_directory in glob.glob('spectrum/templates/elife-*-*-*'):
         match = re.match(r".*/elife-(\d+)-.+", template_directory)
-        assert match is not None
+        assert match is not None, ("Cannot match an article id into %s" % template_directory)
         assert len(match.groups()) == 1
         article_id = match.groups()[0]
         if article_id in blacklist:
