@@ -10,6 +10,7 @@ class PageObject:
     def __init__(self, driver):
         self._driver = driver
 
+    # TODO: transform into XpubInput object?
     def _send_input_to(self, css_selector, text, name=None):
         input_element = self._driver.find_element_by_css_selector(css_selector)
         if name:
