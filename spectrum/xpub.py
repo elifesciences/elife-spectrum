@@ -86,9 +86,6 @@ class XpubInitialSubmissionFilesPage(PageObject):
         LOGGER.info("Found instructions: %s", instructions.text)
 
 class XpubInitialSubmissionSubmissionPage(PageObject):
-    def __init__(self, driver):
-        self._driver = driver
-
     def populate_required_fields(self):
         self._send_input_to('[name="meta.title"]', 'My title', 'title')
         # unstable selectors follow: https://github.com/elifesciences/elife-xpub/issues/1041
@@ -108,9 +105,6 @@ class XpubInitialSubmissionSubmissionPage(PageObject):
 
 
 class XpubInitialSubmissionEditorsPage(PageObject):
-    def __init__(self, driver):
-        self._driver = driver
-
     def populate_one_editor(self):
         self._driver.find_element_by_css_selector('[data-test-id="suggested-senior-editors"] button').click()
         # TODO: make sure journal-cms--end2end is populated, and choose one
