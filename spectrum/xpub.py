@@ -1,4 +1,5 @@
 from spectrum import logger
+from selenium.webdriver.common.keys import Keys
 
 
 LOGGER = logger.logger(__name__)
@@ -78,10 +79,32 @@ class XpubInitialSubmissionFilesPage(PageObject):
 
     def next(self):
         XpubNextButton(self._driver).follow()
+        return XpubInitialSubmissionSubmissionPage(self._driver)
 
     def _wait_for_upload_and_conversion(self):
         instructions = self._driver.find_element_by_css_selector(self.CSS_UPLOAD_INSTRUCTIONS)
         LOGGER.info("Found instructions: %s", instructions.text)
+
+class XpubInitialSubmissionSubmissionPage(PageObject):
+    def __init__(self, driver):
+        self._driver = driver
+
+    def populate_required_fields(self):
+        self._send_input_to('[name="meta.title"]', 'My title', 'title')
+        # unstable selectors follow: https://github.com/elifesciences/elife-xpub/issues/1041
+        self._driver.find_element_by_css_selector('[role=listbox] button').click()
+        # multiple elements, pick the first one
+        self._driver.find_element_by_css_selector('[role=option]').click()
+        # subject area menu
+        subject_area = self._driver.find_element_by_css_selector('label[for="subject-area-select"]')
+        subject_area.click()
+        subject_area_input = self._driver.find_element_by_css_selector('input#subject-area-select')
+        subject_area_input.send_keys(Keys.ARROW_DOWN)
+        subject_area_input.send_keys(Keys.ENTER)
+
+    def next(self):
+        XpubNextButton(self._driver).follow()
+
 
 class XpubNextButton():
     CSS_NEXT = 'button[data-test-id="next"]'
