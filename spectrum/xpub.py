@@ -66,13 +66,23 @@ class XpubInitialSubmissionAuthorPage(PageObject):
         next_button = self._driver.find_element_by_css_selector(self.CSS_NEXT)
         next_button.click()
         return XpubInitialSubmissionFilesPage(self._driver)
-    
+
 class XpubInitialSubmissionFilesPage(PageObject):
+    CSS_EDITOR_COVER_LETTER = '#coverLetter [contentEditable=true]'
+    CSS_INPUT_MANUSCRIPT = '[data-test-id=upload]>input'
+    CSS_UPLOAD_INSTRUCTIONS = 'p[data-test-conversion="completed"]'
+    CSS_NEXT = 'button[data-test-id="next"]'
+
     def populate_required_fields(self):
-        cover_letter = self._driver.find_element_by_css_selector('#coverLetter [contentEditable=true]')
-        LOGGER.info("Editable: %s", cover_letter)
-        cover_letter.send_keys("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-        input_file = self._driver.find_element_by_css_selector('[data-test-id=upload]>input')
-        input_file.send_keys("/templates/elife-xpub/initial-submission.pdf")
-        instructions = self._driver.find_element_by_css_selector('p[data-test-conversion="completed"]')
-        LOGGER.info("Instructions: %s", instructions.text)
+        self._send_input_to(self.CSS_EDITOR_COVER_LETTER, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'cover letter')
+        self._send_input_to(self.CSS_INPUT_MANUSCRIPT, '/templates/elife-xpub/initial-submission.pdf', 'manuscript file')
+        self._wait_for_upload_and_conversion()
+
+    # TODO: extract method or object for next()
+    def next(self):
+        next_button = self._driver.find_element_by_css_selector(self.CSS_NEXT)
+        next_button.click()
+
+    def _wait_for_upload_and_conversion(self):
+        instructions = self._driver.find_element_by_css_selector(self.CSS_UPLOAD_INSTRUCTIONS)
+        LOGGER.info("Found instructions: %s", instructions.text)
