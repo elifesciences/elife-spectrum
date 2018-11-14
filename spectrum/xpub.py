@@ -104,6 +104,16 @@ class XpubInitialSubmissionSubmissionPage(PageObject):
 
     def next(self):
         XpubNextButton(self._driver).follow()
+        return XpubInitialSubmissionEditorsPage(self._driver)
+
+
+class XpubInitialSubmissionEditorsPage(PageObject):
+    def __init__(self, driver):
+        self._driver = driver
+
+    def populate_one_editor(self):
+        self._driver.find_element_by_css_selector('[data-test-id="suggested-senior-editors"] button').click()
+        # TODO: make sure journal-cms--end2end is populated, and choose one
 
 
 class XpubNextButton():
