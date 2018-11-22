@@ -129,7 +129,7 @@ class XpubPeoplePicker():
 
     def __init__(self, driver):
         self._picker = driver.find_element_by_css_selector(self.CSS_PEOPLE_PICKER)
-        self._add = self._picker.find_element_by_css_selector(self.CSS_ADD_BUTTON)
+        self._add = driver.find_element_by_css_selector(self.CSS_ADD_BUTTON)
 
     def choose_some(self, quantity):
         buttons = self._picker.find_elements_by_css_selector(self.CSS_PERSON_POD_BUTTON)
