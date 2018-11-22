@@ -6,7 +6,7 @@ from spectrum import input
 @pytest.mark.profiles
 @pytest.mark.xpub
 def test_login(get_selenium_driver):
-    journal_session = input.JOURNAL.javascript_session(get_selenium_driver())
+    journal_session = input.JOURNAL_CDN.javascript_session(get_selenium_driver())
     xpub_session = journal_session.submit()
     xpub_session.login()
 
@@ -14,7 +14,7 @@ def test_login(get_selenium_driver):
 #@pytest.mark.journal_cms
 @pytest.mark.xpub
 def test_initial_submission(get_selenium_driver):
-    journal_session = input.JOURNAL.javascript_session(get_selenium_driver())
+    journal_session = input.JOURNAL_CDN.javascript_session(get_selenium_driver())
     xpub_session = journal_session.submit()
     xpub_session.login()
 
