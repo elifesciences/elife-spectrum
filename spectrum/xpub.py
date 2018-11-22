@@ -105,8 +105,10 @@ class XpubInitialSubmissionSubmissionPage(PageObject):
 
 
 class XpubInitialSubmissionEditorsPage(PageObject):
-    def populate_one_editor(self):
+    def populate_editors(self):
         self._driver.find_element_by_css_selector('[data-test-id="suggested-senior-editors"] button').click()
+        picker = XpubPeoplePicker(self._driver)
+        picker.choose_some(2)
         # TODO: make sure journal-cms--end2end is populated, and choose one
 
 
@@ -118,3 +120,19 @@ class XpubNextButton():
 
     def follow(self):
         self._element.click()
+
+
+class XpubPeoplePicker():
+    CSS_PEOPLE_PICKER = '[data-test-id="people-picker-body"]'
+    CSS_PERSON_POD_BUTTON = '[data-test-id="person-pod-button"]'
+    CSS_ADD_BUTTON = '[data-test-id="people-picker-add"]'
+
+    def __init__(self, driver):
+        self._picker = driver.find_element_by_css_selector(self.CSS_PEOPLE_PICKER)
+        self._add = self._picker.find_element_by_css_selector(self.CSS_ADD_BUTTON)
+
+    def choose_some(self, quantity):
+        buttons = self._picker.find_elements_by_css_selector(self.CSS_PERSON_POD_BUTTON)
+        for i in range(0, quantity):
+            buttons[i].click()
+        self._add.click()
