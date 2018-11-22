@@ -23,4 +23,9 @@ def test_initial_submission(get_selenium_driver):
     files_page = author_page.next()
 
     files_page.populate_required_fields()
-    files_page.next()
+    submission_page = files_page.next()
+
+    submission_page.populate_required_fields()
+    editors_page = submission_page.next()
+
+    editors_page.populate_editors()

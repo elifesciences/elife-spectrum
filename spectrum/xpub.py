@@ -1,3 +1,5 @@
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.wait import WebDriverWait
 from spectrum import logger
 
 
@@ -78,10 +80,44 @@ class XpubInitialSubmissionFilesPage(PageObject):
 
     def next(self):
         XpubNextButton(self._driver).follow()
+        return XpubInitialSubmissionSubmissionPage(self._driver)
 
     def _wait_for_upload_and_conversion(self):
         instructions = self._driver.find_element_by_css_selector(self.CSS_UPLOAD_INSTRUCTIONS)
         LOGGER.info("Found instructions: %s", instructions.text)
+
+class XpubInitialSubmissionSubmissionPage(PageObject):
+    def populate_required_fields(self):
+        self._send_input_to('[name="meta.title"]', 'My title', 'title')
+        # unstable selectors follow: https://github.com/elifesciences/elife-xpub/issues/1041
+        self._driver.find_element_by_css_selector('[role=listbox] button').click()
+        # multiple elements, pick the first one
+        self._driver.find_element_by_css_selector('[role=option]').click()
+        # subject area menu
+        subject_area = self._driver.find_element_by_css_selector('label[for="subject-area-select"]')
+        subject_area.click()
+        subject_area_input = self._driver.find_element_by_css_selector('input#subject-area-select')
+        subject_area_input.send_keys(Keys.ARROW_DOWN)
+        subject_area_input.send_keys(Keys.ENTER)
+
+    def next(self):
+        XpubNextButton(self._driver).follow()
+        return XpubInitialSubmissionEditorsPage(self._driver)
+
+
+class XpubInitialSubmissionEditorsPage(PageObject):
+    CSS_SUGGEST_SENIOR_EDITORS_BUTTON = '[data-test-id="suggested-senior-editors"] button'
+    CSS_SUGGEST_REVIEWING_EDITORS_BUTTON = '[data-test-id="suggested-reviewing-editors"] button'
+
+    def populate_editors(self):
+        self._driver.find_element_by_css_selector(self.CSS_SUGGEST_SENIOR_EDITORS_BUTTON).click()
+        picker = XpubPeoplePicker(self._driver)
+        picker.choose_some(2)
+
+        self._driver.find_element_by_css_selector(self.CSS_SUGGEST_REVIEWING_EDITORS_BUTTON).click()
+        picker = XpubPeoplePicker(self._driver)
+        picker.choose_some(2)
+
 
 class XpubNextButton():
     CSS_NEXT = 'button[data-test-id="next"]'
@@ -91,3 +127,25 @@ class XpubNextButton():
 
     def follow(self):
         self._element.click()
+
+
+class XpubPeoplePicker():
+    CSS_PEOPLE_PICKER = '[data-test-id="people-picker-body"]'
+    CSS_PERSON_POD_BUTTON = '[data-test-id="person-pod-button"]'
+    CSS_ADD_BUTTON = '[data-test-id="people-picker-add"]'
+    TIMEOUT_CLOSING = 10
+
+    def __init__(self, driver):
+        self._driver = driver
+        self._picker = self._find_picker()
+        self._add = driver.find_element_by_css_selector(self.CSS_ADD_BUTTON)
+
+    def _find_picker(self):
+        return self._driver.find_element_by_css_selector(self.CSS_PEOPLE_PICKER)
+
+    def choose_some(self, quantity):
+        buttons = self._picker.find_elements_by_css_selector(self.CSS_PERSON_POD_BUTTON)
+        for button in range(0, quantity):
+            buttons[button].click()
+        self._add.click()
+        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: self._find_picker().is_displayed())
