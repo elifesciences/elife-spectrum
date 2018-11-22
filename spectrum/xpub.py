@@ -137,12 +137,15 @@ class XpubPeoplePicker():
 
     def __init__(self, driver):
         self._driver = driver
-        self._picker = driver.find_element_by_css_selector(self.CSS_PEOPLE_PICKER)
+        self._picker = self._find_picker()
         self._add = driver.find_element_by_css_selector(self.CSS_ADD_BUTTON)
+
+    def _find_picker(self):
+        return self._driver.find_element_by_css_selector(self.CSS_PEOPLE_PICKER)
 
     def choose_some(self, quantity):
         buttons = self._picker.find_elements_by_css_selector(self.CSS_PERSON_POD_BUTTON)
         for button in range(0, quantity):
             buttons[button].click()
         self._add.click()
-        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: driver.find_element_by_css_selector(self.CSS_PEOPLE_PICKER).is_displayed())
+        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: self._find_picker().is_displayed())
