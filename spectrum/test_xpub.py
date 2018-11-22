@@ -29,5 +29,3 @@ def test_initial_submission(get_selenium_driver):
     editors_page = submission_page.next()
 
     editors_page.populate_editors()
-    import time
-    time.sleep(30)

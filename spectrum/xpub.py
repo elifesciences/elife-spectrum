@@ -1,4 +1,5 @@
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.wait import WebDriverWait
 from spectrum import logger
 
 
@@ -105,11 +106,17 @@ class XpubInitialSubmissionSubmissionPage(PageObject):
 
 
 class XpubInitialSubmissionEditorsPage(PageObject):
+    CSS_SUGGEST_SENIOR_EDITORS_BUTTON = '[data-test-id="suggested-senior-editors"] button'
+    CSS_SUGGEST_REVIEWING_EDITORS_BUTTON = '[data-test-id="suggested-reviewing-editors"] button'
+
     def populate_editors(self):
-        self._driver.find_element_by_css_selector('[data-test-id="suggested-senior-editors"] button').click()
+        self._driver.find_element_by_css_selector(self.CSS_SUGGEST_SENIOR_EDITORS_BUTTON).click()
         picker = XpubPeoplePicker(self._driver)
         picker.choose_some(2)
-        # TODO: make sure journal-cms--end2end is populated, and choose one
+
+        self._driver.find_element_by_css_selector(self.CSS_SUGGEST_REVIEWING_EDITORS_BUTTON).click()
+        picker = XpubPeoplePicker(self._driver)
+        picker.choose_some(2)
 
 
 class XpubNextButton():
@@ -126,8 +133,10 @@ class XpubPeoplePicker():
     CSS_PEOPLE_PICKER = '[data-test-id="people-picker-body"]'
     CSS_PERSON_POD_BUTTON = '[data-test-id="person-pod-button"]'
     CSS_ADD_BUTTON = '[data-test-id="people-picker-add"]'
+    TIMEOUT_CLOSING = 10
 
     def __init__(self, driver):
+        self._driver = driver
         self._picker = driver.find_element_by_css_selector(self.CSS_PEOPLE_PICKER)
         self._add = driver.find_element_by_css_selector(self.CSS_ADD_BUTTON)
 
@@ -136,3 +145,4 @@ class XpubPeoplePicker():
         for i in range(0, quantity):
             buttons[i].click()
         self._add.click()
+        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: driver.find_element_by_css_selector(self.CSS_PEOPLE_PICKER).is_displayed())
