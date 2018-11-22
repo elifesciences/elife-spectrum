@@ -93,7 +93,7 @@ def test_logged_in_profile():
 @pytest.mark.profiles
 @pytest.mark.annotations
 def test_logged_in_through_cdn():
-    session = input.JOURNAL.cdn_session()
+    session = input.JOURNAL_CDN.session()
     session.login()
 
     id = _find_profile_id_by_orcid(MAGIC_ORCID)
