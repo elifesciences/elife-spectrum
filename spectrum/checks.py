@@ -876,8 +876,8 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
         response = future.result()
         LOGGER.debug("Loading (%s) resource %s", resource_checking_method, url, extra=extra)
 
-        if response.status_code == 504:
-            LOGGER.warning("Loading (%s) resource %s again due to 504 timeout", resource_checking_method, url, extra=extra)
+        if retries.retry_request(response):
+            LOGGER.warning("Loading (%s) resource %s again due to %s status code", resource_checking_method, url, response.status_code, extra=extra)
             response = requests.get(url)
 
         assert_status_code(response, 200, url)
