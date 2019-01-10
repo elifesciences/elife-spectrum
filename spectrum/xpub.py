@@ -118,6 +118,25 @@ class XpubInitialSubmissionEditorsPage(PageObject):
         picker = XpubPeoplePicker(self._driver)
         picker.choose_some(2)
 
+        # <input id="textfield-5d6s3exl" type="text" name="suggestedReviewers.0.name" class="sc-jWBwVP jrOMph" value="A">
+        # <input id="textfield-8cq77rq8" type="email" name="suggestedReviewers.0.email" class="sc-jWBwVP jrOMph" value="a@example.com">
+
+    def next(self):
+        pass
+        # <button type="submit" data-test-id="next" class="sc-kpOJdX gFwmTv">Next</button>
+
+
+class XpubInitialSubmissionDisclosurePage(PageObject):
+    def acknowledge(self):
+        pass
+        # <input id="textfield-66u4rnti" type="text" name="submitterSignature" class="sc-jWBwVP UGMLr" value="">
+        # <input name="disclosureConsent" type="checkbox" class="sc-ckVGcZ bwmVLb" value="">
+
+    def submit(self):
+        pass
+        # <button type="button" data-test-id="submit" class="sc-kpOJdX gFwmTv">Submit</button>
+        # <button type="button" data-test-id="accept" class="sc-kpOJdX gFwmTv">Confirm</button>
+
 
 class XpubNextButton():
     CSS_NEXT = 'button[data-test-id="next"]'
