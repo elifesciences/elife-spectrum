@@ -108,8 +108,10 @@ class XpubInitialSubmissionSubmissionPage(PageObject):
 class XpubInitialSubmissionEditorsPage(PageObject):
     CSS_SUGGEST_SENIOR_EDITORS_BUTTON = '[data-test-id="suggested-senior-editors"] button'
     CSS_SUGGEST_REVIEWING_EDITORS_BUTTON = '[data-test-id="suggested-reviewing-editors"] button'
+    CSS_SUGGEST_REVIEWER_NAME_TEMPLATE = 'input[name="suggestedReviewers.{index}.name"]'
+    CSS_SUGGEST_REVIEWER_EMAIL_TEMPLATE = 'input[name="suggestedReviewers.{index}.email"]'
 
-    def populate_editors(self):
+    def populate_required_fields(self):
         self._driver.find_element_by_css_selector(self.CSS_SUGGEST_SENIOR_EDITORS_BUTTON).click()
         picker = XpubPeoplePicker(self._driver)
         picker.choose_some(2)
@@ -118,24 +120,35 @@ class XpubInitialSubmissionEditorsPage(PageObject):
         picker = XpubPeoplePicker(self._driver)
         picker.choose_some(2)
 
-        # <input id="textfield-5d6s3exl" type="text" name="suggestedReviewers.0.name" class="sc-jWBwVP jrOMph" value="A">
-        # <input id="textfield-8cq77rq8" type="email" name="suggestedReviewers.0.email" class="sc-jWBwVP jrOMph" value="a@example.com">
+        for index in range(0, 3):
+            self._send_input_to(self.CSS_SUGGEST_REVIEWER_NAME_TEMPLATE.format(index=index), 'Reviewer %d' % index)
+            self._send_input_to(self.CSS_SUGGEST_REVIEWER_EMAIL_TEMPLATE.format(index=index), 'reviewer%d@example.com' % index)
 
     def next(self):
-        pass
-        # <button type="submit" data-test-id="next" class="sc-kpOJdX gFwmTv">Next</button>
+        XpubNextButton(self._driver).follow()
+        return XpubInitialSubmissionDisclosurePage(self._driver)
 
 
 class XpubInitialSubmissionDisclosurePage(PageObject):
+    CSS_SUBMITTER_SIGNATURE = 'input[name="submitterSignature"]'
+    CSS_DISCLOSURE_CONSENT = 'input[name="disclosureConsent"]'
+    CSS_SUBMIT = 'button[data-test-id="submit"]'
+    CSS_CONFIRM = 'button[data-test-id="accept"]'
+
     def acknowledge(self):
-        pass
-        # <input id="textfield-66u4rnti" type="text" name="submitterSignature" class="sc-jWBwVP UGMLr" value="">
-        # <input name="disclosureConsent" type="checkbox" class="sc-ckVGcZ bwmVLb" value="">
+        self._send_input_to(self.CSS_SUBMITTER_SIGNATURE, 'Josiah Carberry')
+        # need to click on the parent <label>
+        # TODO: add logs or wrap in object
+        self._driver.find_element_by_css_selector(self.CSS_DISCLOSURE_CONSENT).find_element_by_xpath('..').click()
 
     def submit(self):
-        pass
-        # <button type="button" data-test-id="submit" class="sc-kpOJdX gFwmTv">Submit</button>
-        # <button type="button" data-test-id="accept" class="sc-kpOJdX gFwmTv">Confirm</button>
+        self._driver.find_element_by_css_selector(self.CSS_SUBMIT).click()
+        self._driver.find_element_by_css_selector(self.CSS_CONFIRM).click()
+        print()
+        WebDriverWait(self._driver, 10).until(lambda driver: self._on_thank_you())
+
+    def _on_thank_you(self):
+        return self._driver.find_element_by_css_selector('h1').text == 'Thank you'
 
 
 class XpubNextButton():
@@ -167,4 +180,5 @@ class XpubPeoplePicker():
         for button in range(0, quantity):
             buttons[button].click()
         self._add.click()
+        # seem to be needlessly slow, stopping for several seconds after the picker has disappeared
         WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: self._find_picker().is_displayed())
