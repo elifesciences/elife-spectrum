@@ -134,6 +134,7 @@ class XpubInitialSubmissionDisclosurePage(PageObject):
     CSS_DISCLOSURE_CONSENT = 'input[name="disclosureConsent"]'
     CSS_SUBMIT = 'button[data-test-id="submit"]'
     CSS_CONFIRM = 'button[data-test-id="accept"]'
+    CSS_THANK_YOU = 'h1'
 
     def acknowledge(self):
         self._send_input_to(self.CSS_SUBMITTER_SIGNATURE, 'Josiah Carberry', 'submitter signature')
@@ -154,7 +155,7 @@ class XpubInitialSubmissionDisclosurePage(PageObject):
         LOGGER.info('Consented via checkbox %s', selector)
 
     def _on_thank_you(self):
-        return self._driver.find_element_by_css_selector('h1').text == 'Thank you'
+        return self._driver.find_element_by_css_selector(self.CSS_THANK_YOU).text == 'Thank you'
 
 
 class XpubNextButton():
