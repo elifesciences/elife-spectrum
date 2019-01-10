@@ -196,7 +196,7 @@ class XpubPeoplePicker():
         - Suggest [senior|reviewing] editors
 
         The first is invisible. We check the second has disappeared to declare the PeoplePicker is now closed."""
-        LOGGER.info("PeoplePicker visibility check")
+        LOGGER.debug("PeoplePicker visibility check")
         headings = self._driver.find_elements_by_css_selector(self.CSS_HEADING)
-        LOGGER.info("Headings: %d", len(headings))
+        LOGGER.debug("Headings: %d", len(headings))
         return len(headings) < 2
