@@ -169,6 +169,7 @@ class XpubPeoplePicker():
     CSS_PEOPLE_PICKER = '[data-test-id="people-picker-body"]'
     CSS_PERSON_POD_BUTTON = '[data-test-id="person-pod-button"]'
     CSS_ADD_BUTTON = '[data-test-id="people-picker-add"]'
+    CSS_HEADING = 'h2'
     TIMEOUT_CLOSING = 10
 
     def __init__(self, driver):
@@ -184,10 +185,16 @@ class XpubPeoplePicker():
         for button in range(0, quantity):
             buttons[button].click()
         self._add.click()
-        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: self._picker_visible())
+        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until(lambda driver: self._picker_closed())
 
-    def _picker_visible(self):
-        LOGGER.info("Picker visibility check")
-        headings = self._driver.find_elements_by_css_selector('h2')
+    def _picker_closed(self):
+        """When the PeoplePicker is open, there are two h2 elements on the page.
+        
+        - Who should review your work?
+        - Suggest [senior|reviewing] editors
+        
+        The first is invisible. We check the second has disappeared to declare the PeoplePicker is now closed."""
+        LOGGER.info("PeoplePicker visibility check")
+        headings = self._driver.find_elements_by_css_selector(self.CSS_HEADING)
         LOGGER.info("Headings: %d", len(headings))
-        return len(headings) == 2
+        return len(headings) < 2
