@@ -147,6 +147,7 @@ class XpubInitialSubmissionDisclosurePage(PageObject):
         LOGGER.info('Submitted')
         self._driver.find_element_by_css_selector(self.CSS_CONFIRM).click()
         LOGGER.info('Confirmed modal')
+        # it's ok, implicit wait is not enough because there may already be a h1 on the page
         WebDriverWait(self._driver, 10).until(lambda driver: self._on_thank_you())
         LOGGER.info('Reached thank you page')
 
@@ -183,10 +184,10 @@ class XpubPeoplePicker():
         for button in range(0, quantity):
             buttons[button].click()
         self._add.click()
-        # seem to be needlessly slow, stopping for several seconds after the picker has disappeared
         WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: self._picker_visible())
 
     def _picker_visible(self):
-        visible = self._find_picker().is_displayed()
-        LOGGER.info("Picker visible: %s", visible)
-        return visible
+        LOGGER.info("Picker visibility check")
+        headings = self._driver.find_elements_by_css_selector('h2')
+        LOGGER.info("Headings: %d", len(headings))
+        return len(headings) == 2
