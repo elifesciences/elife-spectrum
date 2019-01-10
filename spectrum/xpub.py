@@ -121,8 +121,8 @@ class XpubInitialSubmissionEditorsPage(PageObject):
         picker.choose_some(2)
 
         for index in range(0, 3):
-            self._send_input_to(self.CSS_SUGGEST_REVIEWER_NAME_TEMPLATE.format(index=index), 'Reviewer %d' % index)
-            self._send_input_to(self.CSS_SUGGEST_REVIEWER_EMAIL_TEMPLATE.format(index=index), 'reviewer%d@example.com' % index)
+            self._send_input_to(self.CSS_SUGGEST_REVIEWER_NAME_TEMPLATE.format(index=index), 'Reviewer %d' % index, 'reviewer %d name' % index)
+            self._send_input_to(self.CSS_SUGGEST_REVIEWER_EMAIL_TEMPLATE.format(index=index), 'reviewer%d@example.com' % index, 'reviewer %d email' % index)
 
     def next(self):
         XpubNextButton(self._driver).follow()
@@ -136,16 +136,19 @@ class XpubInitialSubmissionDisclosurePage(PageObject):
     CSS_CONFIRM = 'button[data-test-id="accept"]'
 
     def acknowledge(self):
-        self._send_input_to(self.CSS_SUBMITTER_SIGNATURE, 'Josiah Carberry')
+        self._send_input_to(self.CSS_SUBMITTER_SIGNATURE, 'Josiah Carberry', 'submitter signature')
         # need to click on the parent <label>
         # TODO: add logs or wrap in object
         self._driver.find_element_by_css_selector(self.CSS_DISCLOSURE_CONSENT).find_element_by_xpath('..').click()
+        LOGGER.info('Consented via checkbox %s', self.CSS_DISCLOSURE_CONSENT)
 
     def submit(self):
         self._driver.find_element_by_css_selector(self.CSS_SUBMIT).click()
+        LOGGER.info('Submitted')
         self._driver.find_element_by_css_selector(self.CSS_CONFIRM).click()
-        print()
+        LOGGER.info('Confirmed modal')
         WebDriverWait(self._driver, 10).until(lambda driver: self._on_thank_you())
+        LOGGER.info('Reached thank you page')
 
     def _on_thank_you(self):
         return self._driver.find_element_by_css_selector('h1').text == 'Thank you'
@@ -181,4 +184,9 @@ class XpubPeoplePicker():
             buttons[button].click()
         self._add.click()
         # seem to be needlessly slow, stopping for several seconds after the picker has disappeared
-        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: self._find_picker().is_displayed())
+        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: self._picker_visible())
+
+    def _picker_visible(self):
+        visible = self._find_picker().is_displayed()
+        LOGGER.info("Picker visible: %s", visible)
+        return visible
