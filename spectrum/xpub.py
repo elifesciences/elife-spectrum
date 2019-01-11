@@ -120,10 +120,6 @@ class XpubInitialSubmissionEditorsPage(PageObject):
         picker = XpubPeoplePicker(self._driver)
         picker.choose_some(2)
 
-        for index in range(0, 3):
-            self._send_input_to(self.CSS_SUGGEST_REVIEWER_NAME_TEMPLATE.format(index=index), 'Reviewer %d' % index, 'reviewer %d name' % index)
-            self._send_input_to(self.CSS_SUGGEST_REVIEWER_EMAIL_TEMPLATE.format(index=index), 'reviewer%d@example.com' % index, 'reviewer %d email' % index)
-
     def next(self):
         XpubNextButton(self._driver).follow()
         return XpubInitialSubmissionDisclosurePage(self._driver)
