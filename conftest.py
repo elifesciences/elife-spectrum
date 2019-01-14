@@ -115,9 +115,7 @@ def get_selenium_driver(request):
             command_executor='http://127.0.0.1:4444/wd/hub',
             desired_capabilities=DesiredCapabilities.CHROME
         )
-        # moved from 10 to 15 to allow occasionally long xpub file uploads,
-        # that cut off sciencebeam after 12 seconds
-        driver.implicitly_wait(15) # seconds
+        driver.implicitly_wait(10) # seconds
         drivers.append(driver)
         return driver
     yield creation
