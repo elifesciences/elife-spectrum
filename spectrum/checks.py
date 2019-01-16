@@ -740,9 +740,9 @@ class NginxAutoindexJson:
     def recent_files(self, after):
         response = requests.get(self._folder_url)
         files = response.json()
-        LOGGER.info("Looking for MECA files after %s in %s", after, self._folder_url)
+        LOGGER.debug("Looking for MECA files after %s in %s", after, self._folder_url)
         files_urls = ["%s%s" % (self._folder_url, f['name']) for f in files if self._from_nginx_to_datetime(f['mtime']) >= after]
-        LOGGER.info("Found MECA files: %s", files_urls)
+        LOGGER.debug("Found MECA files: %s", files_urls)
         return files_urls
 
     def _from_nginx_to_datetime(self, formatted):
@@ -761,8 +761,27 @@ class MecaFile:
             article_xml = zip_file.read('article.xml')
             soup = BeautifulSoup(article_xml, "lxml-xml")
             title = soup.find('article-title').text
-            LOGGER.info("Found MECA title: %s", title)
+            LOGGER.debug("Found MECA title: `%s`", title)
             return title
+
+
+class MecaFiles:
+    def __init__(self, nginx_autoindex):
+        self._nginx_autoindex = nginx_autoindex
+
+    def wait_title(self, title, after):
+        _poll(
+            lambda: self._check_title(title, after),
+            "MECA archive with title `%s` created after %s",
+            title,
+            after
+        )
+
+    def _check_title(self, title, after):
+        meca_titles = [MecaFile(url).title() for url in self._nginx_autoindex.recent_files(after=after)]
+        found = title in meca_titles
+        LOGGER.info("Found title `%s` in %s", title, meca_titles)
+        return (found, meca_titles)
 
 
 def _is_content_present(url, text_match=None, **extra):
@@ -1078,4 +1097,4 @@ PUBMED = HttpCheck(
     str(SETTINGS['bot_host']) + '/pubmed/{xml}'
 )
 BOT_EMAILS = MailcatcherCheck(SETTINGS['bot_mailcatcher'])
-XPUB_MECA = NginxAutoindexJson(SETTINGS['xpub_meca_url'])
+XPUB_MECA = MecaFiles(NginxAutoindexJson(SETTINGS['xpub_meca_url']))

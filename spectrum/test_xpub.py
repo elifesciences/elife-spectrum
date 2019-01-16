@@ -36,5 +36,4 @@ def test_initial_submission(get_selenium_driver):
     submission_time = datetime.now()
     disclosure_page.submit()
 
-    meca_titles = [checks.MecaFile(url).title() for url in checks.XPUB_MECA.recent_files(after=submission_time)]
-    assert title in meca_titles
+    checks.XPUB_MECA.wait_title(title, after=submission_time)
