@@ -740,7 +740,9 @@ class NginxAutoindexJson:
     def recent_files(self, after):
         response = requests.get(self._folder_url)
         files = response.json()
-        return ["%s%s" % (self._folder_url, f['name']) for f in files if self._from_nginx_to_datetime(f['mtime']) > after]
+        files_urls = ["%s%s" % (self._folder_url, f['name']) for f in files if self._from_nginx_to_datetime(f['mtime']) > after]
+        LOGGER.info("Found MECA files: %s", files_urls)
+        return files_urls
 
     def _from_nginx_to_datetime(self, formatted):
         # "Tue, 15 Jan 2019 15:25:45 GMT"
@@ -757,7 +759,9 @@ class MecaFile:
         with zipfile.ZipFile(zipbuffer) as zip_file:
             article_xml = zip_file.read('article.xml')
             soup = BeautifulSoup(article_xml, "lxml-xml")
-            return soup.find('article-title').text
+            title = soup.find('article-title').text
+            LOGGER.info("Found MECA title: %s", title)
+            return title
 
 
 def _is_content_present(url, text_match=None, **extra):
