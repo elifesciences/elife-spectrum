@@ -746,6 +746,7 @@ class NginxAutoindexJson:
         # "Tue, 15 Jan 2019 15:25:45 GMT"
         return datetime.strptime(formatted, "%a, %d %b %Y %H:%M:%S %Z")
 
+
 class MecaFile:
     def __init__(self, url):
         self._url = url
