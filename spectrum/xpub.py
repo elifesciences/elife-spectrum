@@ -111,8 +111,10 @@ class XpubInitialSubmissionSubmissionPage(PageObject):
 class XpubInitialSubmissionEditorsPage(PageObject):
     CSS_SUGGEST_SENIOR_EDITORS_BUTTON = '[data-test-id="suggested-senior-editors"] button'
     CSS_SUGGEST_REVIEWING_EDITORS_BUTTON = '[data-test-id="suggested-reviewing-editors"] button'
+    CSS_SUGGEST_REVIEWER_NAME_TEMPLATE = 'input[name="suggestedReviewers.{index}.name"]'
+    CSS_SUGGEST_REVIEWER_EMAIL_TEMPLATE = 'input[name="suggestedReviewers.{index}.email"]'
 
-    def populate_editors(self):
+    def populate_required_fields(self):
         self._driver.find_element_by_css_selector(self.CSS_SUGGEST_SENIOR_EDITORS_BUTTON).click()
         picker = XpubPeoplePicker(self._driver)
         picker.choose_some(2)
@@ -120,6 +122,39 @@ class XpubInitialSubmissionEditorsPage(PageObject):
         self._driver.find_element_by_css_selector(self.CSS_SUGGEST_REVIEWING_EDITORS_BUTTON).click()
         picker = XpubPeoplePicker(self._driver)
         picker.choose_some(2)
+
+    def next(self):
+        XpubNextButton(self._driver).follow()
+        return XpubInitialSubmissionDisclosurePage(self._driver)
+
+
+class XpubInitialSubmissionDisclosurePage(PageObject):
+    CSS_SUBMITTER_SIGNATURE = 'input[name="submitterSignature"]'
+    CSS_DISCLOSURE_CONSENT = 'input[name="disclosureConsent"]'
+    CSS_SUBMIT = 'button[data-test-id="submit"]'
+    CSS_CONFIRM = 'button[data-test-id="accept"]'
+    CSS_THANK_YOU = 'h1'
+
+    def acknowledge(self):
+        self._send_input_to(self.CSS_SUBMITTER_SIGNATURE, 'Josiah Carberry', 'submitter signature')
+        self._checkbox(self.CSS_DISCLOSURE_CONSENT)
+
+    def submit(self):
+        self._driver.find_element_by_css_selector(self.CSS_SUBMIT).click()
+        LOGGER.info('Submitted')
+        self._driver.find_element_by_css_selector(self.CSS_CONFIRM).click()
+        LOGGER.info('Confirmed modal')
+        # it's ok, implicit wait is not enough because there may already be a h1 on the page
+        WebDriverWait(self._driver, 10).until(lambda driver: self._on_thank_you())
+        LOGGER.info('Reached thank you page')
+
+    def _checkbox(self, selector):
+        # need to click on the parent <label>
+        self._driver.find_element_by_css_selector(selector).find_element_by_xpath('..').click()
+        LOGGER.info('Consented via checkbox %s', selector)
+
+    def _on_thank_you(self):
+        return self._driver.find_element_by_css_selector(self.CSS_THANK_YOU).text == 'Thank you'
 
 
 class XpubNextButton():
@@ -136,6 +171,7 @@ class XpubPeoplePicker():
     CSS_PEOPLE_PICKER = '[data-test-id="people-picker-body"]'
     CSS_PERSON_POD_BUTTON = '[data-test-id="person-pod-button"]'
     CSS_ADD_BUTTON = '[data-test-id="people-picker-add"]'
+    CSS_HEADING = 'h2'
     TIMEOUT_CLOSING = 10
 
     def __init__(self, driver):
@@ -151,4 +187,16 @@ class XpubPeoplePicker():
         for button in range(0, quantity):
             buttons[button].click()
         self._add.click()
-        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until_not(lambda driver: self._find_picker().is_displayed())
+        WebDriverWait(self._driver, self.TIMEOUT_CLOSING).until(lambda driver: self._picker_closed())
+
+    def _picker_closed(self):
+        """When the PeoplePicker is open, there are two h2 elements on the page.
+
+        - Who should review your work?
+        - Suggest [senior|reviewing] editors
+
+        The first is invisible. We check the second has disappeared to declare the PeoplePicker is now closed."""
+        LOGGER.debug("PeoplePicker visibility check")
+        headings = self._driver.find_elements_by_css_selector(self.CSS_HEADING)
+        LOGGER.debug("Headings: %d", len(headings))
+        return len(headings) < 2

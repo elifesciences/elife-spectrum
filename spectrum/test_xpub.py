@@ -28,4 +28,8 @@ def test_initial_submission(get_selenium_driver):
     submission_page.populate_required_fields()
     editors_page = submission_page.next()
 
-    editors_page.populate_editors()
+    editors_page.populate_required_fields()
+    disclosure_page = editors_page.next()
+    disclosure_page.acknowledge()
+    disclosure_page.submit()
+
