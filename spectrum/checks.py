@@ -740,7 +740,7 @@ class NginxAutoindexJson:
     def recent_files(self, after):
         response = requests.get(self._folder_url)
         files = response.json()
-        files_urls = ["%s%s" % (self._folder_url, f['name']) for f in files if self._from_nginx_to_datetime(f['mtime']) > after]
+        files_urls = ["%s%s" % (self._folder_url, f['name']) for f in files if self._from_nginx_to_datetime(f['mtime']) >= after]
         LOGGER.info("Found MECA files: %s", files_urls)
         return files_urls
 
