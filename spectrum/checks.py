@@ -6,8 +6,10 @@ Contains anything from HTTP(S) calls to REST JSON APIs to S3 checks over the pre
 from concurrent.futures import ThreadPoolExecutor, wait
 from datetime import datetime
 from pprint import pformat
+import io
 import re
-from ssl import SSLError
+import ssl
+import zipfile
 
 from bs4 import BeautifulSoup
 import requests
@@ -89,7 +91,7 @@ class BucketFileCheck:
                         return (match.groups(), {'key': file.key})
                     else:
                         return True
-        except SSLError as e:
+        except ssl.SSLError as e:
             _log_connection_error(e)
         return False
 
@@ -730,6 +732,58 @@ class GithubCheck:
             url
         )
 
+
+class NginxAutoindexJson:
+    def __init__(self, folder_url):
+        self._folder_url = folder_url
+
+    def recent_files(self, after):
+        response = requests.get(self._folder_url)
+        files = response.json()
+        LOGGER.debug("Looking for MECA files after %s in %s", after, self._folder_url)
+        files_urls = ["%s%s" % (self._folder_url, f['name']) for f in files if self._from_nginx_to_datetime(f['mtime']) >= after]
+        LOGGER.debug("Found MECA files: %s", files_urls)
+        return files_urls
+
+    def _from_nginx_to_datetime(self, formatted):
+        # "Tue, 15 Jan 2019 15:25:45 GMT"
+        return datetime.strptime(formatted, "%a, %d %b %Y %H:%M:%S %Z")
+
+
+class MecaFile:
+    def __init__(self, url):
+        self._url = url
+
+    def title(self):
+        response = requests.get(self._url)
+        zipbuffer = io.BytesIO(response.content)
+        with zipfile.ZipFile(zipbuffer) as zip_file:
+            article_xml = zip_file.read('article.xml')
+            soup = BeautifulSoup(article_xml, "lxml-xml")
+            title = soup.find('article-title').text
+            LOGGER.debug("Found MECA title: `%s`", title)
+            return title
+
+
+class MecaFiles:
+    def __init__(self, nginx_autoindex):
+        self._nginx_autoindex = nginx_autoindex
+
+    def wait_title(self, title, after):
+        _poll(
+            lambda: self._check_title(title, after),
+            "MECA archive with title `%s` created after %s",
+            title,
+            after
+        )
+
+    def _check_title(self, title, after):
+        meca_titles = [MecaFile(url).title() for url in self._nginx_autoindex.recent_files(after=after)]
+        found = title in meca_titles
+        LOGGER.info("Found title `%s` in %s", title, meca_titles)
+        return (found, meca_titles)
+
+
 def _is_content_present(url, text_match=None, **extra):
     try:
         response = requests.get(url)
@@ -1043,4 +1097,4 @@ PUBMED = HttpCheck(
     str(SETTINGS['bot_host']) + '/pubmed/{xml}'
 )
 BOT_EMAILS = MailcatcherCheck(SETTINGS['bot_mailcatcher'])
-BOT_INTERNAL = (SETTINGS['bot_mailcatcher'])
+XPUB_MECA = MecaFiles(NginxAutoindexJson(SETTINGS['xpub_meca_url']))

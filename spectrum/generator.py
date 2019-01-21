@@ -110,6 +110,10 @@ def digest_zip(template_id):
     return DigestZip(article_id, target_zip_filename)
 
 
+def generate_article_title():
+    return 'My spectrum article %s' % random.randrange(1, 1000000000000)
+
+
 def clean():
     for entry in glob.glob('%s/elife*' % COMMON['tmp']):
         if path.isdir(entry):

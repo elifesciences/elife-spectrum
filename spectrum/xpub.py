@@ -90,8 +90,8 @@ class XpubInitialSubmissionFilesPage(PageObject):
         LOGGER.info("Found instructions: %s", instructions.text)
 
 class XpubInitialSubmissionSubmissionPage(PageObject):
-    def populate_required_fields(self):
-        self._send_input_to('[name="meta.title"]', 'My title', 'title')
+    def populate_required_fields(self, title='My title'):
+        self._send_input_to('[name="meta.title"]', title, 'title')
         # unstable selectors follow: https://github.com/elifesciences/elife-xpub/issues/1041
         self._driver.find_element_by_css_selector('[role=listbox] button').click()
         # multiple elements, pick the first one
