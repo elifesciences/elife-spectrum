@@ -228,7 +228,7 @@ class JournalJavaScriptSession:
         submit_link.click()
         self._log("Clicked #%s", self.ID_SUBMIT_MY_RESEARCH)
 
-        selenium_title_smoke_test('xpub', self._driver)
+        # selenium_title_smoke_test('eLife', self._driver)
         # expand: click on login button, log in, and check final destination
         return XpubJavaScriptSession(self._driver)
 
