@@ -16,7 +16,6 @@ def test_homepage():
 @pytest.mark.two
 @pytest.mark.journal
 @pytest.mark.journal_cms
-@pytest.mark.medium
 @pytest.mark.search
 def test_magazine():
     checks.JOURNAL.magazine()

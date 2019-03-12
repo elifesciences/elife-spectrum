@@ -14,10 +14,6 @@ def test_list_based_apis_journal_cms():
     checks.API.interviews()
     checks.API.collections()
 
-@pytest.mark.medium
-def test_list_based_apis_medium():
-    checks.API.medium_articles()
-
 @pytest.mark.profiles
 def test_list_based_apis_profiles():
     checks.API.profiles()
