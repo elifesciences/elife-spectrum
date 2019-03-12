@@ -319,9 +319,6 @@ class ApiCheck:
     def people(self):
         self._list_api('/people', 'person')
 
-    def medium_articles(self):
-        self._list_api('/medium-articles', 'medium-article')
-
     def blog_articles(self):
         self._list_api('/blog-articles', 'blog-article')
 
