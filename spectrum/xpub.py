@@ -25,6 +25,7 @@ class XpubJavaScriptSession:
     CSS_COOKIE_NOTICE_BUTTON = 'button[data-test-id="cookieAcceptButton"]'
     CSS_LOGIN_BUTTON = 'button[data-test-id="login"]'
     CSS_PROFILE_MENU = 'button[data-test-id="profile-menu"]'
+    TIMEOUT_COOKIE_NOTICE_CLOSING = 10
 
     def __init__(self, driver):
         self._driver = driver
@@ -51,10 +52,19 @@ class XpubJavaScriptSession:
         try:
             cookie_notice_button = self._driver.find_element_by_css_selector(self.CSS_COOKIE_NOTICE_BUTTON)
             _info_log("Found cookie notice button %s `%s`", self.CSS_COOKIE_NOTICE_BUTTON, cookie_notice_button.text)
-            cookie_notice_button.click()
-            _info_log("Clicked cookie notice button %s", self.CSS_COOKIE_NOTICE_BUTTON)
         except NoSuchElementException:
             _info_log("Found no cookie notice button %s", self.CSS_COOKIE_NOTICE_BUTTON)
+            return
+
+        cookie_notice_button.click()
+        _info_log("Clicked cookie notice button %s", self.CSS_COOKIE_NOTICE_BUTTON)
+        WebDriverWait(self._driver, self.TIMEOUT_COOKIE_NOTICE_CLOSING).until(lambda driver: self._cookie_notice_closed())
+
+    def _cookie_notice_closed(self):
+        LOGGER.debug("Cookie notice visibility check")
+        buttons = self._driver.find_elements_by_css_selector(self.CSS_COOKIE_NOTICE_BUTTON)
+        LOGGER.debug("Cookie notice buttons: %d", len(buttons))
+        return len(buttons) == 0
 
 
 class XpubDashboardPage(PageObject):
