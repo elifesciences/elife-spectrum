@@ -1,5 +1,6 @@
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException
 from spectrum import logger
 
 
@@ -21,6 +22,7 @@ class PageObject:
 
 
 class XpubJavaScriptSession:
+    CSS_COOKIE_NOTICE_BUTTON = 'button[data-test-id="cookieAcceptButton"]'
     CSS_LOGIN_BUTTON = 'button[data-test-id="login"]'
     CSS_PROFILE_MENU = 'button[data-test-id="profile-menu"]'
 
@@ -30,6 +32,9 @@ class XpubJavaScriptSession:
     def login(self):
         login_button = self._driver.find_element_by_css_selector(self.CSS_LOGIN_BUTTON)
         _info_log("Found login button %s `%s`", self.CSS_LOGIN_BUTTON, login_button.text)
+        # assume if we can find other buttons, all the DOM has been properly loaded
+        self._dismiss_cookie_notice()
+
         login_button.click()
         _info_log("Clicked login button %s", self.CSS_LOGIN_BUTTON)
         profile_menu = self._driver.find_element_by_css_selector(self.CSS_PROFILE_MENU)
@@ -41,6 +46,15 @@ class XpubJavaScriptSession:
         dashboard_button = self._driver.find_element_by_link_text('Dashboard')
         dashboard_button.click()
         return XpubDashboardPage(self._driver)
+
+    def _dismiss_cookie_notice(self):
+        try:
+            cookie_notice_button = self._driver.find_element_by_css_selector(self.CSS_COOKIE_NOTICE_BUTTON)
+            _info_log("Found cookie notice button %s `%s`", self.CSS_COOKIE_NOTICE_BUTTON, cookie_notice_button.text)
+            cookie_notice_button.click()
+            _info_log("Clicked cookie notice button %s", self.CSS_COOKIE_NOTICE_BUTTON)
+        except NoSuchElementException:
+            _info_log("Found no cookie notice button %s", self.CSS_COOKIE_NOTICE_BUTTON)
 
 
 class XpubDashboardPage(PageObject):
