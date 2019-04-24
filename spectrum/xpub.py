@@ -101,7 +101,7 @@ class XpubInitialSubmissionFilesPage(PageObject):
     TIMEOUT_FILE_PROCESSING = 60
 
     def populate_required_fields(self):
-        self._send_input_to(self.CSS_EDITOR_COVER_LETTER, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'cover letter')
+        self._send_input_to(self.CSS_EDITOR_COVER_LETTER, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ' * 4, 'cover letter')
         self._send_input_to(self.CSS_INPUT_MANUSCRIPT, '/templates/elife-xpub/initial-submission.pdf', 'manuscript file')
         self._wait_for_upload_and_conversion()
 
