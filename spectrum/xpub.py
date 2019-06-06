@@ -23,21 +23,26 @@ class PageObject:
 
 class XpubJavaScriptSession:
     CSS_COOKIE_NOTICE_BUTTON = 'button[data-test-id="cookieAcceptButton"]'
-    CSS_LOGIN_BUTTON = 'button[data-test-id="login"]'
+    CSS_START_BUTTON = 'button[data-test-id="desktop-new-submission"]'
     CSS_PROFILE_MENU = 'button[data-test-id="profile-menu"]'
     TIMEOUT_COOKIE_NOTICE_CLOSING = 10
 
     def __init__(self, driver):
         self._driver = driver
 
-    def login(self):
-        login_button = self._driver.find_element_by_css_selector(self.CSS_LOGIN_BUTTON)
-        _info_log("Found login button %s `%s`", self.CSS_LOGIN_BUTTON, login_button.text)
+    def land(self):
         # assume if we can find other buttons, all the DOM has been properly loaded
         self._dismiss_cookie_notice()
+        self._verify_logged_in()
 
-        login_button.click()
-        _info_log("Clicked login button %s", self.CSS_LOGIN_BUTTON)
+    def start(self):
+        start_button = self._driver.find_element_by_css_selector(self.CSS_START_BUTTON)
+        _info_log("Found start button %s `%s`", self.CSS_START_BUTTON, start_button.text)
+        start_button.click()
+        _info_log("Clicked start button %s", self.CSS_START_BUTTON)
+        return XpubInitialSubmissionAuthorPage(self._driver)
+
+    def _verify_logged_in(self):
         profile_menu = self._driver.find_element_by_css_selector(self.CSS_PROFILE_MENU)
         _info_log("Found profile menu %s", self.CSS_PROFILE_MENU)
         profile_menu.click()
