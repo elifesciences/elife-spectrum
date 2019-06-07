@@ -442,7 +442,7 @@ class ApiCheck:
 
     def search(self, for_input):
         url = "%s/search?for=%s" % (self._host, for_input)
-        response = requests.get(url, headers=self._base_headers())
+        response = retries.persistently_get(url, headers=self._base_headers())
         return self._ensure_sane_response(response, url)
 
     def wait_search(self, word, item_check=None):
