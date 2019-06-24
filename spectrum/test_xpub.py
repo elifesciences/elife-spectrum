@@ -9,7 +9,7 @@ from spectrum import generator, input, checks
 def test_login(get_selenium_driver):
     journal_session = input.JOURNAL_CDN.javascript_session(get_selenium_driver())
     xpub_session = journal_session.submit()
-    xpub_session.land()
+    xpub_session.login()
 
 # FUTURE: add to journal_cms when included
 #@pytest.mark.journal_cms
@@ -17,9 +17,9 @@ def test_login(get_selenium_driver):
 def test_initial_submission(get_selenium_driver):
     journal_session = input.JOURNAL_CDN.javascript_session(get_selenium_driver())
     xpub_session = journal_session.submit()
-    xpub_session.land()
+    xpub_session.login()
 
-    author_page = xpub_session.start()
+    author_page = xpub_session.dashboard().create_initial_submission()
     author_page.populate_required_fields()
     files_page = author_page.next()
 
