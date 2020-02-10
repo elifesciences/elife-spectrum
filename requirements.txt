@@ -16,11 +16,13 @@ git+git://github.com/elifesciences/econ-tools.git@master#egg=econtools
 execnet==1.4.1
 funcsigs==1.0.2
 idna==2.7
+isort==4.3.21
 Jinja2==2.10.1
 jmespath==0.9.0
 lazy-object-proxy==1.4.3
 lxml==4.1.1
 MarkupSafe==0.23
+mccabe==0.6.1
 MechanicalSoup==0.6.0
 mock==2.0.0
 packaging==16.8
@@ -28,7 +30,7 @@ pbr==1.10.0
 polling==0.3.0
 pollute==1.0.2
 py==1.4.31
-pylint==1.5.5
+pylint==2.4.4
 pyparsing==2.2.0
 pytest==2.9.1
 pytest-xdist==1.14
