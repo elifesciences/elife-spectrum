@@ -801,27 +801,6 @@ def _is_content_present(url, text_match=None, **extra):
         _log_connection_error(e)
     return False
 
-class PeerscoutCheck:
-    def __init__(self, host, user, password):
-        self._host = host
-        self._user = user
-        self._password = password
-
-    def recommend(self, manuscript='', subject='', keywords='', abstract=''):
-        template = "%s/api/recommend-reviewers"
-        query = {
-            "manuscript_no": manuscript,
-            "subject_area": subject,
-            "keywords": keywords,
-            "abstract": abstract,
-        }
-        url = template % self._host
-        response = requests.get(url, params=query, auth=(self._user, self._password))
-        LOGGER.info("Found recommendations at %s for query %s", url, query)
-        if response.status_code > 299:
-            raise UnrecoverableError(response)
-        return response.json()
-
 class ObserverCheck:
     def __init__(self, host):
         self._host = host
@@ -1081,11 +1060,6 @@ CDN_XML = HttpCheck(
 )
 GITHUB_XML = GithubCheck(
     repo_url=SETTINGS['github_article_xml_repository_url']
-)
-PEERSCOUT = PeerscoutCheck(
-    host=SETTINGS['peerscout_host'],
-    user=SETTINGS['peerscout_user'],
-    password=SETTINGS['peerscout_password']
 )
 OBSERVER = ObserverCheck(
     host=SETTINGS['observer_host']
