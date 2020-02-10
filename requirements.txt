@@ -1,6 +1,6 @@
 apipkg==1.4
 appdirs==1.4.3
-astroid==1.4.5
+astroid==2.3.3
 backoff==1.4.3
 beautifulsoup4==4.5.1
 boto==2.34.0
@@ -18,7 +18,7 @@ funcsigs==1.0.2
 idna==2.7
 Jinja2==2.10.1
 jmespath==0.9.0
-lazy-object-proxy==1.2.2
+lazy-object-proxy==1.4.3
 lxml==4.1.1
 MarkupSafe==0.23
 MechanicalSoup==0.6.0
@@ -38,7 +38,8 @@ requests==2.20.0
 requests-futures==0.9.7
 s3transfer==0.3.3
 selenium==3.14.1
-six==1.10.0
+six==1.14.0
 git+ssh://git@github.com/elifesciences/elife-spectrum-private.git@91371987bee96747b9cef6dfb7f63d0b04d4a048#egg=spectrumprivate
+typed-ast==1.4.1
 urllib3==1.25.8
-wrapt==1.10.8
+wrapt==1.11.2
