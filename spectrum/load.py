@@ -214,19 +214,3 @@ JOURNAL_ALL = AllOf(
     +JOURNAL_LISTINGS_OF_LISTINGS
     +JOURNAL_PAGES
 )
-
-class PeerScout():
-    def __init__(self, peerscout, number_of_keywords=10000, manuscript=10627):
-        self._peerscout = peerscout
-        self._number_of_keywords = number_of_keywords
-        self._manuscript = manuscript
-
-    def run(self):
-        keywords = "stress dummy%d" % randint(0, self._number_of_keywords)
-        LOGGER.info("Loading suggestions for keywords %s", keywords)
-        self._peerscout.recommend(manuscript=self._manuscript, keywords=keywords)
-
-    def __str__(self):
-        return "PeerScout"
-
-PEERSCOUT = PeerScout(checks.PEERSCOUT)
