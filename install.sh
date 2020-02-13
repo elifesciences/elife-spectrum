@@ -12,6 +12,6 @@ source venv/bin/activate
 if pip list | grep econtools; then
     pip uninstall -y econtools
 fi
-pip install -r requirements.txt
+pip install -r requirements.lock
 
 docker-compose up -d --force-recreate
