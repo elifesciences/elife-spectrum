@@ -1031,10 +1031,9 @@ JOURNAL_CDN = JournalCheck(
 JOURNAL_GOOGLEBOT = JOURNAL_CDN.with_headers({'User-Agent': config.GOOGLEBOT_USER_AGENT})
 JOURNAL_GENERIC_PATHS = [
     '/about',
-    '/about/early-career',
-    '/about/innovation',
-    '/about/openness',
     '/about/peer-review',
+    '/about/research-culture',
+    '/about/technology',
     '/alerts',
     '/contact',
     '/for-the-press',
