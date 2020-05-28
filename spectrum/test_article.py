@@ -243,20 +243,20 @@ def test_adding_article_fragment(generate_article, modify_article):
     assert response.status_code == 200, "Image %s is not loading" % image_uri
     checks.API.wait_search(invented_word, item_check=checks.API.item_check_image(image_uri))
 
-"""
-@pytest.mark.bot
-def test_downstream_upload_to_pubmed(generate_article):
-    article = generate_article(SIMPLEST_ARTICLE_ID)
-    input.PACKAGING_BUCKET.clean("pubmed/outbox/")
-    test_start = datetime.now()
 
-    _ingest_and_publish_and_wait_for_published(article)
-    checks.PACKAGING_BUCKET_OUTBOX.of(vendor="pubmed", folder="outbox", id=article.id())
-    input.BOT_WORKFLOWS.pubmed()
+#@pytest.mark.bot
+#def test_downstream_upload_to_pubmed(generate_article):
+#    article = generate_article(SIMPLEST_ARTICLE_ID)
+#    input.PACKAGING_BUCKET.clean("pubmed/outbox/")
+#    test_start = datetime.now()
 
-    (xml, ) = checks.PACKAGING_BUCKET_BATCH.of(vendor="pubmed", last_modified_after=test_start)
-    checks.PUBMED.of(xml=xml)
-"""
+#    _ingest_and_publish_and_wait_for_published(article)
+#    checks.PACKAGING_BUCKET_OUTBOX.of(vendor="pubmed", folder="outbox", id=article.id())
+#    input.BOT_WORKFLOWS.pubmed()
+
+#    (xml, ) = checks.PACKAGING_BUCKET_BATCH.of(vendor="pubmed", last_modified_after=test_start)
+#    checks.PUBMED.of(xml=xml)
+
 
 @pytest.mark.personalised_covers
 @pytest.mark.continuum
