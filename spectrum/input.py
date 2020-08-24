@@ -106,7 +106,11 @@ class JournalCmsSession:
         LOGGER.info("Attaching image")
 
         form.input({'field_episode_mp3[0][uri]': uri})
-        form.input({'field_episode_chapter[form][inline_entity_form][title][0][value]': chapter_title})
+        chapter_title_field = create_page.soup.form.find('input', {'name': 'field_episode_chapter[form][0][title][0][value]'})
+        # Leave this condition in until after inline_entity_form is updated
+        if chapter_title_field is None:
+            chapter_title_field = create_page.soup.form.find('input', {'name': 'field_episode_chapter[form][inline_entity_form][title][0][value]'})
+        chapter_title_field['value'] = chapter_title
 
         response = self._browser.submit(form, create_page.url, data={'op': 'Save'})
         # requests follows redirects by default
