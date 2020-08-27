@@ -1,3 +1,5 @@
+/* This script downloads the two kitchen sink files (from github) and replaces the article ID with some jinja template 
+tags. The results are used in end2end testing. */
 def updateSummary;
 elifeUpdatePipeline(
     { commit ->
