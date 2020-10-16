@@ -1,3 +1,7 @@
+"""utility library used primarily for fixture generation in `conftest.py`.
+
+contains no test to be run."""
+
 import glob
 import os
 from os import path

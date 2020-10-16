@@ -274,6 +274,13 @@ def test_rss_feed_contains_new_article(generate_article):
     _ingest_and_publish_and_wait_for_published(article)
     checks.OBSERVER.latest_article(article.id())
 
+def test_bioprotocol_has_protocol_data(generate_article):
+    article = generate_article(SIMPLEST_ARTICLE_ID)
+    _ingest_and_publish_and_wait_for_published(article)
+    checks.API.bioprotocol(article.id())
+
+#
+
 def _wait_for_published(article):
     checks.DASHBOARD.published(id=article.id(), version=article.version())
     checks.LAX.published(id=article.id(), version=article.version())

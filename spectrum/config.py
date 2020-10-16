@@ -1,3 +1,7 @@
+"""utility library for parsing app.cfg into global variables.
+
+contains no tests to be run."""
+
 import os
 from configparser import RawConfigParser
 

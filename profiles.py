@@ -1,3 +1,6 @@
+"""Use with:
+$ cat profiles.txt | SPECTRUM_ENVIRONMENT=prod SPECTRUM_LOG_LEVEL=DEBUG python profiles.py"""
+
 from argparse import ArgumentParser
 from spectrum import load, input, checks
 from sys import argv, exit
@@ -21,7 +24,7 @@ def check_journal(profile_ids, limit):
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description="Load tests profiles and annotations, data and pages")
+    parser = ArgumentParser(description="Loads test profiles and annotations, data and pages")
     parser.add_argument('profile_ids', type=str, help='File from which to read profile ids')
     parser.add_argument('--check', choices=['api', 'journal'], default='journal', help='Which service to run checks on')
     parser.add_argument('--limit', type=int, default=None, help='The maximum number of checks to make before stopping. Only applicable for journal')

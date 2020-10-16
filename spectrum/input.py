@@ -1,3 +1,12 @@
+"""utility library for interacting with remote services, such as:
+
+* dashboard
+* journal
+* elife-bot
+* journal-cms
+
+contains no tests to be run."""
+
 from os import path
 import random
 import string
@@ -37,7 +46,6 @@ class Dashboard:
     def publish(self, id, version, run):
         template = "%s/api/queue_article_publication"
         url = template % self._host
-        body = {}
         body = {'articles': [{'id': id, 'version': version, 'run': run}]}
         response = requests.post(url, auth=(self._user, self._password), json=body, verify=False)
         assert response.status_code == 200, ("Response status was %s: %s" % (response.status_code, response.text))

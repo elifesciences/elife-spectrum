@@ -13,7 +13,6 @@ def test_list_based_apis_journal_cms():
     checks.API.events()
     checks.API.interviews()
     checks.API.collections()
-    checks.API.bioprotocol()
 
 @pytest.mark.profiles
 def test_list_based_apis_profiles():
