@@ -8,7 +8,7 @@ Coordination of tests in CI is tightly coupled to the
 
 ## Requirements
 
-* [https://git-lfs.github.com/](git-lfs) to be installed to download the large `.tif` files.
+* [git-lfs](https://git-lfs.github.com/) to be installed to download the large `.tif` files.
 * [docker](https://www.docker.com) and [docker-compose](https://docs.docker.com/compose/) to run [Selenium](http://www.seleniumframework.com)
 * a configuration file '`app.cfg`' found on [elife-libraries](https://github.com/elifesciences/elife-libraries-formula) project instances. [Template here](https://github.com/elifesciences/builder-base-formula/blob/master/elife/config/srv-elife-spectrum-app.cfg).
 
