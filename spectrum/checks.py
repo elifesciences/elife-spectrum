@@ -350,7 +350,10 @@ class ApiCheck:
         return self._item_api('/digests/%s' % id, 'digest')
 
     def bioprotocol(self, id):
-        return self._item_api('/bioprotocol/article/%s' % id, 'bioprotocol')
+        url = self._host + '/bioprotocol/article/%s' % id
+        response = requests.get(url, headers=self._base_headers())
+        LOGGER.info("Found %s: %s", url, response.status_code)
+        return self._ensure_sane_response(response, url)
 
     def wait_digest(self, id, item_check=None):
         latest_url = "%s/digests/%s" % (self._host, id)

@@ -288,6 +288,37 @@ class JournalHtmlSession:
 
         return page
 
+class BioProtocol:
+    def __init__(self, host, user, password):
+        self.host = host
+        self.user = user
+        self.password = password
+
+    def create_bioprotocol_data(self, article_id):
+        "generates bioprotocol for given article data and posts it to the bioprotocol service"
+        payload = [
+	    {
+	        "ProtocolSequencingNumber": "s4-1",
+	        "ProtocolTitle": "Protein production",
+	        "IsProtocol": True,
+	        "ProtocolStatus": 0,
+	        "URI": "https://en.bio-protocol.org/rap.aspx?eid=24419&item=s4-1"
+
+	    },
+	    {
+	        "ProtocolSequencingNumber": "s4-2",
+	        "ProtocolTitle": "Chitin-triggered alkalinization of tomato cell suspension",
+	        "IsProtocol": False,
+	        "ProtocolStatus": 0,
+	        "URI": "https://en.bio-protocol.org/rap.aspx?eid=24419&item=s4-2"
+            }
+        ]        
+        # https://end2end--bp.elifesciences.org/bioprotocol/article/123456789
+        template = "%s/bioprotocol/article/%s"
+        url = template % (self.host, article_id)
+        response = requests.post(url, auth=(self.user, self.password), json=payload, verify=False)
+        assert response.status_code == 200, ("Response status was %s: %s" % (response.status_code, response.text))
+
 def invented_word(length=30, characters=None):
     if not characters:
         characters = string.ascii_lowercase + string.digits
@@ -331,3 +362,8 @@ BOT_WORKFLOWS = BotWorkflowStarter(
 )
 
 BOT_CONFIGURATION = InputBucket(aws.S3, SETTINGS['bucket_configuration'])
+
+BIOPROTOCOL = BioProtocol(
+    SETTINGS['bioprotocol_host'],
+    SETTINGS['bioprotocol_user'],
+    SETTINGS['bioprotocol_password'])

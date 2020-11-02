@@ -275,8 +275,13 @@ def test_rss_feed_contains_new_article(generate_article):
     checks.OBSERVER.latest_article(article.id())
 
 def test_bioprotocol_has_protocol_data(generate_article):
-    article = generate_article(SIMPLEST_ARTICLE_ID)
+    # the payload is for this article.
+    # we're not going so far in this test as to do link checking (yet)
+    article_with_mandms = "00790" 
+    article_with_mandms = SIMPLEST_ARTICLE_ID
+    article = generate_article(article_with_mandms)
     _ingest_and_publish_and_wait_for_published(article)
+    input.BIOPROTOCOL.create_bioprotocol_data(article.id())
     checks.API.bioprotocol(article.id())
 
 #
