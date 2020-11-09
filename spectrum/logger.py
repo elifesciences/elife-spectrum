@@ -1,3 +1,7 @@
+"""utility library for wrangling Python logging.
+
+contains no tests to be run."""
+
 import logging
 import os
 

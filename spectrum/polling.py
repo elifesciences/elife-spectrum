@@ -1,3 +1,7 @@
+"""utility for executing a function repeatedly until it returns something truthy.
+
+contains no tests to be run."""
+
 from __future__ import absolute_import
 import os
 from pprint import pformat

@@ -1,3 +1,7 @@
+"""utility library for polling URLs.
+
+contains no tests that are run."""
+
 import backoff
 import requests
 from spectrum import logger
