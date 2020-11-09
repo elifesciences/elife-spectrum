@@ -1,18 +1,19 @@
 """Test fixtures made available via decorators during the test run.
 
-The `conftest.py` file is a barely documented pytest-ism. 
+The `conftest.py` file is a barely documented pytest-ism.
 pytest will look for this file and execute it's contents automatically.
 
-In this file we're defining globally available test fixtures that are injected magically using parameter 
+In this file we're defining globally available test fixtures that are injected magically using parameter
 name matching alone. For example:
 
     def test_searching_for_a_new_article(generate_article, modify_article):
         ...
 
-will have the results of calling the `generate_article` fixture passed as the first parameter and the 
+will have the results of calling the `generate_article` fixture passed as the first parameter and the
 results of calling the `modify_article` fixture passed as the second parameter.
 
-Both of those fixtures `yield` a function that encloses a stateful list that is used to ensure the fixture knows what to clean up afterwards: 
+Both of those fixtures `yield` a function that encloses a stateful list that is used to ensure the fixture knows what
+to clean up afterwards:
 
 https://stackoverflow.com/questions/34466027/in-pytest-what-is-the-use-of-conftest-py-files
 https://docs.pytest.org/en/latest/writing_plugins.html#conftest-py-plugins

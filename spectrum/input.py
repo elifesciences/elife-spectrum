@@ -297,22 +297,21 @@ class BioProtocol:
     def create_bioprotocol_data(self, article_id):
         "generates bioprotocol for given article data and posts it to the bioprotocol service"
         payload = [
-	    {
-	        "ProtocolSequencingNumber": "s4-1",
-	        "ProtocolTitle": "Protein production",
-	        "IsProtocol": True,
-	        "ProtocolStatus": 0,
-	        "URI": "https://en.bio-protocol.org/rap.aspx?eid=24419&item=s4-1"
-
-	    },
-	    {
-	        "ProtocolSequencingNumber": "s4-2",
-	        "ProtocolTitle": "Chitin-triggered alkalinization of tomato cell suspension",
-	        "IsProtocol": False,
-	        "ProtocolStatus": 0,
-	        "URI": "https://en.bio-protocol.org/rap.aspx?eid=24419&item=s4-2"
+            {
+                "ProtocolSequencingNumber": "s4-1",
+                "ProtocolTitle": "Protein production",
+                "IsProtocol": True,
+                "ProtocolStatus": 0,
+                "URI": "https://en.bio-protocol.org/rap.aspx?eid=24419&item=s4-1"
+            },
+            {
+                "ProtocolSequencingNumber": "s4-2",
+                "ProtocolTitle": "Chitin-triggered alkalinization of tomato cell suspension",
+                "IsProtocol": False,
+                "ProtocolStatus": 0,
+                "URI": "https://en.bio-protocol.org/rap.aspx?eid=24419&item=s4-2"
             }
-        ]        
+        ]
         # http://end2end--bp.elife.internal/bioprotocol/article/123456789
         template = "%s/bioprotocol/article/%s"
         url = template % (self.int_host, article_id)
