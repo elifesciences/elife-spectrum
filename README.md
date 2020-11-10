@@ -32,9 +32,9 @@ Publish and test everything marked with `continuum` (or other labels):
 
 ## Environment variable
 
-- `SPECTRUM_PROCESSES` how many parallel processes to use to run tests.
-- `SPECTRUM_TIMEOUT` how much polling has to wait for a life sign before giving up with an exception.
-- `SPECTRUM_ENVIRONMENT` which environment to run tests in e.g. `end2end` (default) or `continuumtest'.
+- `SPECTRUM_PROCESSES` how many parallel processes to use to run tests (default 4).
+- `SPECTRUM_TIMEOUT` how long to poll for a life sign before giving up with an exception.
+- `SPECTRUM_ENVIRONMENT` which environment to run tests, either `end2end` (default) or `continuumtest'.
 
 ## Run "locally"
 
@@ -62,3 +62,5 @@ export SPECTRUM_TIMEOUT=60  # speeds up errors
 python -m pytest -s spectrum/test_api.py
 python -m pytest -s spectrum/test_article.py::test_article_multiple_ingests_of_the_same_version
 ```
+
+See `example-local-test.sh`
