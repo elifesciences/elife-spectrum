@@ -6,6 +6,20 @@ Coordination of tests in CI is tightly coupled to the
 [elife-alfred](https://github.com/elifesciences/elife-alfred-formula) and 
 [elife-libraries](https://github.com/elifesciences/elife-libraries-formula) projects.
 
+## Description
+
+End-to-end testing in an infrastructure of microservices happens at the level above the individual service where *many* 
+services exist. It is here real world user processes and the interactions between services are tested.
+
+The most important process at eLife is publishing an article and ensuring it appears in all dependent services like the
+journal, the search engine, metrics, reporting, buckets, archival, etc.
+
+User interactions to drive the tests are simulated through the [input.py](./spectrum/input.py) module and the various 
+logic for checking API endpoints and polling and handling pagination are encapsulated in [checks.py](./spectrum.py).
+
+The actual tests themselves live in the modules prefixed with `test_`, like [test_article.py](./spectrum/test_article.py),
+and are executed by `pytest`. See below for options on running tests.
+
 ## Requirements
 
 * [git-lfs](https://git-lfs.github.com/) to be installed to download the large `.tif` files.
