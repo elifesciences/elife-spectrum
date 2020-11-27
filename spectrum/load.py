@@ -173,7 +173,7 @@ class JournalHomepage():
 
 class AllOf():
     def __init__(self, actions):
-        "every element of actions is a tuple (action, weight) where action has a run() method"
+        "every element of `actions` is a tuple `(action, weight)` where `action` has a `run()` method"
         self._intervals = []
         start = 0
         assert len(actions) > 0, "Cannot create AllOf with an empty list of actions"

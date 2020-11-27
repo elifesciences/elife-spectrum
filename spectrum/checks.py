@@ -349,6 +349,12 @@ class ApiCheck:
     def digest(self, id):
         return self._item_api('/digests/%s' % id, 'digest')
 
+    def bioprotocol(self, id):
+        url = self._host + '/bioprotocol/article/%s' % id
+        response = requests.get(url, headers=self._base_headers())
+        LOGGER.info("Found %s: %s", url, response.status_code)
+        return self._ensure_sane_response(response, url)
+
     def wait_digest(self, id, item_check=None):
         latest_url = "%s/digests/%s" % (self._host, id)
         def _is_ready():
@@ -520,7 +526,7 @@ class ApiCheck:
         )
 
     def _ensure_sane_response(self, response, url):
-        assert response.status_code is 200, \
+        assert response.status_code == 200, \
             "Response from %s had status %d, body %s" % (url, response.status_code, response.text)
         try:
             return response.json()
