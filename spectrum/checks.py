@@ -1073,4 +1073,3 @@ PUBMED = HttpCheck(
     str(SETTINGS['bot_host']) + '/pubmed/{xml}'
 )
 BOT_EMAILS = MailcatcherCheck(SETTINGS['bot_mailcatcher'])
-XPUB_MECA = MecaFiles(NginxAutoindexJson(SETTINGS['xpub_meca_url']))

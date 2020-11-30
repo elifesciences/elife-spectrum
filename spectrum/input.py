@@ -16,7 +16,6 @@ from pollute import modified_environ
 import mechanicalsoup
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
-from spectrum.xpub import XpubJavaScriptSession
 
 LOGGER = logger.logger(__name__)
 
@@ -242,7 +241,8 @@ class JournalJavaScriptSession:
 
         selenium_title_smoke_test('eLife', self._driver)
         # expand: click on login button, log in, and check final destination
-        return XpubJavaScriptSession(self._driver)
+        # lsh@2020-10-22: xpub removed without replacement
+        #return XpubJavaScriptSession(self._driver)
 
 
 class JournalHtmlSession:
