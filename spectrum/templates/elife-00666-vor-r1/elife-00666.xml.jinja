@@ -1,13 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!-- UPDATE: eLife is updating to the most recent version of JATS, 1.2 -->
-<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.2d1 20190208//EN" "JATS-archivearticle1.dtd">
 <!--we use subj-groups to indicate eLife-specific terms. The @article-type on article drives the template used on the html version of the article and is also used for PubMed deposits.
 The @article-types currently used are:
-article-commentary - Insight
+
+article-commentary - Insight (Feature template 1)
 correction - Correction
-discussion - Feature 1/Feature 2
-editorial - Editorial
-research-article - all research content (ie non-feature content) 
+retraction - Retraction
+discussion - Feature contribution (Feature template 3 or 4)
+editorial - Editorial (Feature template 2)
+research-article - all research content and feature research articles (Feature template 5)
+review-article - Review articles
+
 UPDATE: xmlns:ali="http://www.niso.org/schemas/ali/1.0/" this name space is added in order to add the new license information (see permissions section)
 -->
 <article xmlns:ali="http://www.niso.org/schemas/ali/1.0/" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" article-type="research-article" dtd-version="1.2">
@@ -118,15 +121,15 @@ Authors can have one or multiple affiliations. There should be one aff per uniqu
 xref link requires display number (e.g. see below "1"). This is required for PMC and PDF build-->
           <xref ref-type="aff" rid="aff1">1</xref>
           <!-- Equal contributions are linked to a contrib via the footnote with attribute fn-type="fn" and the corresponding id (equal-contrib1, equal-contrib2 etc).-->
-          <xref ref-type="fn" rid="equal-contrib1">†</xref>
+          <xref ref-type="fn" rid="equal-contrib1">&#x2020;</xref>
           <!-- Present addresses are linked to a contrib via the footnote with attribute fn-type="present-address" and the corresponding id (pa1, pa2 etc). There is no limit
 on the number of present addresses allowed per author and multiple authors can share a single present address.-->
-          <xref ref-type="fn" rid="pa1">§</xref>
+          <xref ref-type="fn" rid="pa1">&#xA7;</xref>
           <!-- Other footnotes are linked to a contrib via the footnote with attribute fn-type="fn" and the corresponding id (fn1, fn2 etc). No limit on the number allowed 
 per author and multiple authors can share the same footnote. There is no display text associated with this link.
 Other footnotes are rare (they have only been used 3 times in the history of eLife) -->
           <xref ref-type="fn" rid="fn1">#</xref>
-          <xref ref-type="fn" rid="fn2">¶</xref>
+          <xref ref-type="fn" rid="fn2">&#xB6;</xref>
           <!-- Authors who have funding declared on the article are linked to the relevant <award-group> via an xref link using the"fund" id. Each <award-group> id
 should have a unique number e.g. fund1, fund2 etc. Authors can have one or multiple award-groups and multiple authors can be associated with one
 award-group. There is no display text associated with this link
@@ -150,7 +153,7 @@ author. There is no display text associated with this link-->
             <given-names>James F</given-names>
           </name>
           <xref ref-type="aff" rid="aff1">1</xref>
-          <xref ref-type="fn" rid="equal-contrib1">†</xref>
+          <xref ref-type="fn" rid="equal-contrib1">&#x2020;</xref>
           <xref ref-type="fn" rid="conf2"/>
           <xref ref-type="fn" rid="con2"/>
         </contrib>
@@ -159,10 +162,10 @@ They are no longer separated from their group name in tagging and linked by auth
 list displayed in the PDF is retained as per the XML order-->
         <contrib contrib-type="author" equal-contrib="yes">
           <collab>eLife Editorial Production Group
-                        <contrib-group><!-- UPDATE: use of role in group authors. If a group author is subdivided into sections or sub-groups, this is indicated using the role tag--><role>Writing group</role><contrib><name><surname>Shearer</surname><given-names>Alistair</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country>United Kingdom</country></aff></contrib><contrib><name><surname>Caton</surname><given-names>Hannah</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country>United Kingdom</country></aff><aff><institution>eLife Institute</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country>United Kingdom</country></aff></contrib></contrib-group>
-                        <contrib-group><role>Editing group</role><contrib><name><surname>Chan</surname><given-names>Wei Mun</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country>United Kingdom</country></aff></contrib><contrib><name><surname>Drury</surname><given-names>Hannah</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country>United Kingdom</country></aff></contrib><contrib><name><surname>Guerreiro</surname><given-names>Maria</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country>United Kingdom</country></aff></contrib><contrib><name><surname>Richmond</surname><given-names>Susanna</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country>United Kingdom</country></aff></contrib></contrib-group>
+                        <contrib-group><!-- UPDATE: use of role in group authors. If a group author is subdivided into sections or sub-groups, this is indicated using the role tag--><role>Writing group</role><contrib><name><surname>Shearer</surname><given-names>Alistair</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country country="GB">United Kingdom</country></aff></contrib><contrib><name><surname>Caton</surname><given-names>Hannah</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country country="GB">United Kingdom</country></aff><aff><institution>eLife Institute</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country country="GB">United Kingdom</country></aff></contrib></contrib-group>
+                        <contrib-group><role>Editing group</role><contrib><name><surname>Chan</surname><given-names>Wei Mun</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country country="GB">United Kingdom</country></aff></contrib><contrib><name><surname>Drury</surname><given-names>Hannah</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country country="GB">United Kingdom</country></aff></contrib><contrib><name><surname>Guerreiro</surname><given-names>Maria</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country country="GB">United Kingdom</country></aff></contrib><contrib><name><surname>Richmond</surname><given-names>Susanna</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country country="GB">United Kingdom</country></aff></contrib></contrib-group>
                 </collab>
-          <xref ref-type="fn" rid="equal-contrib2">‡</xref>
+          <xref ref-type="fn" rid="equal-contrib2">&#x2021;</xref>
           <xref ref-type="fn" rid="con3"/>
           <xref ref-type="fn" rid="conf2"/>
           <xref ref-type="aff" rid="aff1">1</xref>
@@ -170,10 +173,10 @@ list displayed in the PDF is retained as per the XML order-->
         <contrib contrib-type="author" equal-contrib="yes" corresp="yes">
           <collab>eLife Technology Group
                     <contrib-group><!-- UPDATE: A group author member can have an affiliation, but it is contained within the contrib after their name rather than listed separately. Group author
-affiliations are truncated compared to normal author affiliations (usually just institution, city and country) --><!-- A group author member can have an ORCID, although this is not required --><contrib><name><surname>Nott</surname><given-names>Graham</given-names></name><aff><institution>Graham Nott Enterprises</institution><addr-line><named-content content-type="city">Victoria</named-content></addr-line><country>Canada</country></aff></contrib><contrib><name><surname>Wilkinson</surname><given-names>Chris</given-names></name><email>c.wilkinson@elifesciences.org</email><contrib-id contrib-id-type="orcid" authenticated="true">https://orcid.org/0000-0003-4921-6155</contrib-id><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country>United Kingdom</country></aff></contrib><contrib><name><surname>Skibinski</surname><given-names>Luke</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country>United Kingdom</country></aff></contrib></contrib-group>
+affiliations are truncated compared to normal author affiliations (usually just institution, city and country) --><!-- A group author member can have an ORCID, although this is not required --><contrib><name><surname>Nott</surname><given-names>Graham</given-names></name><aff><institution>Graham Nott Enterprises</institution><addr-line><named-content content-type="city">Victoria</named-content></addr-line><country country="CA">Canada</country></aff></contrib><contrib><name><surname>Wilkinson</surname><given-names>Chris</given-names></name><email>c.wilkinson@elifesciences.org</email><contrib-id contrib-id-type="orcid" authenticated="true">https://orcid.org/0000-0003-4921-6155</contrib-id><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country country="GB">United Kingdom</country></aff></contrib><contrib><name><surname>Skibinski</surname><given-names>Luke</given-names></name><aff><institution>eLife</institution><addr-line><named-content content-type="city">Cambridge</named-content></addr-line><country country="GB">United Kingdom</country></aff></contrib></contrib-group>
             </collab>
           <xref ref-type="aff" rid="aff2">2</xref>
-          <xref ref-type="fn" rid="equal-contrib2">‡</xref>
+          <xref ref-type="fn" rid="equal-contrib2">&#x2021;</xref>
           <xref ref-type="other" rid="fund2"/>
           <xref ref-type="fn" rid="conf3"/>
           <xref ref-type="fn" rid="con4"/>
@@ -194,7 +197,7 @@ need to be boilerplate for the PDF display-->
           <addr-line>
             <named-content content-type="city">Cambridge</named-content>
           </addr-line>
-          <country>United Kingdom</country>
+          <country country="GB">United Kingdom</country>
         </aff>
         <aff id="aff2">
           <label>2</label>
@@ -203,7 +206,7 @@ need to be boilerplate for the PDF display-->
           <addr-line>
             <named-content content-type="city">Cambridge</named-content>
           </addr-line>
-          <country>United Kingdom</country>
+          <country country="GB">United Kingdom</country>
         </aff>
         <!-- eLife articles are shepherded through the review process by a reviewing editor, who is listed in the XML and called out in the online and PDF displays.
 UPDATE: As above, punctuation outside XML tags has been removed -->
@@ -217,7 +220,7 @@ UPDATE: As above, punctuation outside XML tags has been removed -->
           <role>Senior Editor</role>
           <aff>
             <institution>eLife</institution>
-            <country>United Kingdom</country>
+            <country country="GB">United Kingdom</country>
           </aff>
         </contrib>
         <contrib contrib-type="editor" id="author-10">
@@ -228,7 +231,7 @@ UPDATE: As above, punctuation outside XML tags has been removed -->
           <role>Reviewing Editor</role>
           <aff>
             <institution>eLife Sciences</institution>
-            <country>United Kingdom</country>
+            <country country="GB">United Kingdom</country>
           </aff>
         </contrib>
       </contrib-group>
@@ -241,16 +244,16 @@ UPDATE: email for corresponding author is contained within contrib and no longer
 -->
         <!--Equal contributions footnote-->
         <fn fn-type="con" id="equal-contrib1">
-          <label>†</label>
+          <label>&#x2020;</label>
           <p>These authors contributed equally to this work</p>
         </fn>
         <fn fn-type="con" id="equal-contrib2">
-          <label>‡</label>
+          <label>&#x2021;</label>
           <p>These authors also contributed equally to this work</p>
         </fn>
         <!--Present address s footnote-->
         <fn fn-type="present-address" id="pa1">
-          <label>§</label>
+          <label>&#xA7;</label>
           <p>Department of Wellcome Trust, Sanger Institute, London, United Kingdom</p>
         </fn>
         <!-- Other footnotes Deceased
@@ -261,7 +264,7 @@ content must work as a discrete item on each author's roll over and on the displ
           <p>Deceased (not really!!)</p>
         </fn>
         <fn fn-type="fn" id="fn2">
-          <label>¶</label>
+          <label>&#xB6;</label>
           <p>This footnote text must work in isolation as nothing is processed on the html view to make it "work"</p>
         </fn>
       </author-notes>
@@ -305,7 +308,7 @@ content must work as a discrete item on each author's roll over and on the displ
       </history>
       <pub-history>
         <event event-type="preprint-publication">
-          <event-desc> This article was originally published as a <ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="uri" xlink:href="https://doi.org/10.1101/118356">preprint</ext-link> on bioRxiv.</event-desc>
+          <event-desc> This article was originally published as a <ext-link ext-link-type="uri" xlink:href="https://doi.org/10.1101/118356">preprint</ext-link> on bioRxiv.</event-desc>
           <article-id pub-id-type="doi" assigning-authority="crossref">10.1101/118356</article-id>
           <date iso-8601-date="2017-03-24">
             <day>24</day>
@@ -316,7 +319,7 @@ content must work as a discrete item on each author's roll over and on the displ
       </pub-history>
       <!-- UPDATE: Permissions: this has changed/been updated to include the free_to_reed tag further to NISO recommendations -->
       <permissions>
-        <copyright-statement>© 2016, Harrison et al</copyright-statement>
+        <copyright-statement>&#xA9; 2016, Harrison et al</copyright-statement>
         <copyright-year>2016</copyright-year>
         <copyright-holder>Harrison et al</copyright-holder>
         <ali:free_to_read/>
@@ -329,6 +332,8 @@ content must work as a discrete item on each author's roll over and on the displ
         </license>
       </permissions>
       <self-uri content-type="pdf" xlink:href="elife-{{ article['id'] }}.pdf"/>
+      <!-- Some content will not have a figures PDF -->
+      <self-uri content-type="figures-pdf" xlink:href="elife-{{ article['id'] }}-figures.pdf"/>
       <!-- UPDATE: historical events in the publication history will be entered using related-object. 
 If something is published once it will not have these related-objects.
 If an item is published twice the first related-object will be to the first publication and contain the related-object and date with date-type of v1 only
@@ -360,7 +365,7 @@ with a  date-type of v3 and also a comment on this v3 (the comment will detail t
           <month>06</month>
           <year>2016</year>
         </date>
-        <comment>The author Christoph Wuelfing requested has surname was converted to the German spelling of "Wülfing".</comment>
+        <comment>The author Christoph Wuelfing requested has surname was converted to the German spelling of "W&#xFC;lfing".</comment>
       </related-object>
       <!-- Related article linking: Optional.
 Set of accepted @related-article-type values:
@@ -376,13 +381,11 @@ NOTE: research advance MUST contain <related-article related-article-type="artic
 <bold>DOI:</bold>
 <ext-link ext-link-type="doi" xlink:href="10.7554/eLife.{{ article['id'] }}.001">https://doi.org/10.7554/eLife.{{ article['id'] }}.001</ext-link> -->
       <abstract>
-        <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.001</object-id>
         <p>This is the abstract. This article will describe the eLife article and the process.
                     An abstract can contain any formatting, such as <italic>italics</italic>,
                         <bold>bold</bold>, <sup>superscript</sup>, <sub>subscript</sub> or <sc>small caps</sc>. MathML is
                     also allowed: 
-                    <inline-formula><mml:math><mml:mrow><mml:munder><mml:mo/><mml:mi>m</mml:mi></mml:munder><mml:mrow><mml:msub><mml:mover accent="true"><mml:mi>p</mml:mi><mml:mo/></mml:mover><mml:mi>m</mml:mi></mml:msub><mml:mo>=</mml:mo><mml:mn>0</mml:mn></mml:mrow></mml:mrow></mml:math></inline-formula>
+                    <inline-formula><mml:math id="inf1"><mml:mrow><mml:munder><mml:mo/><mml:mi>m</mml:mi></mml:munder><mml:mrow><mml:msub><mml:mover accent="true"><mml:mi>p</mml:mi><mml:mo/></mml:mover><mml:mi>m</mml:mi></mml:msub><mml:mo>=</mml:mo><mml:mn>0</mml:mn></mml:mrow></mml:mrow></mml:math></inline-formula>
                 .</p>
         <p>eLife does not structure abstracts into sub headings expect in a clinical trial article, but the abstract can have
                     multiple paragarahs. The sub DOI is always .001 as it is the first asset in any
@@ -395,8 +398,6 @@ NOTE: research advance MUST contain <related-article related-article-type="artic
 <ext-link ext-link-type="doi" xlink:href="10.7554/eLife.{{ article['id'] }}.001">https://doi.org/10.7554/eLife.{{ article['id'] }}.002</ext-link>
 Additionally, digest are no longer a required component of all Research Articles and Short Reports. All research content can now be published with no digest -->
       <abstract abstract-type="executive-summary">
-        <!-- UPDATE: DOI prefix removed from XML but must be displayed in outputs-->
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.002</object-id>
         <title>eLife digest</title>
         <p>eLife digest are now optional and not every research article will contain one.
                     These are layman abstracts, designed for non-specialists in this field to be
@@ -507,12 +508,10 @@ Impact statement:-->
                 Before you submit your work, please note that eLife is a very selective journal that aims to publish
                 work of the highest scientific standards and importance. Leading academic
                 researchers evaluate new submissions and approximately two-thirds are returned to
-                the authors without further peer review. See  <xref ref-type="bibr" rid="bib12">DeLano (2002)</xref> and <xref ref-type="bibr" rid="bib13">
-                    Department of Education and Morgan (2016)</xref>. Approximately half of the articles that are
+                the authors without further peer review. See  <xref ref-type="bibr" rid="bib12">DeLano (2002)</xref> and <xref ref-type="bibr" rid="bib13">Department of Education and Morgan (2016)</xref>. Approximately half of the articles that are
                     selected for peer review go on to be published (<xref ref-type="bibr" rid="bib5">Brettar et al., 2004a</xref>). If other researchers publish similar
                 findings after submission, this will not be a reason for rejection. The eLife
-                editorial process broadly occurs in three phases (<xref ref-type="bibr" rid="bib48">Turlings and Wäckers, 2004a</xref>; <xref ref-type="bibr" rid="bib49">Turlings and Wäckers, 2004b</xref>;  <xref ref-type="bibr" rid="bib51">
-                    Wolski et al., 2008</xref>; <xref ref-type="bibr" rid="bib50">Walker, 1994</xref>; <xref ref-type="bibr" rid="bib44">Tanaka et al., 2016</xref>). If you are interested in
+                editorial process broadly occurs in three phases (<xref ref-type="bibr" rid="bib47">Turlings and W&#xE4;ckers, 2004a</xref>; <xref ref-type="bibr" rid="bib48">Turlings and W&#xE4;ckers, 2004b</xref>;  <xref ref-type="bibr" rid="bib50">Wolski et al., 2008</xref>; <xref ref-type="bibr" rid="bib49">Walker, 1994</xref>; <xref ref-type="bibr" rid="bib43">Tanaka et al., 2016</xref>). If you are interested in
                 submitting your work to eLife, please review the guidelines relating to initial
                 submissions. If you have received an encouraging response to your initial
                 submission, please review the guidelines relating to full submissions. If your full
@@ -522,10 +521,10 @@ Impact statement:-->
           <title>Initial submission (level 3 heading)</title>
           <p>eLife publishes research of the very highest (<xref ref-type="bibr" rid="bib7">Bricogne et al., 2011</xref>) standard and significance, 
                 so many manuscripts are returned to the authors without in-depth peer review. During the initial submission
-                phase, members of eLife’s senior editorial team rapidly assess new submissions,
+                phase, members of eLife&#x2019;s senior editorial team rapidly assess new submissions,
                 often in consultation with members of the Board of Reviewing Editors or with
                 external guest editors where necessary, to identify the ones that are appropriate
-                for in-depth peer review (<xref ref-type="bibr" rid="bib8">Cardé and Millar, 2004</xref>; <xref ref-type="bibr" rid="bib9">Cartwright, 2016</xref>; 
+                for in-depth peer review (<xref ref-type="bibr" rid="bib8">Card&#xE9; and Millar, 2004</xref>; <xref ref-type="bibr" rid="bib9">Cartwright, 2016</xref>; 
                 <xref ref-type="bibr" rid="bib10">Chmeil, 2008</xref>). To simplify the submission process, authors should submit
                 their full manuscript as a single PDF. Limited additional information is collected
                 via the submission screen questions to complete the submission (<xref ref-type="bibr" rid="bib6">Brettar et al., 2004b</xref>).</p>
@@ -547,7 +546,7 @@ Impact statement:-->
           <title>Revised submission (level 3 heading)</title>
           <p>We will require a response to the essential revision requirements outlined in the decision letter. A
                 response to minor comments is optional. In the event of acceptance, the substantive
-                revision requests and the authors’ response will be published, under the terms of
+                revision requests and the authors&#x2019; response will be published, under the terms of
                 the Creative Commons Attribution license. In preparation for submission, authors
                 should ensure they have all the materials and information necessary to expedite the
                 submission and assessment of their work (<xref ref-type="bibr" rid="bib15">Eisen, 2016</xref>; 
@@ -587,9 +586,8 @@ Impact statement:-->
       <sec id="s2-1">
         <title>eLife controlled lists</title>
         <p>eLife has no strict requirements for the display of lists. Below we will show examples of how to present lists.
-                    See <xref ref-type="fig" rid="fig2s1">Figure 2—figure supplement 1</xref> for the representation of the Major Subject Areas, Research
-                    Organisms and author keywords on the eLife HTML page (<xref ref-type="bibr" rid="bib45">The <italic>Shigella</italic> Genome Sequencing Consortium,
-                    2015a</xref>).
+                    See <xref ref-type="fig" rid="fig2s1">Figure 2&#x2014;figure supplement 1</xref> for the representation of the Major Subject Areas, Research
+                    Organisms and author keywords on the eLife HTML page (<xref ref-type="bibr" rid="bib44">The <italic>Shigella</italic> Genome Sequencing Consortium, 2015a</xref>).
                 </p>
         <sec id="s2-1-1">
           <title>Article types</title>
@@ -797,17 +795,14 @@ Impact statement:-->
             <list-item>
               <p>Here is an example of a list with multiple paragraphs and equations.</p>
               <p>A discrete three-dimensional model space was generated (represented as a
-                            three-dimensional matrix; <xref ref-type="fig" rid="fig2s1">Figure
-                                2—figure supplement 1A</xref>, left), with dimensions
-                            corresponding to population µ, population σ, and f value.
-                            Any given value in the matrix indicates P(f|μ,σ),
-                            that is, the probability of a given frequency given a particular
-                            μ and σ. The columns (all f values for a given μ
-                            and σ combination; <xref ref-type="fig" rid="fig2s1">Figure
-                                2—figure supplement 1</xref>, upper-right) thus constitute
+                            three-dimensional matrix; <xref ref-type="fig" rid="fig2s1">Figure 2&#x2014;figure supplement 1A</xref>, left), with dimensions
+                            corresponding to population &#xB5;, population &#x3C3;, and f value.
+                            Any given value in the matrix indicates P(f|&#x3BC;,&#x3C3;),
+                            that&#xA0;is, the probability of a given frequency given a particular
+                            &#x3BC; and &#x3C3;. The columns (all f values for a given &#x3BC;
+                            and &#x3C3; combination; <xref ref-type="fig" rid="fig2s1">Figure 2&#x2014;figure supplement 1</xref>, upper-right) thus constitute
                             the forward model (by which stimuli are generated), and the planes (all
-                            combinations of μ and σ for a given f value; <xref ref-type="fig" rid="fig2s1">Figure 2—figure supplement
-                                1</xref>, lower-middle) constitute the inverse model (by which
+                            combinations of &#x3BC; and &#x3C3; for a given f value; <xref ref-type="fig" rid="fig2s1">Figure 2&#x2014;figure supplement 1</xref>, lower-middle) constitute the inverse model (by which
                             hidden parameters can be estimated from observed f values).</p>
             </list-item>
             <!-- UPDATE: this 2) below is in error - it creates a repeat on the html view and a space 
@@ -815,8 +810,7 @@ Impact statement:-->
             <list-item>
               <p> 2) For each segment, the model was inverted for its particular f value,
                             yielding a two-dimensional probability distribution for the hidden
-                            parameters (<xref ref-type="fig" rid="fig2s1">Figure 2—figure
-                                supplement 1</xref>, lower-middle). Steps 3-6 were then worked
+                            parameters (<xref ref-type="fig" rid="fig2s1">Figure 2&#x2014;figure supplement 1</xref>, lower-middle). Steps 3-6 were then worked
                             through for each stimulus segment in order, starting at the beginning of
                             the stimulus.</p>
             </list-item>
@@ -824,8 +818,7 @@ Impact statement:-->
               <p>These probability distributions, for each segment subsequent to the most
                             recent estimated population change (as defined later), were multiplied
                             together, and scaled to a sum of 1. The resulting probability
-                            distribution (<xref ref-type="fig" rid="fig2s1">Figure 2—figure
-                                supplement 1</xref>, lower-right) thus reflects parameter
+                            distribution (<xref ref-type="fig" rid="fig2s1">Figure 2&#x2014;figure supplement 1</xref>, lower-right) thus reflects parameter
                             probabilities taking into account all relevant f values</p>
             </list-item>
             <list-item>
@@ -848,10 +841,10 @@ Impact statement:-->
                             segment the probability of observing the present f value was compared
                             for the two probability distributions (the distribution assuming a
                             population change, and the distribution assuming no change),
-                            that is, P(f|c) and P(f|~c), respectively, with c denoting
+                            that&#xA0;is, P(f|c) and P(f|~c), respectively, with c denoting
                             a population change. The probabilities were compared, in conjunction
                             with the known prior probability of a population change (1/8), using
-                            Bayes’ rule, as stated in Equation 2:<disp-formula id="equ1"><label>(1)</label><mml:math id="m2"><mml:mrow><mml:mi>P</mml:mi><mml:mo>(</mml:mo><mml:mi>c</mml:mi><mml:mo>|</mml:mo><mml:mi>f</mml:mi><mml:mo>)</mml:mo><mml:mo>=</mml:mo><mml:mfrac><mml:mrow><mml:mi>P</mml:mi><mml:mrow><mml:mo>(</mml:mo><mml:mrow><mml:mi>f</mml:mi><mml:mtext>|</mml:mtext><mml:mi>c</mml:mi></mml:mrow><mml:mo>)</mml:mo></mml:mrow><mml:mi>P</mml:mi><mml:mo>(</mml:mo><mml:mi>c</mml:mi><mml:mo>)</mml:mo></mml:mrow><mml:mrow><mml:mi>P</mml:mi><mml:mo>(</mml:mo><mml:mi>f</mml:mi><mml:mo>)</mml:mo></mml:mrow></mml:mfrac></mml:mrow></mml:math></disp-formula></p>
+                            Bayes&#x2019; rule, as stated in Equation 2:<disp-formula id="equ1"><label>(1)</label><mml:math id="m2"><mml:mrow><mml:mi>P</mml:mi><mml:mo>(</mml:mo><mml:mi>c</mml:mi><mml:mo>|</mml:mo><mml:mi>f</mml:mi><mml:mo>)</mml:mo><mml:mo>=</mml:mo><mml:mfrac><mml:mrow><mml:mi>P</mml:mi><mml:mrow><mml:mo>(</mml:mo><mml:mrow><mml:mi>f</mml:mi><mml:mtext>|</mml:mtext><mml:mi>c</mml:mi></mml:mrow><mml:mo>)</mml:mo></mml:mrow><mml:mi>P</mml:mi><mml:mo>(</mml:mo><mml:mi>c</mml:mi><mml:mo>)</mml:mo></mml:mrow><mml:mrow><mml:mi>P</mml:mi><mml:mo>(</mml:mo><mml:mi>f</mml:mi><mml:mo>)</mml:mo></mml:mrow></mml:mfrac></mml:mrow></mml:math></disp-formula></p>
               <p>Here, P(c|f) is the chance that a population change occurred at that
                             particular time. Given that P(c) is known to be 1/8, and P(f), the total
                             probability of the observed f value, can be rewritten
@@ -877,15 +870,15 @@ Impact statement:-->
               <p>Once the above steps were worked through for each stimulus segment in
                             order, the optimal prior predictions were used to calculate the
                             perceptual inference variables of interest. Predictions themselves were
-                            summarised by their mean (μ) and precision (1/variance). Changes
-                            to predictions (Δµ) were calculated as the absolute change
-                            (in octaves) in μ from one prediction to the next. Surprise (S)
+                            summarised by their mean (&#x3BC;) and precision (1/variance). Changes
+                            to predictions (&#x394;&#xB5;) were calculated as the absolute change
+                            (in octaves) in &#x3BC; from one prediction to the next. Surprise (S)
                             was calculated as the negative log probability of the observed f value
                             given the prior prediction, and prediction error (irrespective of
                             prediction precision) was calculated as the absolute difference (in
                             octaves) between the observed f value and the mean of the prior
                             prediction. Mathematically, surprise is directly proportional to
-                            prediction precision multiplied by prediction error. Finally, Δf
+                            prediction precision multiplied by prediction error. Finally, &#x394;f
                             was calculated as the absolute difference between the current and
                             preceding value of f.</p>
             </list-item>
@@ -901,19 +894,27 @@ Impact statement:-->
               </p>
             </list-item>
             <list-item>
-              <p><italic>B</italic>. <italic>subtilis</italic></p>
+              <p>
+                <italic>B. subtilis</italic>
+              </p>
             </list-item>
             <list-item>
-              <p><italic>C</italic>. <italic>elegans</italic></p>
+              <p>
+                <italic>C. elegans</italic>
+              </p>
             </list-item>
             <list-item>
-              <p><italic>C</italic>. <italic>intestinalis</italic></p>
+              <p>
+                <italic>C. intestinalis</italic>
+              </p>
             </list-item>
             <list-item>
               <p>Chicken</p>
             </list-item>
             <list-item>
-              <p><italic>D</italic>. <italic>melanogaster</italic></p>
+              <p>
+                <italic>D. melanogaster</italic>
+              </p>
             </list-item>
             <list-item>
               <p>
@@ -921,7 +922,9 @@ Impact statement:-->
               </p>
             </list-item>
             <list-item>
-              <p><italic>E</italic>. <italic>coli</italic></p>
+              <p>
+                <italic>E. coli</italic>
+              </p>
             </list-item>
             <list-item>
               <p>Frog</p>
@@ -930,7 +933,9 @@ Impact statement:-->
               <p>Human</p>
             </list-item>
             <list-item>
-              <p><italic>M</italic>. <italic>mulatta</italic></p>
+              <p>
+                <italic>M. mulatta</italic>
+              </p>
             </list-item>
             <list-item>
               <p>Maize</p>
@@ -939,10 +944,14 @@ Impact statement:-->
               <p>Mouse</p>
             </list-item>
             <list-item>
-              <p><italic>M</italic>. <italic>thermophila</italic></p>
+              <p>
+                <italic>M. thermophila</italic>
+              </p>
             </list-item>
             <list-item>
-              <p><italic>M</italic>. <italic>crassa</italic></p>
+              <p>
+                <italic>M. crassa</italic>
+              </p>
             </list-item>
             <list-item>
               <p>
@@ -956,28 +965,40 @@ Impact statement:-->
               <p>Other</p>
             </list-item>
             <list-item>
-              <p><italic>O</italic>. <italic>fasciatus</italic></p>
+              <p>
+                <italic>O. fasciatus</italic>
+              </p>
             </list-item>
             <list-item>
-              <p><italic>P</italic>. <italic>falciparum</italic></p>
+              <p>
+                <italic>P. falciparum</italic>
+              </p>
             </list-item>
             <list-item>
-              <p><italic>P</italic>. <italic>dumerilii</italic></p>
+              <p>
+                <italic>P. dumerilii</italic>
+              </p>
             </list-item>
             <list-item>
               <p>Rat</p>
             </list-item>
             <list-item>
-              <p><italic>S</italic>. <italic>cerevisiae</italic></p>
+              <p>
+                <italic>S. cerevisiae</italic>
+              </p>
             </list-item>
             <list-item>
-              <p><italic>S</italic>. <italic>pombe</italic></p>
+              <p>
+                <italic>S. pombe</italic>
+              </p>
             </list-item>
             <list-item>
-              <p><italic>S</italic>. <italic>enterica</italic>serovar Typhi</p>
+              <p><italic>S. enterica</italic>serovar Typhi</p>
             </list-item>
             <list-item>
-              <p><italic>S</italic>. <italic>pyogenes</italic></p>
+              <p>
+                <italic>S. pyogenes</italic>
+              </p>
             </list-item>
             <list-item>
               <p>Virus</p>
@@ -993,7 +1014,9 @@ Impact statement:-->
               </p>
             </list-item>
             <list-item>
-              <p><italic>P</italic>. <italic>cynocephalus</italic></p>
+              <p>
+                <italic>P. cynocephalus</italic>
+              </p>
             </list-item>
             <list-item>
               <p>Zebrafish</p>
@@ -1012,8 +1035,6 @@ UPDATE: Example of how to deal with spans in a citation. We cannot add the links
 not add all rids to the xref as it does not work. Only add the first one -->
         <p>This section is an example of different tables, there are four in total (<xref ref-type="table" rid="table1">Tables 1 to 3</xref> and an unnamed inline table).</p>
         <table-wrap id="table1" position="float">
-          <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-          <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.003</object-id>
           <label>Table 1.</label>
           <caption>
             <title>This is the title.</title>
@@ -1024,7 +1045,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
               <!-- Header row -->
               <tr>
                 <!-- This header row contains several headings that span multiple columns -->
-                <th colspan="3" rowspan="2"> </th>
+                <th colspan="3" rowspan="2">&#x2009;</th>
                 <th align="center" colspan="8">GLVs (percent IS plant<sup>-1</sup>)</th>
                 <th align="center" colspan="17">TPS10 products (percent IS plant<sup>-1</sup>)</th>
                 <th align="center" colspan="10">Non-target volatiles (percent IS plant<sup>-1</sup>)</th>
@@ -1033,7 +1054,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <th align="center" colspan="8">(<italic>Z</italic>)-Hexen-3-ol</th>
                 <th align="center" colspan="10">TAB</th>
                 <th align="center" colspan="7">TBF</th>
-                <th align="center" colspan="6">α-Duprezianene</th>
+                <th align="center" colspan="6">&#x3B1;-Duprezianene</th>
                 <th align="center" colspan="4">Germacrene A</th>
               </tr>
             </thead>
@@ -1087,10 +1108,10 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <td>8</td>
                 <td>8</td>
                 <td>0.99%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.99%</td>
                 <td>7.96%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>4.25%</td>
                 <!-- The next cell contains coloured text using author-callout-style-a1 (Blue). It is also centrally aligned -->
                 <td rowspan="2" valign="middle">
@@ -1107,15 +1128,15 @@ not add all rids to the xref as it does not work. Only add the first one -->
                   </sub>
                 </td>
                 <td>0.37%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.29%</td>
                 <td>
                   <bold>
                     <named-content content-type="author-callout-style-a1">a</named-content>
                   </bold>
                 </td>
-                <td colspan="3">—</td>
-                <td> </td>
+                <td colspan="3">&#x2014;</td>
+                <td>&#x2009;</td>
                 <td rowspan="3" valign="middle">
                   <named-content content-type="author-callout-style-a1">}</named-content>
                 </td>
@@ -1129,19 +1150,19 @@ not add all rids to the xref as it does not work. Only add the first one -->
                     </bold>
                   </sub>
                 </td>
-                <td colspan="3">—</td>
+                <td colspan="3">&#x2014;</td>
                 <td>
                   <bold>
                     <named-content content-type="author-callout-style-a1">a</named-content>
                   </bold>
                 </td>
-                <td colspan="3">—</td>
+                <td colspan="3">&#x2014;</td>
                 <!-- The next cell contains coloured text using author-callout-style-a2 (Purple). It is also centrally aligned -->
                 <td>
                   <named-content content-type="author-callout-style-a2">2.13%</named-content>
                 </td>
                 <td>
-                  <named-content content-type="author-callout-style-a2">±</named-content>
+                  <named-content content-type="author-callout-style-a2">&#xB1;</named-content>
                 </td>
                 <td>
                   <named-content content-type="author-callout-style-a2">0.85%</named-content>
@@ -1150,7 +1171,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
                   <named-content content-type="author-callout-style-a2">0.96%</named-content>
                 </td>
                 <td>
-                  <named-content content-type="author-callout-style-a2">±</named-content>
+                  <named-content content-type="author-callout-style-a2">&#xB1;</named-content>
                 </td>
                 <td>
                   <named-content content-type="author-callout-style-a2">0.42%</named-content>
@@ -1159,12 +1180,12 @@ not add all rids to the xref as it does not work. Only add the first one -->
                   <named-content content-type="author-callout-style-a2">1.68%</named-content>
                 </td>
                 <td>
-                  <named-content content-type="author-callout-style-a2">±</named-content>
+                  <named-content content-type="author-callout-style-a2">&#xB1;</named-content>
                 </td>
                 <td>
                   <named-content content-type="author-callout-style-a2">0.98%</named-content>
                 </td>
-                <td>—</td>
+                <td>&#x2014;</td>
               </tr>
               <tr>
                 <td>
@@ -1175,13 +1196,13 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <td>7</td>
                 <td>7</td>
                 <td>2.37%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>1.55%</td>
                 <td>2.84%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.63%</td>
                 <td>18.97%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>6.03%</td>
                 <!-- The next cell contains coloured text using author-callout-style-a3 (Red). It is also centrally aligned -->
                 <td>
@@ -1190,13 +1211,13 @@ not add all rids to the xref as it does not work. Only add the first one -->
                   </bold>
                 </td>
                 <td>0.94%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.53%</td>
                 <td rowspan="3" valign="middle">
                   <named-content content-type="author-callout-style-a3">}</named-content>
                 </td>
                 <td>9.34%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>3.44%</td>
                 <td>
                   <bold>
@@ -1204,18 +1225,18 @@ not add all rids to the xref as it does not work. Only add the first one -->
                   </bold>
                 </td>
                 <td>0.20%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.20%</td>
                 <td>9.47%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>5.26%</td>
                 <td>0.94%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.26%</td>
                 <td>2.78%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>1.52%</td>
-                <td>—</td>
+                <td>&#x2014;</td>
               </tr>
               <tr>
                 <td>
@@ -1226,10 +1247,10 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <td>7</td>
                 <td>8</td>
                 <td>0.13%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.13%</td>
                 <td>1.06%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.64%</td>
                 <td rowspan="2" valign="middle">
                   <named-content content-type="author-callout-style-a3">}</named-content>
@@ -1244,14 +1265,14 @@ not add all rids to the xref as it does not work. Only add the first one -->
                     </bold>
                   </sub>
                 </td>
-                <td colspan="3">—</td>
+                <td colspan="3">&#x2014;</td>
                 <td>
                   <bold>
                     <named-content content-type="author-callout-style-a1">a</named-content>
                   </bold>
                 </td>
                 <td>0.15%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.15%</td>
                 <td rowspan="2">
                   <bold>
@@ -1263,23 +1284,23 @@ not add all rids to the xref as it does not work. Only add the first one -->
                     </bold>
                   </sub>
                 </td>
-                <td colspan="3">—</td>
+                <td colspan="3">&#x2014;</td>
                 <td>
                   <bold>
                     <named-content content-type="author-callout-style-a1">a</named-content>
                   </bold>
                 </td>
-                <td colspan="3">—</td>
+                <td colspan="3">&#x2014;</td>
                 <td>2.75%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>1.12%</td>
                 <td>0.60%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.19%</td>
                 <td>1.68%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>1.49%</td>
-                <td>—</td>
+                <td>&#x2014;</td>
               </tr>
               <tr>
                 <td>
@@ -1288,13 +1309,13 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <td>7</td>
                 <td>7</td>
                 <td>0.07%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.07%</td>
                 <td>1.24%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.84%</td>
                 <td>7.39%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>2.56%</td>
                 <td>
                   <bold>
@@ -1302,11 +1323,11 @@ not add all rids to the xref as it does not work. Only add the first one -->
                   </bold>
                 </td>
                 <td>2.08%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.84%</td>
-                <td> </td>
+                <td>&#x2009;</td>
                 <td>4.47%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>1.70%</td>
                 <td>
                   <bold>
@@ -1314,18 +1335,18 @@ not add all rids to the xref as it does not work. Only add the first one -->
                   </bold>
                 </td>
                 <td>0.40%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.40%</td>
                 <td>3.02%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>1.42%</td>
                 <td>0.73%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.31%</td>
                 <td>0.66%</td>
-                <td>±</td>
+                <td>&#xB1;</td>
                 <td>0.37%</td>
-                <td>—</td>
+                <td>&#x2014;</td>
               </tr>
             </tbody>
           </table>
@@ -1348,8 +1369,6 @@ not add all rids to the xref as it does not work. Only add the first one -->
                     Table 2 is structured into two sub-tables. In the PDF, these should be set seperately, with a space equivalent to a row of empty cells between the final row of
                     the first and the header row of the second.-->
         <table-wrap id="table2" position="float">
-          <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-          <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.004</object-id>
           <label>Table 2.</label>
           <caption>
             <p>This table contains references and footnotes and is sized to the text column width in the PDF.</p>
@@ -1360,7 +1379,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <th rowspan="2">Protein</th>
                 <th rowspan="2">Molar ratio of lipid:protein in RPL reactions<xref ref-type="table-fn" rid="tablefn1">*</xref></th>
                 <th colspan="2">Molar ratio of lipid:protein on vacuoles</th>
-                <th rowspan="2">References<xref ref-type="table-fn" rid="tablefn2">†</xref></th>
+                <th rowspan="2">References<xref ref-type="table-fn" rid="tablefn2">&#x2020;</xref></th>
               </tr>
               <tr>
                 <th>BJ3505</th>
@@ -1372,11 +1391,11 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <!-- The next cell contains a coloured background using author-callout-style-b1 (Blue) -->
                 <td style="author-callout-style-b1">Vam7p</td>
                 <!-- The next cell contains a coloured background using author-callout-style-b2 (Green) -->
-                <td style="author-callout-style-b2">2 × 10<sup>3</sup></td>
+                <td style="author-callout-style-b2">2 &#xD7; 10<sup>3</sup></td>
                 <!-- The next cell contains a coloured background using author-callout-style-b3 (Orange) -->
-                <td style="author-callout-style-b3">30 × 10<sup>4</sup></td>
+                <td style="author-callout-style-b3">30 &#xD7; 10<sup>4</sup></td>
                 <!-- The next cell contains a coloured background using author-callout-style-b4 (Yellow) -->
-                <td style="author-callout-style-b4">6.5 × 10<sup>4</sup></td>
+                <td style="author-callout-style-b4">6.5 &#xD7; 10<sup>4</sup></td>
                 <!-- The next cell contains a reference -->
                 <td>
                   <xref ref-type="bibr" rid="bib12">DeLano, 2002</xref>
@@ -1386,29 +1405,29 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <!-- The next cell contains a coloured background using author-callout-style-b5 (Purple) -->
                 <td style="author-callout-style-b5">Vam3p</td>
                 <!-- The next cell contains a coloured background using author-callout-style-b6 (Red) -->
-                <td style="author-callout-style-b6">2 × 10<sup>3</sup></td>
+                <td style="author-callout-style-b6">2 &#xD7; 10<sup>3</sup></td>
                 <!-- The next cell contains a coloured background using author-callout-style-b7 (Pink) -->
-                <td style="author-callout-style-b7">11 × 10<sup>4</sup></td>
+                <td style="author-callout-style-b7">11 &#xD7; 10<sup>4</sup></td>
                 <!-- The next cell contains a coloured background using author-callout-style-b8 (Grey) -->
-                <td style="author-callout-style-b8">22 × 10<sup>4</sup></td>
+                <td style="author-callout-style-b8">22 &#xD7; 10<sup>4</sup></td>
                 <td>
                   <xref ref-type="bibr" rid="bib13">Department of Education and Morgan, 2016</xref>
                 </td>
               </tr>
               <tr>
                 <td>Vti1p</td>
-                <td>2 × 10<sup>3</sup></td>
-                <td>10 × 10<sup>4</sup></td>
-                <td>13 × 10<sup>4</sup></td>
+                <td>2 &#xD7; 10<sup>3</sup></td>
+                <td>10 &#xD7; 10<sup>4</sup></td>
+                <td>13 &#xD7; 10<sup>4</sup></td>
                 <td>
-                  <xref ref-type="bibr" rid="bib54">Zhong et al., 2013</xref>
+                  <xref ref-type="bibr" rid="bib53">Zhong et al., 2013</xref>
                 </td>
               </tr>
               <tr>
                 <td>Nyv1p</td>
-                <td>2 × 10<sup>3</sup></td>
-                <td>4.3 × 10<sup>4</sup></td>
-                <td>8.1 × 10<sup>4</sup></td>
+                <td>2 &#xD7; 10<sup>3</sup></td>
+                <td>4.3 &#xD7; 10<sup>4</sup></td>
+                <td>8.1 &#xD7; 10<sup>4</sup></td>
                 <td>
                   <xref ref-type="bibr" rid="bib16">Ferry et al., 2014</xref>
                 </td>
@@ -1421,42 +1440,42 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <th rowspan="2">Protein</th>
                 <th rowspan="2">Molar ratio of lipid:protein in RPL reactions<xref ref-type="table-fn" rid="tablefn1">*</xref></th>
                 <th colspan="2">Molar ratio of lipid:protein on vacuoles</th>
-                <th rowspan="2">References<xref ref-type="table-fn" rid="tablefn2">†</xref></th>
+                <th rowspan="2">References<xref ref-type="table-fn" rid="tablefn2">&#x2020;</xref></th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Ypt7p</td>
-                <td>4 × 10<sup>3</sup></td>
-                <td>1.9 × 10<sup>4</sup></td>
-                <td>1.8 × 10<sup>4</sup></td>
+                <td>4 &#xD7; 10<sup>3</sup></td>
+                <td>1.9 &#xD7; 10<sup>4</sup></td>
+                <td>1.8 &#xD7; 10<sup>4</sup></td>
                 <td>
-                  <xref ref-type="bibr" rid="bib54">Zhong et al., 2013</xref>
+                  <xref ref-type="bibr" rid="bib53">Zhong et al., 2013</xref>
                 </td>
               </tr>
               <tr>
                 <td>Sec17p</td>
-                <td>7 × 10<sup>3</sup></td>
-                <td>41 × 10<sup>4</sup></td>
-                <td>13 × 10<sup>4</sup></td>
+                <td>7 &#xD7; 10<sup>3</sup></td>
+                <td>41 &#xD7; 10<sup>4</sup></td>
+                <td>13 &#xD7; 10<sup>4</sup></td>
                 <td>
-                  <xref ref-type="bibr" rid="bib51">Wolski et al., 2008</xref>
+                  <xref ref-type="bibr" rid="bib50">Wolski et al., 2008</xref>
                 </td>
               </tr>
               <tr>
                 <td>Sec18p</td>
-                <td>1 × 10<sup>3</sup></td>
-                <td>10 × 10<sup>4</sup></td>
-                <td>13 × 10<sup>4</sup></td>
+                <td>1 &#xD7; 10<sup>3</sup></td>
+                <td>10 &#xD7; 10<sup>4</sup></td>
+                <td>13 &#xD7; 10<sup>4</sup></td>
                 <td>This article (<xref ref-type="fig" rid="fig1">Figure 1</xref>)</td>
               </tr>
               <tr>
                 <td>Vps33p</td>
-                <td>6 × 10<sup>3</sup></td>
-                <td>17 × 10<sup>4</sup></td>
-                <td>31 × 10<sup>4</sup></td>
+                <td>6 &#xD7; 10<sup>3</sup></td>
+                <td>17 &#xD7; 10<sup>4</sup></td>
+                <td>31 &#xD7; 10<sup>4</sup></td>
                 <td>
-                  <xref ref-type="bibr" rid="bib54">Zhong et al., 2013</xref>
+                  <xref ref-type="bibr" rid="bib53">Zhong et al., 2013</xref>
                 </td>
               </tr>
             </tbody>
@@ -1471,11 +1490,11 @@ not add all rids to the xref as it does not work. Only add the first one -->
                                     set of symbols used for authors footnotes.</p>
             </fn>
             <fn id="tablefn2">
-              <label>†</label>
+              <label>&#x2020;</label>
               <p>Authors are fully allowed to cite references and figures in tables. There is no difference in citation style between the main text and tables.</p>
             </fn>
             <fn>
-              <p>Order: Designated footnotes (e.g. *, †, ‡, §, #, ¶, **, and so on), 
+              <p>Order: Designated footnotes (e.g. *, &#x2020;, &#x2021;, &#xA7;, #, &#xB6;, **, and so on), 
                                 p value footnotes (*p, **p, ***p), undesignated footnotes and abbreviations.</p>
             </fn>
           </table-wrap-foot>
@@ -1483,17 +1502,13 @@ not add all rids to the xref as it does not work. Only add the first one -->
         <p><xref ref-type="table" rid="table3">Table 3</xref> is an example of a narrow table that will appear at half the text column width in the PDF. It also has source data.</p>
         <!-- Table 3 is a narrow table containing monospace text and including source data -->
         <table-wrap id="table3" position="float">
-          <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-          <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.005</object-id>
           <label>Table 3.</label>
           <caption>
             <p/>
             <!-- The following paragraph contains the caption and file call-out for this table's source data file -->
             <p>
               <supplementary-material id="table3sdata1">
-                <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-                <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.006</object-id>
-                <label>Table 3—source data 1.</label>
+                <label>Table 3&#x2014;source data 1.</label>
                 <caption>
                   <title>Representative curves of steady-state kinetic analyses for each IGF1R protein characterized.</title>
                   <p>Each data point was performed in duplicate and is shown separately.</p>
@@ -1508,65 +1523,65 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <td colspan="2">Data collection</td>
               </tr>
               <tr>
-                <td> Space group</td>
+                <td>&#x2003;Space group</td>
                 <td>P6<sub>2</sub></td>
               </tr>
               <tr>
-                <td rowspan="2">Cell dimensions (Å)</td>
+                <td rowspan="2">Cell dimensions (&#xC5;)</td>
                 <td>a = b = 78.33, c = 62.32</td>
               </tr>
               <tr>
-                <td>α = β = 90<sup>o</sup>, γ = 120<sup>o</sup></td>
+                <td>&#x3B1; = &#x3B2; = 90<sup>o</sup>, &#x3B3; = 120<sup>o</sup></td>
               </tr>
               <tr>
-                <td> Wavelength (Å)</td>
+                <td>&#x2003;Wavelength (&#xC5;)</td>
                 <td>0.9794</td>
               </tr>
               <tr>
-                <td> R<sub>sym</sub> or R<sub>merge</sub> (%)</td>
+                <td>&#x2003;R<sub>sym</sub> or R<sub>merge</sub> (%)</td>
                 <td>8.4</td>
               </tr>
               <tr>
-                <td> Resolution (Å)</td>
+                <td>&#x2003;Resolution (&#xC5;)</td>
                 <td>
-                  <monospace>50–2.05 (2.09–2.05)</monospace>
+                  <monospace>50&#x2013;2.05 (2.09&#x2013;2.05)</monospace>
                 </td>
               </tr>
               <tr>
-                <td> I/σI</td>
+                <td>&#x2003;I/&#x3C3;I</td>
                 <td>19.19 (3.23)</td>
               </tr>
               <tr>
-                <td> Completeness (%)</td>
+                <td>&#x2003;Completeness (%)</td>
                 <td>
                   <monospace>99.8 (97.3)</monospace>
                 </td>
               </tr>
               <tr>
-                <td> Redundancy</td>
+                <td>&#x2003;Redundancy</td>
                 <td>6.2 (5.4)</td>
               </tr>
               <tr>
                 <td colspan="2">Refinement</td>
               </tr>
               <tr>
-                <td> No. reflections</td>
+                <td>&#x2003;No. reflections</td>
                 <td>12,206</td>
               </tr>
               <tr>
-                <td> Resolution (Å)</td>
+                <td>&#x2003;Resolution (&#xC5;)</td>
                 <td>
-                  <monospace>39.17–2.06 (2.14–2.06)</monospace>
+                  <monospace>39.17&#x2013;2.06 (2.14&#x2013;2.06)</monospace>
                 </td>
               </tr>
               <tr>
-                <td> R<sub>work</sub>/R<sub>free</sub></td>
+                <td>&#x2003;R<sub>work</sub>/R<sub>free</sub></td>
                 <td>
                   <monospace>0.17/0.21 (0.16/0.19)</monospace>
                 </td>
               </tr>
               <tr>
-                <td> No. atoms</td>
+                <td>&#x2003;No. atoms</td>
                 <td/>
               </tr>
               <tr>
@@ -1582,15 +1597,15 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <td>61</td>
               </tr>
               <tr>
-                <td> R.m.s. deviations</td>
+                <td>&#x2003;R.m.s. deviations</td>
                 <td/>
               </tr>
               <tr>
-                <td> Bond lengths (Å)</td>
+                <td>&#x2003;Bond lengths (&#xC5;)</td>
                 <td>0.0077</td>
               </tr>
               <tr>
-                <td> Bond angles (°)</td>
+                <td>&#x2003;Bond angles (&#xB0;)</td>
                 <td>0.932</td>
               </tr>
             </tbody>
@@ -1605,7 +1620,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 <th/>
                 <th>pY</th>
                 <th>Experiment</th>
-                <th>Concentration (μM)</th>
+                <th>Concentration (&#x3BC;M)</th>
               </tr>
             </thead>
             <tbody>
@@ -1623,13 +1638,13 @@ not add all rids to the xref as it does not work. Only add the first one -->
               </tr>
               <tr>
                 <td>IGF1R-fl + IGF1</td>
-                <td>−</td>
+                <td>&#x2212;</td>
                 <td><italic>K</italic><sub><italic>m</italic></sub> ATP</td>
                 <td>2000, 1000, 500, 250, 125, 62.5, 31.3, 15.6, 7.8</td>
               </tr>
               <tr>
                 <td>IGF1R-fl + IGF1</td>
-                <td>−</td>
+                <td>&#x2212;</td>
                 <td><italic>K</italic><sub><italic>m</italic></sub> Peptide</td>
                 <td>500, 250, 125, 62.5, 31.3, 15.6, 7.8, 3.9</td>
               </tr>
@@ -1647,13 +1662,13 @@ not add all rids to the xref as it does not work. Only add the first one -->
               </tr>
               <tr>
                 <td>IGF1R-fl</td>
-                <td>−</td>
+                <td>&#x2212;</td>
                 <td><italic>K</italic><sub><italic>m</italic></sub> ATP</td>
                 <td>1000, 500, 250, 125, 62.5, 31.3, 15.6, 7.8</td>
               </tr>
               <tr>
                 <td>IGF1R-fl</td>
-                <td>−</td>
+                <td>&#x2212;</td>
                 <td><italic>K</italic><sub><italic>m</italic></sub> Peptide</td>
                 <td>1000, 500, 250, 125, 62.5, 31.3, 15.6</td>
               </tr>
@@ -1671,19 +1686,19 @@ not add all rids to the xref as it does not work. Only add the first one -->
               </tr>
               <tr>
                 <td>IGF1R-icd</td>
-                <td>−</td>
+                <td>&#x2212;</td>
                 <td><italic>K</italic><sub><italic>m</italic></sub> ATP</td>
                 <td>1000, 500, 250, 125, 62.5, 31.3</td>
               </tr>
               <tr>
                 <td>IGF1R-icd</td>
-                <td>−</td>
+                <td>&#x2212;</td>
                 <td><italic>K</italic><sub><italic>m</italic></sub> Peptide</td>
                 <td>1000, 500, 250, 125, 62.5, 31.3</td>
               </tr>
               <tr>
                 <td>IGF1R-kin</td>
-                <td>−</td>
+                <td>&#x2212;</td>
                 <td><italic>K</italic><sub><italic>m</italic></sub> Peptide</td>
                 <td>1250, 625, 312.5, 156.3, 78.1, 39.1</td>
               </tr>
@@ -1704,42 +1719,42 @@ not add all rids to the xref as it does not work. Only add the first one -->
                         We propose a Bayesian scheme for BCV (see <xref ref-type="disp-formula" rid="equ1">equation 1</xref>) that accommodates the influence of context on incentive value. BCV focuses on scenarios (i) where incentive value depends 
                         on contextual information (either represented by cues or by previous rewards) provided before options or rewards are presented, and (ii) where reward is defined 
                         by a single attribute (e.g., reward amount). To describe the basic principles of BCV, we adopt the formalism of Bayesian graphs (
-                        <xref ref-type="bibr" rid="bib47">The <italic>Shigella</italic> Genome Sequencing Consortium, 2015c</xref>) where a generative model is described by nodes or circles, representing random variables (shaded and white circles refer to observed and non-observed variables respectively), 
+                        <xref ref-type="bibr" rid="bib46">The <italic>Shigella</italic> Genome Sequencing Consortium, 2015c</xref>) where a generative model is described by nodes or circles, representing random variables (shaded and white circles refer to observed and non-observed variables respectively), 
                         and arrows, representing causal relationships among variables. A simple generative model hypothesized by BCV is shown in
                         Figure 1A of another article (not linked here), where C represents prior beliefs about the average reward expected in a given context. 
                         Formally, this corresponds to a (Gaussian) prior belief (with mean
-                        <inline-formula><!-- no id required for inline formulae --><mml:math><mml:mstyle displaystyle="true" scriptlevel="0"><mml:mrow><mml:msub><mml:mi>μ</mml:mi><mml:mrow><mml:mi>c</mml:mi></mml:mrow></mml:msub></mml:mrow></mml:mstyle></mml:math></inline-formula>
+                        <inline-formula><!-- no id required for inline formulae --><mml:math id="inf2"><mml:mstyle displaystyle="true" scriptlevel="0"><mml:mrow><mml:msub><mml:mi>&#x3BC;</mml:mi><mml:mrow><mml:mi>c</mml:mi></mml:mrow></mml:msub></mml:mrow></mml:mstyle></mml:math></inline-formula>
                         and variance
-                        <inline-formula><mml:math><mml:mstyle displaystyle="true" scriptlevel="0"><mml:mrow><mml:msubsup><mml:mi>σ</mml:mi><mml:mrow><mml:mi>c</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup></mml:mrow></mml:mstyle></mml:math></inline-formula>
+                        <inline-formula><mml:math id="inf3"><mml:mstyle displaystyle="true" scriptlevel="0"><mml:mrow><mml:msubsup><mml:mi>&#x3C3;</mml:mi><mml:mrow><mml:mi>c</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup></mml:mrow></mml:mstyle></mml:math></inline-formula>
                         over the mean of a (Gaussian) distribution of reward options R (with variance
-                        <inline-formula><mml:math><mml:mstyle displaystyle="true" scriptlevel="0"><mml:mrow><mml:msubsup><mml:mi>σ</mml:mi><mml:mrow><mml:mi>R</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup></mml:mrow></mml:mstyle></mml:math></inline-formula>
+                        <inline-formula><mml:math id="inf4"><mml:mstyle displaystyle="true" scriptlevel="0"><mml:mrow><mml:msubsup><mml:mi>&#x3C3;</mml:mi><mml:mrow><mml:mi>R</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup></mml:mrow></mml:mstyle></mml:math></inline-formula>
                         ). When R is observed, a posterior expectation about the context is obtained by application of Bayes rule (
-                        <xref ref-type="bibr" rid="bib46">The <italic>Shigella</italic> Genome Sequencing Consortium, 2015b</xref>
+                        <xref ref-type="bibr" rid="bib45">The <italic>Shigella</italic> Genome Sequencing Consortium, 2015b</xref>
                         ):
                         <!-- id and a label required for display formulae -->
-                        <disp-formula id="equ3"><label>(3)</label><mml:math id="m1"><mml:mstyle displaystyle="true" scriptlevel="0"><mml:mrow><mml:msub><mml:mi>μ</mml:mi><mml:mrow><mml:mi>C</mml:mi><mml:mrow><mml:mo stretchy="false">|</mml:mo></mml:mrow><mml:mi>R</mml:mi></mml:mrow></mml:msub><mml:mo>=</mml:mo><mml:msub><mml:mi>μ</mml:mi><mml:mrow><mml:mi>C</mml:mi></mml:mrow></mml:msub><mml:mo>+</mml:mo><mml:mfrac><mml:msubsup><mml:mi>σ</mml:mi><mml:mrow><mml:mi>C</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup><mml:mrow><mml:msubsup><mml:mi>σ</mml:mi><mml:mrow><mml:mi>C</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup><mml:mo>+</mml:mo><mml:msubsup><mml:mi>σ</mml:mi><mml:mrow><mml:mi>R</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup></mml:mrow></mml:mfrac><mml:mrow><mml:mo>(</mml:mo><mml:mi>R</mml:mi><mml:mo>−</mml:mo><mml:msub><mml:mi>μ</mml:mi><mml:mrow><mml:mi>C</mml:mi></mml:mrow></mml:msub><mml:mo>)</mml:mo></mml:mrow></mml:mrow></mml:mstyle></mml:math></disp-formula>
+                        <disp-formula id="equ3"><label>(3)</label><mml:math id="m1"><mml:mstyle displaystyle="true" scriptlevel="0"><mml:mrow><mml:msub><mml:mi>&#x3BC;</mml:mi><mml:mrow><mml:mi>C</mml:mi><mml:mrow><mml:mo stretchy="false">|</mml:mo></mml:mrow><mml:mi>R</mml:mi></mml:mrow></mml:msub><mml:mo>=</mml:mo><mml:msub><mml:mi>&#x3BC;</mml:mi><mml:mrow><mml:mi>C</mml:mi></mml:mrow></mml:msub><mml:mo>+</mml:mo><mml:mfrac><mml:msubsup><mml:mi>&#x3C3;</mml:mi><mml:mrow><mml:mi>C</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup><mml:mrow><mml:msubsup><mml:mi>&#x3C3;</mml:mi><mml:mrow><mml:mi>C</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup><mml:mo>+</mml:mo><mml:msubsup><mml:mi>&#x3C3;</mml:mi><mml:mrow><mml:mi>R</mml:mi></mml:mrow><mml:mrow><mml:mn>2</mml:mn></mml:mrow></mml:msubsup></mml:mrow></mml:mfrac><mml:mrow><mml:mo>(</mml:mo><mml:mi>R</mml:mi><mml:mo>&#x2212;</mml:mo><mml:msub><mml:mi>&#x3BC;</mml:mi><mml:mrow><mml:mi>C</mml:mi></mml:mrow></mml:msub><mml:mo>)</mml:mo></mml:mrow></mml:mrow></mml:mstyle></mml:math></disp-formula>
                         where text following on from this equation but still within the same paragraph should not be indented in the PDF. This is usually used by authors wanting
                         to explain the terms used in the maths.                     
                     </p>
         <p>Additional to maths, eLife articles can also contain code blocks for the display
                         of computer code snipets. For example:
                         <code xml:space="preserve">&lt;MotifGraft name="motif_grafting"
-      context_structure="%%context%%"
-      motif_structure="truncatedBH3.pdb"
-      RMSD_tolerance="3.0"
-      NC_points_RMSD_tolerance="2.0"
-      clash_score_cutoff="0"
-      clash_test_residue="ALA"
-      hotspots="9:12:13:14:16:17"
-      combinatory_fragment_size_delta="0:0"
-      max_fragment_replacement_size_delta="0:0"
-      full_motif_bb_alignment="1"
-      allow_independent_alignment_per_fragment="0"
-      graft_only_hotspots_by_replacement="0"
-      only_allow_if_N_point_match_aa_identity="0"
-      only_allow_if_C_point_match_aa_identity="0"
-      revert_graft_to_native_sequence="1"
-      allow_repeat_same_graft_output="1"/&gt;</code>
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;context_structure="%%context%%"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;motif_structure="truncatedBH3.pdb"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;RMSD_tolerance="3.0"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;NC_points_RMSD_tolerance="2.0"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;clash_score_cutoff="0"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;clash_test_residue="ALA"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;hotspots="9:12:13:14:16:17"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;combinatory_fragment_size_delta="0:0"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;max_fragment_replacement_size_delta="0:0"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;full_motif_bb_alignment="1"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;allow_independent_alignment_per_fragment="0"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;graft_only_hotspots_by_replacement="0"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;only_allow_if_N_point_match_aa_identity="0"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;only_allow_if_C_point_match_aa_identity="0"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;revert_graft_to_native_sequence="1"
+&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;allow_repeat_same_graft_output="1"/&gt;</code>
                     </p>
       </sec>
       <sec id="s2-4">
@@ -1756,8 +1771,6 @@ not add all rids to the xref as it does not work. Only add the first one -->
                             Change: The following has been removed from the XML as it is not necessary to repeat it, can be derived from the object-id DOI:
                         <p><bold>DOI:</bold><ext-link ext-link-type="doi" xlink:href="10.7554/eLife.{{ article['id'] }}.007">http://dx.doi.org/10.7554/eLife.{{ article['id'] }}.007</ext-link></p> -->
         <fig id="fig1" position="float">
-          <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-          <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.007</object-id>
           <label>Figure 1.</label>
           <caption>
             <title>Single figure: The header of an eLife article example on the HTML page. In the PDf this is represented as a single column.</title>
@@ -1767,7 +1780,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
           <!-- Assets within eLife might not always be published under a CC BY license although we endevour to do so. This is an example of how to add a
                                 separate permission statement so it is clear to the human and machine reader that this asset cannot be reused. -->
           <permissions>
-            <copyright-statement>© 2016 eLife. All rights reserved</copyright-statement>
+            <copyright-statement>&#xA9; 2016 eLife. All rights reserved</copyright-statement>
             <copyright-year>2016</copyright-year>
             <copyright-holder>eLife</copyright-holder>
             <license>
@@ -1776,50 +1789,40 @@ not add all rids to the xref as it does not work. Only add the first one -->
             </license>
           </permissions>
         </fig>
-        <p><xref ref-type="fig" rid="fig2">Figure 2</xref> is an example of a figure with figure supplements, <xref ref-type="fig" rid="fig2s1">Figure 2—figure supplement 1</xref> and 
-                        <xref ref-type="fig" rid="fig2s2">Figure 2—figure supplement 2</xref>.</p>
+        <p><xref ref-type="fig" rid="fig2">Figure 2</xref> is an example of a figure with figure supplements, <xref ref-type="fig" rid="fig2s1">Figure 2&#x2014;figure supplement 1</xref> and 
+                        <xref ref-type="fig" rid="fig2s2">Figure 2&#x2014;figure supplement 2</xref>.</p>
         <!-- If a figure has figure supplements it must be contained within fig-group and the supplemental figures must be given a @specific-use attribute of "child-fig"
                     There is no limit to the number of figure supplements a main figure can have. -->
         <fig-group>
           <fig id="fig2" position="float">
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.008</object-id>
             <label>Figure 2.</label>
             <caption>
               <title>Figure with figure supplements. In the PDF this asset box will take full column width.</title>
-              <p>This is the basic information provided about an article. <xref ref-type="fig" rid="fig1">Figure 1
-                            </xref> shows an expanded view (<xref ref-type="bibr" rid="bib26">Kok et al., 2015</xref>; <xref ref-type="bibr" rid="bib28">National Institute of Mental 
-                                Health, 1990</xref>).</p>
+              <p>This is the basic information provided about an article. <xref ref-type="fig" rid="fig1">Figure 1</xref> shows an expanded view (<xref ref-type="bibr" rid="bib26">Kok et al., 2015</xref>; <xref ref-type="bibr" rid="bib28">National Institute of Mental Health, 1990</xref>).</p>
             </caption>
             <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-fig2.tif"/>
           </fig>
           <fig id="fig2s1" position="float" specific-use="child-fig">
-            <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.009</object-id>
-            <label>Figure 2—figure supplement 1.</label>
+            <label>Figure 2&#x2014;figure supplement 1.</label>
             <caption>
-              <title>The representation of the Major Subject Areas, Research Organisms and author keywords on the eLife HTML page</title>
+              <title>The representation of the Major Subject Areas, Research Organisms and author keywords on the eLife HTML page.</title>
             </caption>
             <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-fig2-figsupp1.tif"/>
           </fig>
           <fig id="fig2s2" position="float" specific-use="child-fig">
-            <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.010</object-id>
-            <label>Figure 2—figure supplement 2.</label>
+            <label>Figure 2&#x2014;figure supplement 2.</label>
             <caption>
               <title>Representation of figure with figure supplements on the HTML view.</title>
             </caption>
             <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-fig2-figsupp2.tif"/>
           </fig>
         </fig-group>
-        <p><xref ref-type="fig" rid="fig3">Figure 3</xref> is an example of a figure with a figure supplement (<xref ref-type="fig" rid="fig3s1">Figure 3—figure supplement 1</xref>) 
-                        with two sub-assets, <xref ref-type="supplementary-material" rid="fig3sdata1">Figure 3—figure supplement 1—source data 1</xref> and <xref ref-type="video" rid="fig3video1">Figure 3—video 1</xref> (see <xref ref-type="bibr" rid="bib53">Zhang et al., 
-                                2010</xref>, <xref ref-type="bibr" rid="bib54">Zhong et al.,  2013</xref>; <xref ref-type="bibr" rid="bib52">World Health Organization, 2016</xref>).</p>
+        <p><xref ref-type="fig" rid="fig3">Figure 3</xref> is an example of a figure with a figure supplement (<xref ref-type="fig" rid="fig3s1">Figure 3&#x2014;figure supplement 1</xref>) 
+                        with two sub-assets, <xref ref-type="supplementary-material" rid="fig3sdata1">Figure 3&#x2014;figure supplement 1&#x2014;source data 1</xref> and <xref ref-type="video" rid="fig3video1">Figure 3&#x2014;video 1</xref> (see <xref ref-type="bibr" rid="bib52">Zhang et al., 2010</xref>, <xref ref-type="bibr" rid="bib53">Zhong et al., 2013</xref>; <xref ref-type="bibr" rid="bib51">World Health Organization, 2016</xref>).</p>
         <!-- UPDATE: new method of modelling supplementary material for a figure
                     A figure or a sub figure can have any assets - e.g. data, code, videos -->
         <fig-group>
           <fig id="fig3" position="float">
-            <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.011</object-id>
             <label>Figure 3.</label>
             <caption>
               <title>Figure with figure supplements and figure supplement with source data and a video (see <xref ref-type="bibr" rid="bib25">Koch, 1959</xref>) .</title>
@@ -1827,16 +1830,12 @@ not add all rids to the xref as it does not work. Only add the first one -->
             <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-fig3.tif"/>
           </fig>
           <fig id="fig3s1" position="float" specific-use="child-fig">
-            <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.012</object-id>
-            <label>Figure 3—figure supplement 1.</label>
+            <label>Figure 3&#x2014;figure supplement 1.</label>
             <caption>
-              <title>Title of the figure supplement</title>
+              <title>Title of the figure supplement.</title>
               <p>
                 <supplementary-material id="fig3sdata1">
-                  <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-                  <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.013</object-id>
-                  <label>Figure 3—figure supplement 1—source data 1.</label>
+                  <label>Figure 3&#x2014;figure supplement 1&#x2014;source data 1.</label>
                   <caption>
                     <title>Title of the figure supplement source data.</title>
                     <p>Legend of the figure supplement source data.</p>
@@ -1849,21 +1848,15 @@ not add all rids to the xref as it does not work. Only add the first one -->
           </fig>
           <!-- this is an example of an asset asked later on, so the DOI is the last DOI to prevent renumbering the others -->
           <media mimetype="video" mime-subtype="mp4" id="fig3video1" xlink:href="elife-{{ article['id'] }}-fig3-video1.mp4">
-            <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.035</object-id>
-            <label>Figure 3—video 1.</label>
+            <label>Figure 3&#x2014;video 1.</label>
             <caption>
-              <title>
-                                    A description of the eLife editorial process.
-                                </title>
+              <title>A description of the eLife editorial process.</title>
             </caption>
           </media>
         </fig-group>
-        <p><xref ref-type="fig" rid="fig4">Figure 4</xref> is an example of a figure with source code (<xref ref-type="supplementary-material" rid="fig4scode1">Figure 4—source code 1</xref>).</p>
+        <p><xref ref-type="fig" rid="fig4">Figure 4</xref> is an example of a figure with source code (<xref ref-type="supplementary-material" rid="fig4scode1">Figure 4&#x2014;source code 1</xref>).</p>
         <!-- UPDATE: this is changed tagging. -->
         <fig id="fig4" position="float">
-          <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-          <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.014</object-id>
           <label>Figure 4.</label>
           <caption>
             <title>Single figure with source code.</title>
@@ -1871,9 +1864,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
           <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-fig4.tif"/>
           <p>
             <supplementary-material id="fig4scode1">
-              <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-              <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.015</object-id>
-              <label>Figure 4—source code 1.</label>
+              <label>Figure 4&#x2014;source code 1.</label>
               <caption>
                 <title>Title of the source code.</title>
                 <p>Legend of the source code.</p>
@@ -1890,18 +1881,12 @@ not add all rids to the xref as it does not work. Only add the first one -->
         <!-- UPDATE: This no longer required: content-type="glencoe play-in-place height-250 width-310"  mime-subtype="wmv" mimetype="video"
                     UPDATE: changed id to videoX -->
         <media mimetype="video" mime-subtype="mp4" id="video1" xlink:href="elife-{{ article['id'] }}-video1.mp4">
-          <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-          <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.016</object-id>
           <label>Video 1.</label>
           <caption>
-            <title>
-                                A description of the eLife editorial process.
-                            </title>
+            <title>A description of the eLife editorial process.</title>
             <p>
               <supplementary-material id="video1sdata1">
-                <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-                <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.037</object-id>
-                <label>Video 1—source data 1.</label>
+                <label>Video 1&#x2014;source data 1.</label>
                 <caption>
                   <title>Title of the source code.</title>
                   <p>Legend of the source code.</p>
@@ -1912,10 +1897,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
           </caption>
         </media>
         <media mimetype="video" mime-subtype="gif" id="video2" xlink:href="elife-{{ article['id'] }}-video2.gif">
-          <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-          <!-- UPDATE: animated gifs must process through the Glencoe video workflow but must retain the mime-subtype="gif" 
-                            in the XML to ensure the online system recognises this-->
-          <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.038</object-id>
+          <!-- UPDATE: animated gifs must process through the Glencoe video workflow but must retain the mime-subtype="gif" in the XML to ensure the online system recognises this-->
           <label>Animation 1.</label>
           <caption>
             <title>A demonstration of how to tag an animated gif file to ensure it is autolooped when on the eLife website.</title>
@@ -1929,19 +1911,16 @@ not add all rids to the xref as it does not work. Only add the first one -->
           <p>It is rare for eLife research articles to contain boxes; however they are common in Feature content. <xref ref-type="other" rid="box1">Box 1</xref> 
                         is a simple box that contains very little text and <xref ref-type="other" rid="box2">Box 2</xref> is larger.</p>
           <boxed-text id="box1">
-            <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.017</object-id>
             <label>Box 1.</label>
             <caption>
-              <p>Example of a small box</p>
+              <title>Example of a small box</title>
             </caption>
             <p>Donec rhoncus in odio non vulputate. Donec vitae enim at erat tincidunt tincidunt in nec arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac 
                             turpis egestas. Aliquam id nunc id arcu maximus rutrum. Praesent bibendum nisl orci, ac sollicitudin purus aliquam in. Duis eu fermentum arcu. Fusce eget dolor augue. 
-                            Nulla facilisi. Suspendisse eu nisl vitae neque ullamcorper imperdiet (see <xref ref-type="bibr" rid="bib29">Nellåker, 2014</xref>; <xref ref-type="bibr" rid="bib30">
-                                Pages et al., 2014</xref>; and <xref ref-type="bibr" rid="bib31">Palmer et al., 2007</xref>). Boxes, like main text, can contain <ext-link ext-link-type="uri" xlink:href="https://elifesciences.org/about">hyperlinks</ext-link>
+                            Nulla facilisi. Suspendisse eu nisl vitae neque ullamcorper imperdiet (see <xref ref-type="bibr" rid="bib29">Nell&#xE5;ker, 2014</xref>; <xref ref-type="bibr" rid="bib30">Pages et al., 2014</xref>; and <xref ref-type="bibr" rid="bib31">Palmer et al., 2007</xref>). Boxes, like main text, can contain <ext-link ext-link-type="uri" xlink:href="https://elifesciences.org/about">hyperlinks</ext-link>
                             at any point. Etiam in sem augue.</p>
             <permissions>
-              <copyright-statement>© Some author</copyright-statement>
+              <copyright-statement>&#xA9; Some author</copyright-statement>
               <copyright-year>1998</copyright-year>
               <copyright-holder>Some Author</copyright-holder>
               <license>
@@ -1950,13 +1929,11 @@ not add all rids to the xref as it does not work. Only add the first one -->
             </permissions>
           </boxed-text>
           <boxed-text id="box2">
-            <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.018</object-id>
             <label>Box 2.</label>
             <caption>
-              <p>Example of a large box</p>
+              <title>Example of a large box</title>
             </caption>
-            <p>This box contains a <xref ref-type="fig" rid="box2fig1">figure</xref>. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vel rhoncus lorem. Suspendisse posuere non enim vel tempor. Fusce quis sem sed nulla tincidunt faucibus. 
+            <p>This box contains a figure, <xref ref-type="fig" rid="box2fig1">Box 2&#x2014;figure 1</xref>. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque vel rhoncus lorem. Suspendisse posuere non enim vel tempor. Fusce quis sem sed nulla tincidunt faucibus. 
                             Vivamus dictum magna in ante porttitor faucibus. Aenean lobortis, sem in viverra dignissim, odio purus vestibulum libero, in eleifend lacus metus id tortor. Phasellus tincidunt
                             ipsum ut ornare hendrerit. Praesent lobortis consectetur egestas. Curabitur viverra lectus eu venenatis sagittis. Aliquam lobortis metus mauris, in tincidunt diam ullamcorper ac.
                             Phasellus sagittis, leo eget lacinia commodo, eros justo mattis eros, quis dapibus ipsum ex sit amet sapien. Quisque consequat arcu ut efficitur tincidunt. Ut convallis, 
@@ -1964,11 +1941,9 @@ not add all rids to the xref as it does not work. Only add the first one -->
                             ipsum vel euismod mattis, turpis augue mattis nunc, ac aliquam dolor massa non mi. Vestibulum sit amet elit a augue semper facilisis interdum quis nibh. Mauris consectetur 
                             nisi aliquam urna lobortis, eu efficitur nisl lobortis; <xref ref-type="bibr" rid="bib2">Bates et al., 2016</xref> and <xref ref-type="bibr" rid="bib32">Patterson et al., 2011</xref>.</p>
             <fig id="box2fig1" position="float">
-              <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-              <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.036</object-id>
-              <label>Box 2—Figure 1.</label>
+              <label>Box 2&#x2014;figure 1.</label>
               <caption>
-                <title>Box figure</title>
+                <title>Box figure.</title>
               </caption>
               <!--  NOTE: file type must be included in the file description. -->
               <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-box2-fig1.tif"/>
@@ -2007,6 +1982,30 @@ not add all rids to the xref as it does not work. Only add the first one -->
                         This article is littered with citations to ensure all the references are cited at some point. They have no relevance to the content 
                         <xref ref-type="bibr" rid="bib1">Aivazian et al., 2006</xref>.</p>
         </sec>
+        <sec>
+          <title>Schema and structures</title>
+          <p>Sometimes, authors need to include images to illustrate their text that are either not sutiable as main figures or that they would simply prefer were not treated as such.
+                    Usually, these images need to be anchored at set points in the text and fall into one of two categories: chemical structures and schema. Both are used to illustrate steps
+                    in a method. Chemical structures do not need to be cited in the text and often appear preceded or followed a written description of the compound being shown.</p>
+          <fig id="chem1" position="anchor">
+            <label>Chemical structure 1.</label>
+            <caption>
+              <title>Base pairing of 8-oxoguanosine.</title>
+            </caption>
+            <graphic xlink:href="elife-{{ article['id'] }}-chem1-fig1.tif" mimetype="image" mime-subtype="tiff"/>
+          </fig>
+          <p>A scheme is usually an illustration of a workflow, but at a stretch they can be used to capture small graphs or other graphics that the author wants to include. Please note
+                    that files for both schema and chemical structures follow sequentially on from the main figures with no labelling differences.</p>
+          <fig id="scheme1" position="anchor">
+            <label>Scheme&#xA0;1.</label>
+            <caption>
+              <title>Zdk dissociation from LOV2.</title>
+            </caption>
+            <graphic mime-subtype="tiff" mimetype="image" xlink:href="elife-{{ article['id'] }}-scheme1-fig1.tif"/>
+          </fig>
+          <p>While they are anchored in place, both <xref ref-type="fig" rid="C1">Chemical structure 1</xref> and <xref ref-type="fig" rid="S1">Scheme 1</xref> may be cited elsewhere in
+                    the article; there is just no requirement that these items be placed after their first citaitons.</p>
+        </sec>
       </sec>
     </sec>
     <sec sec-type="discussion" id="s3">
@@ -2017,8 +2016,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
                 Discussion will always connect to the Introduction by way of the question(s) or
                 hypotheses you posed and the literature you cited, but it does not simply repeat or
                 rearrange the Introduction. Instead, it tells how your study has moved us forward
-                from the place you left us at the end of the Introduction (<xref ref-type="bibr" rid="bib38">Schneider, 2006</xref>; <xref ref-type="bibr" rid="bib40">
-                Schwartz, 1993</xref>).</p>
+                from the place you left us at the end of the Introduction (<xref ref-type="bibr" rid="bib38">Schneider, 2006</xref>; <xref ref-type="bibr" rid="bib40">Schwartz, 1993</xref>).</p>
     </sec>
     <sec sec-type="materials|methods" id="s4">
       <title>Materials and methods</title>
@@ -2040,17 +2038,17 @@ not add all rids to the xref as it does not work. Only add the first one -->
               <td>nito</td>
               <td>NA</td>
               <td>FLYB:FBgn0027548</td>
-              <td> </td>
+              <td>&#xA0;</td>
             </tr>
             <tr>
-              <td>gene (<italic>D. melanogaste</italic>r)</td>
+              <td>gene (<italic>D. melanogaster</italic>)</td>
               <td>Sxl</td>
               <td>NA</td>
               <td>FLYB:FBgn0264270</td>
-              <td> </td>
+              <td>&#xA0;</td>
             </tr>
             <tr>
-              <td>genetic reagent (D. melanogaster)</td>
+              <td>genetic reagent (<italic>D. melanogaster</italic>)</td>
               <td>MTD-Gal4</td>
               <td>Bloomington Drosophila Stock Center</td>
               <td>BDSC:31777; FLYB:FBtp0001612; RRID:<ext-link ext-link-type="uri" xlink:href="https://scicrunch.org/resolver/BDSC_31777">BDSC_31777</ext-link></td>
@@ -2095,7 +2093,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
               <td>genetic reagent (<italic>D. melanogaster</italic>)</td>
               <td>nito[1]</td>
               <td>this paper</td>
-              <td> </td>
+              <td>&#xA0;</td>
               <td>Progenitor = nito[HP25329]; imprecise excision; lethal</td>
             </tr>
             <tr>
@@ -2110,7 +2108,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
               <td>nito dsRNA (VDRC 20942)</td>
               <td>Vienna Drosophila RNAi Center</td>
               <td>VDRC:20942</td>
-              <td> </td>
+              <td>&#xA0;</td>
             </tr>
             <tr>
               <td>genetic reagent (<italic>D. melanogaster</italic>)</td>
@@ -2123,11 +2121,11 @@ not add all rids to the xref as it does not work. Only add the first one -->
               <td>genetic reagent (<italic>D. melanogaster</italic>)</td>
               <td>"y w hsflp; ubiGFP FRT[G13]"</td>
               <td>PMID:18160348</td>
-              <td> </td>
-              <td> </td>
+              <td>&#xA0;</td>
+              <td>&#xA0;</td>
             </tr>
             <tr>
-              <td>cell line (<italic>D. melanogaste</italic>r)</td>
+              <td>cell line (<italic>D. melanogaster</italic>)</td>
               <td>S2</td>
               <td>other</td>
               <td>FLYB:FBtc0000181; RRID:<ext-link ext-link-type="uri" xlink:href="https://scicrunch.org/resolver/CVCL_Z992">CVCL_Z992</ext-link></td>
@@ -2138,7 +2136,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
               <td>antibody</td>
               <td>anti-Nito</td>
               <td>this paper</td>
-              <td> </td>
+              <td>&#xA0;</td>
               <td>Rabbit polyclonal; against aa 479-500; used YZ3137 (1:500)</td>
             </tr>
             <tr>
@@ -2181,20 +2179,20 @@ not add all rids to the xref as it does not work. Only add the first one -->
               <td>anti-HA (rat monoclonal)</td>
               <td>Roche</td>
               <td>Roche:3F10; RRID:<ext-link ext-link-type="uri" xlink:href="https://scicrunch.org/resolver/AB_2314622">AB_2314622</ext-link></td>
-              <td> </td>
+              <td>&#xA0;</td>
             </tr>
             <tr>
               <td>antibody</td>
               <td>Alexa 488- or 555- secondaries</td>
               <td>Molecular Probes</td>
-              <td> </td>
+              <td>&#xA0;</td>
               <td>(1:1000)</td>
             </tr>
             <tr>
               <td>other</td>
               <td>DAPI stain</td>
               <td>Molecular Probes</td>
-              <td> </td>
+              <td>&#xA0;</td>
               <td>(1:1000)</td>
             </tr>
             <tr>
@@ -2202,41 +2200,41 @@ not add all rids to the xref as it does not work. Only add the first one -->
               <td>pAGW (Gateway vector)</td>
               <td>Drosophila Genomics Resource Center</td>
               <td>DGRC:1071</td>
-              <td> </td>
+              <td>&#xA0;</td>
             </tr>
             <tr>
               <td>recombinant DNA reagent</td>
               <td>pAHW (Gateway vector)</td>
               <td>Drosophila Genomics Resource Center</td>
               <td>DGRC:1095</td>
-              <td> </td>
+              <td>&#xA0;</td>
             </tr>
             <tr>
               <td>recombinant DNA reagent</td>
               <td>GH11110 (cDNA)</td>
               <td>Drosophila Genomics Resource Center</td>
               <td>DGRC:5666</td>
-              <td> </td>
+              <td>&#xA0;</td>
             </tr>
             <tr>
               <td>recombinant DNA reagent</td>
               <td>GFP-Nito (plasmid)</td>
               <td>this paper</td>
-              <td> </td>
+              <td>&#xA0;</td>
               <td>Progenitors: GH11110 (cDNA); Gateway vector pAGW</td>
             </tr>
             <tr>
               <td>recombinant DNA reagent</td>
               <td>HA-Sxl (plasmid)</td>
               <td>PMID:16207758</td>
-              <td> </td>
+              <td>&#xA0;</td>
               <td>Progentiors: PCR, UAS-Sxl flies; Gateway vector pAHW</td>
             </tr>
             <tr>
               <td>recombinant DNA reagent</td>
               <td>GFP-Sxl (plasmid)</td>
               <td>PMID:16207758</td>
-              <td> </td>
+              <td>&#xA0;</td>
               <td>Progentiors: PCR, UAS-Sxl flies; Gateway vector pAGW</td>
             </tr>
           </tbody>
@@ -2245,27 +2243,25 @@ not add all rids to the xref as it does not work. Only add the first one -->
       <p> eLife is tagged up as XML using the NISO standard JATS DTD. 
                 We conform to the JATS4R recommendations where possible and also deliver our content to PMC.
                 We also convert our JATS XML to PubMed and CrossRef DTDs when we deposit our content with them.
-                eLife content is delivered to more repositories and it can be scraped from the eLife site (<xref ref-type="bibr" rid="bib17">
-                    Gall et al., 2012</xref>; <xref ref-type="bibr" rid="bib22">Horne and Page, 2008</xref>; <xref ref-type="bibr" rid="bib27">
-                        McQuilton et al., 2012</xref>; <xref ref-type="bibr" rid="bib43">Staab et al., 2013</xref>).</p>
+                eLife content is delivered to more repositories and it can be scraped from the eLife site (<xref ref-type="bibr" rid="bib17">Gall et al., 2012</xref>; <xref ref-type="bibr" rid="bib22">Horne and Page, 2008</xref>; <xref ref-type="bibr" rid="bib27">McQuilton et al., 2012</xref>; <xref ref-type="bibr" rid="bib42">Staab et al., 2013</xref>).</p>
       <p>The following is an example of monotype text within the body of an eLife article.</p>
       <p>
-        <monospace>P<sub>NRE+AP-1</sub>: 5’– CTTCGTGACTAGTCTTGACTCAGA –3’</monospace>
+        <monospace>P<sub>NRE+AP-1</sub>: 5&#x2019;&#x2013; CTTCGTGACTAGTCTTGACTCAGA &#x2013;3&#x2019;</monospace>
       </p>
       <p>
-        <monospace>P<sub>RAM</sub>: 5’– CTAGAAGTTTGTTCGTGACTCAGA –3’</monospace>
+        <monospace>P<sub>RAM</sub>: 5&#x2019;&#x2013; CTAGAAGTTTGTTCGTGACTCAGA &#x2013;3&#x2019;</monospace>
       </p>
       <p>
-        <monospace>E1: 5’– CTAGAAGTTTGTTGACTCACCCGA –3’</monospace>
+        <monospace>E1: 5&#x2019;&#x2013; CTAGAAGTTTGTTGACTCACCCGA &#x2013;3&#x2019;</monospace>
       </p>
       <p>
-        <monospace>E2: 5’– CTAGAAGTTTGTTGACTCATTAGA –3’</monospace>
+        <monospace>E2: 5&#x2019;&#x2013; CTAGAAGTTTGTTGACTCATTAGA &#x2013;3&#x2019;</monospace>
       </p>
       <p>
-        <monospace>E3: 5’– CTAGAAGTTTGTGTATGACTCAGA –3’</monospace>
+        <monospace>E3: 5&#x2019;&#x2013; CTAGAAGTTTGTGTATGACTCAGA &#x2013;3&#x2019;</monospace>
       </p>
       <p>
-        <monospace>CME: 5’– CTAGAAATTTGTACGTGCCACAGA –3’</monospace>
+        <monospace>CME: 5&#x2019;&#x2013; CTAGAAATTTGTACGTGCCACAGA &#x2013;3&#x2019;</monospace>
       </p>
       <p>In some cases, authors will include extremely long gene sequences or other letter strings that need to be enclosed withing a particular style tagging in order that
             they can be wrapped on the final HTML display. If this tagging is not included, the strings will likely spill across the edge of the text column, which can look very
@@ -2345,8 +2341,6 @@ but these should be present in the textual entry (see below)-->
 NOTE: if source data or source code are not attached to an individual figure, they are listed in this section.
 All supplementary files are listed here -->
       <supplementary-material id="supp1">
-        <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.019</object-id>
         <label>Supplementary file 1.</label>
         <caption>
           <title>This is the title of the supplementary file 1.</title>
@@ -2355,8 +2349,6 @@ All supplementary files are listed here -->
         <media mimetype="application" mime-subtype="csv" xlink:href="elife-{{ article['id'] }}-supp1.csv"/>
       </supplementary-material>
       <supplementary-material id="sdata1">
-        <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.020</object-id>
         <label>Source data 1.</label>
         <caption>
           <title>This is the title of the source data that is not attached to a specific figure, but to the article as a whole.</title>
@@ -2364,8 +2356,6 @@ All supplementary files are listed here -->
         <media mimetype="application" mime-subtype="xlsx" xlink:href="elife-{{ article['id'] }}-data1.xlsx"/>
       </supplementary-material>
       <supplementary-material id="scode1">
-        <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.021</object-id>
         <label>Source code 1.</label>
         <caption>
           <title>This is the title of the source code that is not attached to a specific figure, but to the article as a whole.</title>
@@ -2373,21 +2363,18 @@ All supplementary files are listed here -->
         <media mimetype="application" mime-subtype="xml" xlink:href="elife-{{ article['id'] }}-code1.xml"/>
       </supplementary-material>
       <supplementary-material id="repstand1">
-        <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.034</object-id>
         <!-- UPDATE: Must contain a label, which is the generic label to indicate it
                     is a reporting standard-->
-        <label>Consort checklist and flow diagram.</label>
+        <label>Reporting standard 1</label>
         <!-- UPDATE: Must contain a caption to indicate what it is specifically-->
         <caption>
-          <title>CONSORT checklist</title>
+          <title>CONSORT checklist.</title>
         </caption>
         <media mimetype="application" mime-subtype="pdf" xlink:href="elife-{{ article['id'] }}-repstand1.pdf"/>
       </supplementary-material>
       <!-- UPDATE July 2017: added transparent reporting form-->
       <supplementary-material id="transrepform">
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.022</object-id>
-        <label>Transparent reporting form.</label>
+        <label>Transparent reporting form</label>
         <media mimetype="application" mime-subtype="pdf" xlink:href="elife-{{ article['id'] }}-transrepform.pdf"/>
       </supplementary-material>
     </sec>
@@ -2406,7 +2393,7 @@ The tagging of the collaborator name again within this section is required for P
         <element-citation publication-type="data" specific-use="isSupplementedBy" id="dataset1">
           <person-group person-group-type="author">
             <name>
-              <surname>Düsterwald</surname>
+              <surname>D&#xFC;sterwald</surname>
               <given-names>KM</given-names>
             </name>
             <name>
@@ -2492,7 +2479,6 @@ The tagging of the collaborator name again within this section is required for P
       </sec>
     </ack>
     <!-- All references shuld be cited in the text -->
-    <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
     <ref-list>
       <!-- Journal reference: page numbers and DOI -->
       <ref id="bib1">
@@ -2836,7 +2822,7 @@ The tagging of the collaborator name again within this section is required for P
         <element-citation publication-type="book">
           <person-group person-group-type="editor">
             <name>
-              <surname>Cardé</surname>
+              <surname>Card&#xE9;</surname>
               <given-names>RT</given-names>
             </name>
             <name>
@@ -2927,7 +2913,7 @@ The tagging of the collaborator name again within this section is required for P
           <data-title>The PyMol Molecular Graphics System</data-title>
           <!-- designator attribute added for version - Feb 8 2017 -->
           <version designator="1.7.4">Version 1.7.4</version>
-          <publisher-name>Schrödinger LLC</publisher-name>
+          <publisher-name>Schr&#xF6;dinger LLC</publisher-name>
           <ext-link ext-link-type="uri" xlink:href="https://www.pymol.org/">https://www.pymol.org/</ext-link>
         </element-citation>
       </ref>
@@ -2943,7 +2929,7 @@ The tagging of the collaborator name again within this section is required for P
           </person-group>
           <year iso-8601-date="2016">2016</year>
           <source>Educational excellence everywhere</source>
-          <publisher-name>Her Majesty’s Stationery Office</publisher-name>
+          <publisher-name>Her Majesty&#x2019;s Stationery Office</publisher-name>
           <publisher-loc>United Kingdom</publisher-loc>
           <pub-id pub-id-type="isbn">9781474130158</pub-id>
         </element-citation>
@@ -3049,7 +3035,7 @@ The tagging of the collaborator name again within this section is required for P
               <given-names>A</given-names>
             </name>
             <name>
-              <surname>Nellåker</surname>
+              <surname>Nell&#xE5;ker</surname>
               <given-names>C</given-names>
             </name>
           </person-group>
@@ -3370,7 +3356,7 @@ The tagging of the collaborator name again within this section is required for P
             <collab>FlyBase Consortium</collab>
           </person-group>
           <year iso-8601-date="2012">2012</year>
-          <article-title>FlyBase 101—the basics of navigating FlyBase</article-title>
+          <article-title>FlyBase 101&#x2014;the basics of navigating FlyBase</article-title>
           <source>Nucleic Acids Res</source>
           <volume>40</volume>
           <fpage>D706</fpage>
@@ -3396,7 +3382,7 @@ The tagging of the collaborator name again within this section is required for P
         <element-citation publication-type="software">
           <person-group person-group-type="author">
             <name>
-              <surname>Nellåker</surname>
+              <surname>Nell&#xE5;ker</surname>
               <given-names>C</given-names>
             </name>
           </person-group>
@@ -3556,7 +3542,7 @@ The tagging of the collaborator name again within this section is required for P
               <given-names>O</given-names>
             </name>
             <name>
-              <surname>Pizarro-Cerdá</surname>
+              <surname>Pizarro-Cerd&#xE1;</surname>
               <given-names>J</given-names>
             </name>
             <name>
@@ -3612,7 +3598,7 @@ The tagging of the collaborator name again within this section is required for P
               <given-names>O</given-names>
             </name>
             <name>
-              <surname>Pizarro-Cerdá</surname>
+              <surname>Pizarro-Cerd&#xE1;</surname>
               <given-names>J</given-names>
             </name>
             <name>
@@ -3707,13 +3693,13 @@ The tagging of the collaborator name again within this section is required for P
         <element-citation publication-type="software">
           <person-group person-group-type="author">
             <name>
-              <surname>Schrödinger</surname>
+              <surname>Schr&#xF6;dinger</surname>
               <given-names>LLC</given-names>
             </name>
           </person-group>
           <year iso-8601-date="2011">2011</year>
           <source>The PyMOL Molecular Graphics System</source>
-          <publisher-name>Schrödinger LLC</publisher-name>
+          <publisher-name>Schr&#xF6;dinger LLC</publisher-name>
           <!-- designator attribute added for version - Feb 8 2017 -->
           <version designator="1.2.3">1.2r3pre</version>
           <ext-link ext-link-type="uri" xlink:href="https://www.pymol.org/">https://www.pymol.org/</ext-link>
@@ -3735,19 +3721,8 @@ The tagging of the collaborator name again within this section is required for P
           <lpage>A4</lpage>
         </element-citation>
       </ref>
-      <!-- Reference to a Clinical Trial - subject to revision -->
-      <ref id="bib41">
-        <element-citation publication-type="clinicaltrial">
-          <person-group person-group-type="sponsor">
-            <collab>Scripps Translational Science Institute</collab>
-          </person-group>
-          <year iso-8601-date="2015">2015</year>
-          <article-title>Scripps Wired for Health Study</article-title>
-          <ext-link ext-link-type="uri" xlink:href="https://clinicaltrials.gov/ct2/show/NCT01975428">https://clinicaltrials.gov/ct2/show/NCT01975428</ext-link>
-        </element-citation>
-      </ref>
       <!-- Software reference: No title -->
-      <ref id="bib42">
+      <ref id="bib41">
         <element-citation publication-type="software">
           <person-group person-group-type="author">
             <name>
@@ -3769,7 +3744,7 @@ The tagging of the collaborator name again within this section is required for P
         </element-citation>
       </ref>
       <!-- Data reference: JASPAR -->
-      <ref id="bib43">
+      <ref id="bib42">
         <element-citation publication-type="data">
           <person-group person-group-type="author">
             <name>
@@ -3804,7 +3779,7 @@ The tagging of the collaborator name again within this section is required for P
         </element-citation>
       </ref>
       <!-- Reference to a Preprint: preprints -->
-      <ref id="bib44">
+      <ref id="bib43">
         <element-citation publication-type="preprint">
           <person-group person-group-type="author">
             <name>
@@ -3848,7 +3823,7 @@ The tagging of the collaborator name again within this section is required for P
         </element-citation>
       </ref>
       <!-- Data reference: NCBI BioProject: author is a collab pub-id-type="accession" assigning-authority="NCBI" example of 3 references with same author/year -->
-      <ref id="bib45">
+      <ref id="bib44">
         <element-citation publication-type="data">
           <person-group person-group-type="author">
             <collab>The <italic>Shigella</italic> Genome Sequencing Consortium</collab>
@@ -3859,7 +3834,7 @@ The tagging of the collaborator name again within this section is required for P
           <pub-id pub-id-type="accession" assigning-authority="NCBI" xlink:href="http://www.ncbi.nlm.nih.gov/bioproject/?term=PRJEB2846">PRJEB2846</pub-id>
         </element-citation>
       </ref>
-      <ref id="bib46">
+      <ref id="bib45">
         <element-citation publication-type="data">
           <person-group person-group-type="author">
             <collab>The <italic>Shigella</italic> Genome Sequencing Consortium</collab>
@@ -3870,7 +3845,7 @@ The tagging of the collaborator name again within this section is required for P
           <pub-id pub-id-type="accession" assigning-authority="NCBI" xlink:href="http://www.ncbi.nlm.nih.gov/bioproject/204320">PRJEB2460</pub-id>
         </element-citation>
       </ref>
-      <ref id="bib47">
+      <ref id="bib46">
         <element-citation publication-type="data">
           <person-group person-group-type="author">
             <collab>The <italic>Shigella</italic> Genome Sequencing Consortium</collab>
@@ -3882,7 +3857,7 @@ The tagging of the collaborator name again within this section is required for P
         </element-citation>
       </ref>
       <!-- Book reference: chapter in book with editors -->
-      <ref id="bib48">
+      <ref id="bib47">
         <element-citation publication-type="book">
           <person-group person-group-type="author">
             <name>
@@ -3890,13 +3865,13 @@ The tagging of the collaborator name again within this section is required for P
               <given-names>TCJ</given-names>
             </name>
             <name>
-              <surname>Wäckers</surname>
+              <surname>W&#xE4;ckers</surname>
               <given-names>FL</given-names>
             </name>
           </person-group>
           <person-group person-group-type="editor">
             <name>
-              <surname>Cardé</surname>
+              <surname>Card&#xE9;</surname>
               <given-names>RT</given-names>
             </name>
             <name>
@@ -3915,7 +3890,7 @@ The tagging of the collaborator name again within this section is required for P
         </element-citation>
       </ref>
       <!-- Book reference: book with editors and authors, no chapter, and example of  -->
-      <ref id="bib49">
+      <ref id="bib48">
         <element-citation publication-type="book">
           <person-group person-group-type="author">
             <name>
@@ -3923,13 +3898,13 @@ The tagging of the collaborator name again within this section is required for P
               <given-names>TCJ</given-names>
             </name>
             <name>
-              <surname>Wäckers</surname>
+              <surname>W&#xE4;ckers</surname>
               <given-names>FL</given-names>
             </name>
           </person-group>
           <person-group person-group-type="editor">
             <name>
-              <surname>Cardé</surname>
+              <surname>Card&#xE9;</surname>
               <given-names>RT</given-names>
             </name>
             <name>
@@ -3943,7 +3918,7 @@ The tagging of the collaborator name again within this section is required for P
         </element-citation>
       </ref>
       <!-- Reference to a whole Website - added date a year ealier than accessed date-->
-      <ref id="bib50">
+      <ref id="bib49">
         <element-citation publication-type="web">
           <person-group person-group-type="author">
             <name>
@@ -3958,7 +3933,7 @@ The tagging of the collaborator name again within this section is required for P
         </element-citation>
       </ref>
       <!-- Journal reference: elocation-id and DOI and PMID -->
-      <ref id="bib51">
+      <ref id="bib50">
         <element-citation publication-type="journal">
           <person-group person-group-type="author">
             <name>
@@ -3997,7 +3972,7 @@ The tagging of the collaborator name again within this section is required for P
         </element-citation>
       </ref>
       <!-- Book reference: Has edition, editor is author -->
-      <ref id="bib52">
+      <ref id="bib51">
         <element-citation publication-type="book">
           <person-group person-group-type="author">
             <collab>World Health Organization</collab>
@@ -4010,7 +3985,7 @@ The tagging of the collaborator name again within this section is required for P
           <publisher-name>World Health Organization</publisher-name>
         </element-citation>
       </ref>
-      <ref id="bib53">
+      <ref id="bib52">
         <element-citation publication-type="data">
           <person-group person-group-type="author">
             <name>
@@ -4057,7 +4032,7 @@ The tagging of the collaborator name again within this section is required for P
         </element-citation>
       </ref>
       <!-- Data reference: modMine pub-id-type="archive" -->
-      <ref id="bib54">
+      <ref id="bib53">
         <element-citation publication-type="data">
           <person-group person-group-type="author">
             <name>
@@ -4132,32 +4107,30 @@ The tagging of the collaborator name again within this section is required for P
           <!-- UPDATE: Appendices must be contained within a box in order to include the DOI as an object-id
 Appendices must have DOIs -->
           <boxed-text>
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.023</object-id>
-            <p>In order to prepare for this Kitchen sink we reviewed our archive and found common errors or miscommunication from the archive, tagging of <xref ref-type="fig" rid="app1fig1">Appendix 1—Figure 
-                        1</xref> is a classic example and here the tagging is updated. Appendices figures can also have figure supplements, for example <xref ref-type="fig" rid="app1fig1s1">Appendix 1—Figure 
-                            1—Figure Supplement 1</xref> (<xref ref-type="bibr" rid="bib25">Koch, 1959</xref>).</p>
+            <p>In order to prepare for this Kitchen sink we reviewed our archive and found common errors or miscommunication from the archive, tagging of <xref ref-type="fig" rid="app1fig1">Appendix 1&#x2014;Figure 1</xref> is a classic example and here the tagging is updated. Appendices figures can also have figure supplements, for example <xref ref-type="fig" rid="app1fig1s1">Appendix 1&#x2014;Figure 1&#x2014;Figure Supplement 1</xref> (<xref ref-type="bibr" rid="bib25">Koch, 1959</xref>).</p>
             <fig-group>
               <fig id="app1fig1" position="float">
-                <!-- UPDATE: DOI prefix added to display-->
-                <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.024</object-id>
-                <label>Appendix 1—Figure 1.</label>
+                <label>Appendix 1&#x2014;figure 1.</label>
                 <caption>
-                  <title>Appendix figure title.
-                        </title>
+                  <title>Appendix figure title.</title>
                   <p>If there is a caption to accompany the title it would display here (<xref ref-type="bibr" rid="bib25">Koch, 1959</xref>).</p>
                 </caption>
                 <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-app1-fig1.tif"/>
               </fig>
               <fig id="app1fig1s1" position="float" specific-use="child-fig">
-                <!-- UPDATE: DOI prefix added to display-->
-                <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.025</object-id>
-                <label>Appendix 1—Figure 1—Figure Supplement 1.</label>
+                <label>Appendix 1&#x2014;figure 1&#x2014;figure supplement 1.</label>
                 <caption>
                   <title>Appendix figure supplement title.</title>
                   <p>If there is a caption to accompany the title it would display here.</p>
                 </caption>
                 <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-app1-fig1-figsupp1.tif"/>
               </fig>
+              <media mimetype="video" mime-subtype="mp4" id="app1fig1video1" xlink:href="elife-{{ article['id'] }}-app1-fig1-video1.mp4">
+                <label>Appendix 1&#x2014;figure 1&#x2014;video 1.</label>
+                <caption>
+                  <title>A video supporting Appendix 1&#x2014;figure 1</title>
+                </caption>
+              </media>
             </fig-group>
             <!-- UPDATE: this is how sub sections in appendices should be tagged. Have been wrong up to now -->
             <sec sec-type="appendix" id="s8-1">
@@ -4170,9 +4143,7 @@ Appendices must have DOIs -->
               <title>1.2 Sub heading</title>
               <p>This is the text of the content of subheading 2 within appendix 2.</p>
               <table-wrap id="app1table1" position="float">
-                <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-                <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.039</object-id>
-                <label>Apendix 1—Table 1.</label>
+                <label>Appendix 1&#x2014;table 1.</label>
                 <caption>
                   <title>This is the title.</title>
                   <p>This is the caption: A table containing interesting formating that is large enough to require landscape orientation in the PDF.</p>
@@ -4182,7 +4153,7 @@ Appendices must have DOIs -->
                     <!-- Header row -->
                     <tr>
                       <!-- This header row contains several headings that span multiple columns -->
-                      <th colspan="3" rowspan="2"> </th>
+                      <th colspan="3" rowspan="2">&#x2009;</th>
                       <th align="center" colspan="8">GLVs (percent IS plant<sup>-1</sup>)</th>
                       <th align="center" colspan="17">TPS10 products (percent IS plant<sup>-1</sup>)</th>
                       <th align="center" colspan="10">Non-target volatiles (percent IS plant<sup>-1</sup>)</th>
@@ -4191,7 +4162,7 @@ Appendices must have DOIs -->
                       <th align="center" colspan="8">(<italic>Z</italic>)-Hexen-3-ol</th>
                       <th align="center" colspan="10">TAB</th>
                       <th align="center" colspan="7">TBF</th>
-                      <th align="center" colspan="6">α-Duprezianene</th>
+                      <th align="center" colspan="6">&#x3B1;-Duprezianene</th>
                       <th align="center" colspan="4">Germacrene A</th>
                     </tr>
                   </thead>
@@ -4245,10 +4216,10 @@ Appendices must have DOIs -->
                       <td>8</td>
                       <td>8</td>
                       <td>0.99%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.99%</td>
                       <td>7.96%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>4.25%</td>
                       <!-- The next cell contains coloured text using author-callout-style-a1 (Blue). It is also centrally aligned -->
                       <td rowspan="2" valign="middle">
@@ -4265,15 +4236,15 @@ Appendices must have DOIs -->
                         </sub>
                       </td>
                       <td>0.37%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.29%</td>
                       <td>
                         <bold>
                           <named-content content-type="author-callout-style-a1">a</named-content>
                         </bold>
                       </td>
-                      <td colspan="3">—</td>
-                      <td> </td>
+                      <td colspan="3">&#x2014;</td>
+                      <td>&#x2009;</td>
                       <td rowspan="3" valign="middle">
                         <named-content content-type="author-callout-style-a1">}</named-content>
                       </td>
@@ -4287,19 +4258,19 @@ Appendices must have DOIs -->
                           </bold>
                         </sub>
                       </td>
-                      <td colspan="3">—</td>
+                      <td colspan="3">&#x2014;</td>
                       <td>
                         <bold>
                           <named-content content-type="author-callout-style-a1">a</named-content>
                         </bold>
                       </td>
-                      <td colspan="3">—</td>
+                      <td colspan="3">&#x2014;</td>
                       <!-- The next cell contains coloured text using author-callout-style-a2 (Purple). It is also centrally aligned -->
                       <td>
                         <named-content content-type="author-callout-style-a2">2.13%</named-content>
                       </td>
                       <td>
-                        <named-content content-type="author-callout-style-a2">±</named-content>
+                        <named-content content-type="author-callout-style-a2">&#xB1;</named-content>
                       </td>
                       <td>
                         <named-content content-type="author-callout-style-a2">0.85%</named-content>
@@ -4308,7 +4279,7 @@ Appendices must have DOIs -->
                         <named-content content-type="author-callout-style-a2">0.96%</named-content>
                       </td>
                       <td>
-                        <named-content content-type="author-callout-style-a2">±</named-content>
+                        <named-content content-type="author-callout-style-a2">&#xB1;</named-content>
                       </td>
                       <td>
                         <named-content content-type="author-callout-style-a2">0.42%</named-content>
@@ -4317,12 +4288,12 @@ Appendices must have DOIs -->
                         <named-content content-type="author-callout-style-a2">1.68%</named-content>
                       </td>
                       <td>
-                        <named-content content-type="author-callout-style-a2">±</named-content>
+                        <named-content content-type="author-callout-style-a2">&#xB1;</named-content>
                       </td>
                       <td>
                         <named-content content-type="author-callout-style-a2">0.98%</named-content>
                       </td>
-                      <td>—</td>
+                      <td>&#x2014;</td>
                     </tr>
                     <tr>
                       <td>
@@ -4333,13 +4304,13 @@ Appendices must have DOIs -->
                       <td>7</td>
                       <td>7</td>
                       <td>2.37%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>1.55%</td>
                       <td>2.84%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.63%</td>
                       <td>18.97%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>6.03%</td>
                       <!-- The next cell contains coloured text using author-callout-style-a3 (Red). It is also centrally aligned -->
                       <td>
@@ -4348,13 +4319,13 @@ Appendices must have DOIs -->
                         </bold>
                       </td>
                       <td>0.94%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.53%</td>
                       <td rowspan="3" valign="middle">
                         <named-content content-type="author-callout-style-a3">}</named-content>
                       </td>
                       <td>9.34%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>3.44%</td>
                       <td>
                         <bold>
@@ -4362,18 +4333,18 @@ Appendices must have DOIs -->
                         </bold>
                       </td>
                       <td>0.20%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.20%</td>
                       <td>9.47%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>5.26%</td>
                       <td>0.94%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.26%</td>
                       <td>2.78%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>1.52%</td>
-                      <td>—</td>
+                      <td>&#x2014;</td>
                     </tr>
                     <tr>
                       <td>
@@ -4384,10 +4355,10 @@ Appendices must have DOIs -->
                       <td>7</td>
                       <td>8</td>
                       <td>0.13%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.13%</td>
                       <td>1.06%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.64%</td>
                       <td rowspan="2" valign="middle">
                         <named-content content-type="author-callout-style-a3">}</named-content>
@@ -4402,14 +4373,14 @@ Appendices must have DOIs -->
                           </bold>
                         </sub>
                       </td>
-                      <td colspan="3">—</td>
+                      <td colspan="3">&#x2014;</td>
                       <td>
                         <bold>
                           <named-content content-type="author-callout-style-a1">a</named-content>
                         </bold>
                       </td>
                       <td>0.15%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.15%</td>
                       <td rowspan="2">
                         <bold>
@@ -4421,23 +4392,23 @@ Appendices must have DOIs -->
                           </bold>
                         </sub>
                       </td>
-                      <td colspan="3">—</td>
+                      <td colspan="3">&#x2014;</td>
                       <td>
                         <bold>
                           <named-content content-type="author-callout-style-a1">a</named-content>
                         </bold>
                       </td>
-                      <td colspan="3">—</td>
+                      <td colspan="3">&#x2014;</td>
                       <td>2.75%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>1.12%</td>
                       <td>0.60%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.19%</td>
                       <td>1.68%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>1.49%</td>
-                      <td>—</td>
+                      <td>&#x2014;</td>
                     </tr>
                     <tr>
                       <td>
@@ -4446,13 +4417,13 @@ Appendices must have DOIs -->
                       <td>7</td>
                       <td>7</td>
                       <td>0.07%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.07%</td>
                       <td>1.24%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.84%</td>
                       <td>7.39%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>2.56%</td>
                       <td>
                         <bold>
@@ -4460,11 +4431,11 @@ Appendices must have DOIs -->
                         </bold>
                       </td>
                       <td>2.08%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.84%</td>
-                      <td> </td>
+                      <td>&#x2009;</td>
                       <td>4.47%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>1.70%</td>
                       <td>
                         <bold>
@@ -4472,18 +4443,18 @@ Appendices must have DOIs -->
                         </bold>
                       </td>
                       <td>0.40%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.40%</td>
                       <td>3.02%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>1.42%</td>
                       <td>0.73%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.31%</td>
                       <td>0.66%</td>
-                      <td>±</td>
+                      <td>&#xB1;</td>
                       <td>0.37%</td>
-                      <td>—</td>
+                      <td>&#x2014;</td>
                     </tr>
                   </tbody>
                 </table>
@@ -4505,13 +4476,9 @@ Appendices must have DOIs -->
         <title>Appendix 2</title>
         <boxed-text>
           <!-- UPDATE: Appendix rearranged to account for appendices without top level secs -->
-          <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-          <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.026</object-id>
           <p>This is an example of an appendix with an introductory paragraph of text preceding any section headers. There should be only one boxed-text element, which is a child of appendix. This boxed-text is the container of the sub-doi for the appendix. Aside from the appendix title, all content should be captured within the boxed-text.</p>
           <fig id="app2fig1" position="float">
-            <!-- UPDATE: DOI prefix added to display-->
-            <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.027</object-id>
-            <label>Appendix 2—Figure 1.</label>
+            <label>Appendix 2&#x2014;figure 1.</label>
             <caption>
               <title>Figure added to demonstrate that not only paragaphs but other forms of content may be included as a child of the boxed-text.</title>
               <p>If there is a caption to accompany the title it would display here.</p>
@@ -4520,22 +4487,16 @@ Appendices must have DOIs -->
           </fig>
           <sec sec-type="appendix" id="s9">
             <title>Negotaition</title>
-            <p>Generating the new rules involved negotation with varous vendors and downsteam hosts to ensure display would work for all instances. See <xref ref-type="video" rid="app2video1">Appendix 2—Video 1</xref> 
-                            and <xref ref-type="table" rid="app2table1">Apendix 2—Table 1</xref>.</p>
+            <p>Generating the new rules involved negotation with varous vendors and downsteam hosts to ensure display would work for all instances. See <xref ref-type="video" rid="app2video1">Appendix 2&#x2014;Video 1</xref> 
+                            and <xref ref-type="table" rid="app2table1">Apendix 2&#x2014;table 1</xref>.</p>
             <media mimetype="video" mime-subtype="mp4" id="app2video1" xlink:href="elife-{{ article['id'] }}-app2-video1.mp4">
-              <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-              <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.028</object-id>
-              <label>Appendix 2—Video 1.</label>
+              <label>Appendix 2&#x2014;video 1.</label>
               <caption>
-                <title>
-                                A descirption of the eLife editorial process.
-                            </title>
+                <title>A descirption of the eLife editorial process.</title>
               </caption>
             </media>
             <table-wrap id="app2table1" position="float">
-              <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-              <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.029</object-id>
-              <label>Apendix 2—Table 1.</label>
+              <label>Appendix 2&#x2014;table 1.</label>
               <caption>
                 <p>Appendix table.</p>
               </caption>
@@ -4558,7 +4519,7 @@ Appendices must have DOIs -->
                   </tr>
                   <tr>
                     <td>
-                      <italic>τ</italic>
+                      <italic>&#x3C4;</italic>
                       <sub>AMPA</sub>
                     </td>
                     <td>ms</td>
@@ -4574,7 +4535,7 @@ Appendices must have DOIs -->
                   </tr>
                   <tr>
                     <td>
-                      <italic>τ</italic>
+                      <italic>&#x3C4;</italic>
                       <sub>NMDA</sub>
                     </td>
                     <td>ms</td>
@@ -4589,7 +4550,6 @@ Appendices must have DOIs -->
       <app id="appendix-3">
         <title>Appendix 3</title>
         <boxed-text>
-          <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.030</object-id>
           <p>This is an example of an appendix with no sections.</p>
         </boxed-text>
       </app>
@@ -4597,10 +4557,9 @@ Appendices must have DOIs -->
   </back>
   <!-- UPDATE: Links to the DOIs of the decision letter and author response need to be added to the PDF template.
 UPDATE: article-type has been changed from article-commentary to decision-letter -->
-  <sub-article article-type="decision-letter" id="SA1">
+  <sub-article article-type="decision-letter" id="sa1">
     <front-stub>
-      <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-      <article-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.029</article-id>
+      <article-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.sa1</article-id>
       <title-group>
         <article-title>Decision letter</article-title>
       </title-group>
@@ -4617,7 +4576,7 @@ UPDATE: punctuation between institution and country removed.
           <role>Reviewing Editor</role>
           <aff>
             <institution>eLife Sciences</institution>
-            <country>United Kingdom</country>
+            <country country="GB">United Kingdom</country>
           </aff>
         </contrib>
       </contrib-group>
@@ -4630,7 +4589,7 @@ UPDATE: punctuation between institution and country removed.
           <role>Reviewer</role>
           <aff>
             <institution>Stanford University</institution>
-            <country>United States</country>
+            <country country="US">United States</country>
           </aff>
         </contrib>
         <contrib contrib-type="reviewer">
@@ -4641,7 +4600,7 @@ UPDATE: punctuation between institution and country removed.
           <role>Reviewer</role>
           <aff>
             <institution>John Innes Centre</institution>
-            <country>United Kingdom</country>
+            <country country="GB">United Kingdom</country>
           </aff>
         </contrib>
       </contrib-group>
@@ -4663,12 +4622,18 @@ UPDATE: punctuation between institution and country removed.
                 </p>
       <p>You need to make sure the XML structure you creates works on the display of the PMC platform and also that there is enough information contained within the 
                     tagging to generate a typeset PDF from the XML with no additional information provided.</p>
+      <fig id="sa1fig1" position="float">
+        <label>Decision letter image 1.</label>
+        <caption>
+          <p>Single figure: The header of an eLife article example on the HTML page.</p>
+        </caption>
+        <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-sa1-fig1.tif"/>
+      </fig>
     </body>
   </sub-article>
-  <sub-article article-type="reply" id="SA2">
+  <sub-article article-type="reply" id="sa2">
     <front-stub>
-      <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-      <article-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.031</article-id>
+      <article-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.sa2</article-id>
       <title-group>
         <article-title>Author response</article-title>
       </title-group>
@@ -4683,21 +4648,17 @@ UPDATE: punctuation between institution and country removed.
     information contained within the tagging to generate a typeset PDF from the XML with no additional information provided.</p>
       </disp-quote>
       <p>In response to this comment, we validated the XML against the DTD (JATS 1) each time we made an update. We also regularly used the 
-                PMC validator to check our decisions against display on the PMC site, see <xref ref-type="fig" rid="respfig1">Author response image 1.</xref>, 
-                <xref ref-type="video" rid="respvideo1">Author response video 1</xref> and <xref ref-type="table" rid="resptable1">Author response table 1</xref>.</p>
-      <fig id="respfig1" position="float">
-        <!-- UPDATE: DOI prefix removed from XML but must be added for display-->
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.031</object-id>
+                PMC validator to check our decisions against display on the PMC site, see <xref ref-type="fig" rid="sa2fig1">Author response image 1.</xref>, 
+                <xref ref-type="video" rid="sa2video1">Author response video 1</xref> and <xref ref-type="table" rid="sa2table1">Author response table 1</xref>.</p>
+      <fig id="sa2fig1" position="float">
         <label>Author response image 1.</label>
         <caption>
           <p>Single figure: The header of an eLife article example on the HTML page.</p>
         </caption>
-        <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-resp-fig1.tif"/>
+        <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-sa2-fig1.tif"/>
       </fig>
-      <table-wrap id="resptable1" position="float">
-        <!-- UPDATE: added to author response assets UPDATE: DOI prefix removed from XML but must be added for display-->
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.032</object-id>
-        <label>Author response Table 1.</label>
+      <table-wrap id="sa2table1" position="float">
+        <label>Author response table 1.</label>
         <caption>
           <p>Author response table</p>
         </caption>
@@ -4753,10 +4714,7 @@ UPDATE: punctuation between institution and country removed.
           </tbody>
         </table>
       </table-wrap>
-      <media mimetype="video" mime-subtype="mp4" id="respvideo1" xlink:href="elife-{{ article['id'] }}-resp-video1.mp4">
-        <!-- UPDATE: added to author response assets 
-UPDATE: DOI prefix removed from XML but must be added for display-->
-        <object-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.033</object-id>
+      <media mimetype="video" mime-subtype="mp4" id="sa2video1" xlink:href="elife-{{ article['id'] }}-sa2-video1.mp4">
         <label>Author response video 1.</label>
         <caption>
           <p>Caption and/or a title is required for all author response assets</p>
@@ -4766,12 +4724,29 @@ UPDATE: DOI prefix removed from XML but must be added for display-->
                 to discuss whether any of our updates could be accomodated by them - during this review we aimed to reduce the complexity of the XML structure and remove all 
                 formatting and bioler plate text required for a PDF display format. We also produced buisness rules {Insert table} in order to produce rules for the 
                 production systems and the website to follow. These buisness rules also informed the basis for a set of Schematron rules for our references.{Insert table}</p>
-      <p>If an author referes to a reference in the response letter it is cross linked to the reference in the reference list (<xref ref-type="bibr" rid="bib11">Coyne and Orr,
-                1989</xref>), however, if it is a new reference only cited in the decision letter or author response it is not added to the main reference link and is just listed as free
+      <p>If an author referes to a reference in the response letter it is cross linked to the reference in the reference list (<xref ref-type="bibr" rid="bib11">Coyne and Orr, 1989</xref>), however, if it is a new reference only cited in the decision letter or author response it is not added to the main reference link and is just listed as free
                 text, for example, Butcher et al, 2006. If the author provides the reference it can be added as free text to the end of the letter, however, this is not a requirement
                 .</p>
-      <p>Adding some MathML to the sub-article.<inline-formula><mml:math><mml:mrow><mml:munder><mml:mo/><mml:mi>m</mml:mi></mml:munder><mml:mrow><mml:msub><mml:mover accent="true"><mml:mi>p</mml:mi><mml:mo/></mml:mover><mml:mi>m</mml:mi></mml:msub><mml:mo>=</mml:mo><mml:mn>0</mml:mn></mml:mrow></mml:mrow></mml:math></inline-formula>
+      <p>Adding some MathML to the sub-article.<inline-formula><mml:math id="sa2m1"><mml:mrow><mml:munder><mml:mo/><mml:mi>m</mml:mi></mml:munder><mml:mrow><mml:msub><mml:mover accent="true"><mml:mi>p</mml:mi><mml:mo/></mml:mover><mml:mi>m</mml:mi></mml:msub><mml:mo>=</mml:mo><mml:mn>0</mml:mn></mml:mrow></mml:mrow></mml:math></inline-formula>
             </p>
+      <p>May also contain a formula as a block
+            <disp-formula id="sa2equ1"><mml:math id="sa2m2"><mml:mrow><mml:mi>&#x3D5;</mml:mi><mml:mo>=</mml:mo><mml:msup><mml:mi>e</mml:mi><mml:mrow><mml:mo>&#x2212;</mml:mo><mml:mfrac><mml:mrow><mml:mi>z</mml:mi><mml:mi>F</mml:mi><mml:mi>V</mml:mi></mml:mrow><mml:mrow><mml:mi>n</mml:mi><mml:mi>R</mml:mi><mml:mi>T</mml:mi></mml:mrow></mml:mfrac></mml:mrow></mml:msup></mml:mrow></mml:math></disp-formula>
+            </p>
+      <list list-type="order">
+        <list-item>
+          <p>'Contamination'</p>
+          <list list-type="roman-lower">
+            <list-item>
+              <p>Cell line <sup>superscript</sup><sub>subscript</sub> &amp; p&lt;0.001</p>
+            </list-item>
+            <list-item>
+              <p>
+                <italic>C. elegans</italic>
+              </p>
+            </list-item>
+          </list>
+        </list-item>
+      </list>
     </body>
   </sub-article>
 </article>
