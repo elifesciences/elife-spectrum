@@ -16,6 +16,11 @@ from pollute import modified_environ
 import mechanicalsoup
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
+#from spectrum.xpub import XpubJavaScriptSession
+
+#from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException
 
 LOGGER = logger.logger(__name__)
 
@@ -241,10 +246,56 @@ class JournalJavaScriptSession:
 
         selenium_title_smoke_test('eLife', self._driver)
         # expand: click on login button, log in, and check final destination
-        # lsh@2020-10-22: xpub removed without replacement
         #return XpubJavaScriptSession(self._driver)
+        return SubmissionJavaScriptSession(self._driver)
 
 
+#
+
+def _info_log(message, *args, **kwargs):
+    LOGGER.info(message, extra={'app':'elife-xpub'}, *args, **kwargs)
+    
+#class XpubJavaScriptSession:
+class SubmissionJavaScriptSession:
+    CSS_COOKIE_NOTICE_BUTTON = 'button[data-test-id="cookieAcceptButton"]'
+    CSS_LOGIN_BUTTON = 'button[data-test-id="login"]'
+    CSS_PROFILE_MENU = 'button[data-test-id="profile-menu"]'
+    TIMEOUT_COOKIE_NOTICE_CLOSING = 10
+
+    def __init__(self, driver):
+        self._driver = driver
+
+    def login(self):
+        login_button = self._driver.find_element_by_css_selector(self.CSS_LOGIN_BUTTON)
+        _info_log("Found login button %s `%s`", self.CSS_LOGIN_BUTTON, login_button.text)
+        # assume if we can find other buttons, all the DOM has been properly loaded
+        self._dismiss_cookie_notice()
+
+        login_button.click()
+        _info_log("Clicked login button %s", self.CSS_LOGIN_BUTTON)
+        profile_menu = self._driver.find_element_by_css_selector(self.CSS_PROFILE_MENU)
+        _info_log("Found profile menu %s", self.CSS_PROFILE_MENU)
+        profile_menu.click()
+        _info_log("Clicked profile menu %s", self.CSS_PROFILE_MENU)
+
+    def _dismiss_cookie_notice(self):
+        try:
+            cookie_notice_button = self._driver.find_element_by_css_selector(self.CSS_COOKIE_NOTICE_BUTTON)
+            _info_log("Found cookie notice button %s `%s`", self.CSS_COOKIE_NOTICE_BUTTON, cookie_notice_button.text)
+        except NoSuchElementException:
+            _info_log("Found no cookie notice button %s", self.CSS_COOKIE_NOTICE_BUTTON)
+            return
+
+        cookie_notice_button.click()
+        _info_log("Clicked cookie notice button %s", self.CSS_COOKIE_NOTICE_BUTTON)
+        WebDriverWait(self._driver, self.TIMEOUT_COOKIE_NOTICE_CLOSING).until(lambda driver: self._cookie_notice_closed())
+
+    def _cookie_notice_closed(self):
+        LOGGER.debug("Cookie notice visibility check")
+        buttons = self._driver.find_elements_by_css_selector(self.CSS_COOKIE_NOTICE_BUTTON)
+        LOGGER.debug("Cookie notice buttons: %d", len(buttons))
+        return len(buttons) == 0
+        
 class JournalHtmlSession:
     PROFILE_LINK = ".login-control__non_js_control_link"
 
