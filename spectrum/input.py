@@ -14,13 +14,12 @@ import requests
 from econtools import econ_workflow
 from pollute import modified_environ
 import mechanicalsoup
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
 #from spectrum.xpub import XpubJavaScriptSession
 
-#from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
 
 LOGGER = logger.logger(__name__)
 
@@ -254,7 +253,7 @@ class JournalJavaScriptSession:
 
 def _info_log(message, *args, **kwargs):
     LOGGER.info(message, extra={'app':'elife-xpub'}, *args, **kwargs)
-    
+
 #class XpubJavaScriptSession:
 class SubmissionJavaScriptSession:
     CSS_COOKIE_NOTICE_BUTTON = 'button[data-test-id="cookieAcceptButton"]'
@@ -295,7 +294,7 @@ class SubmissionJavaScriptSession:
         buttons = self._driver.find_elements_by_css_selector(self.CSS_COOKIE_NOTICE_BUTTON)
         LOGGER.debug("Cookie notice buttons: %d", len(buttons))
         return len(buttons) == 0
-        
+
 class JournalHtmlSession:
     PROFILE_LINK = ".login-control__non_js_control_link"
 
