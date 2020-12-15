@@ -2,6 +2,7 @@
 import pytest
 from spectrum import checks, input
 
+# 'Josiah Carberry', a dummy user used by ORCID
 MAGIC_ORCID = '0000-0002-1825-0097'
 
 @pytest.mark.two
@@ -69,6 +70,7 @@ def test_rss_feeds():
 @pytest.mark.journal
 @pytest.mark.profiles
 @pytest.mark.annotations
+@pytest.mark.skip(reason="ORCID referer redirect behaviour has changed")
 def test_logging_in_and_out():
     session = input.JOURNAL.session()
     original = '/about'
@@ -81,6 +83,7 @@ def test_logging_in_and_out():
 @pytest.mark.journal
 @pytest.mark.profiles
 @pytest.mark.annotations
+@pytest.mark.skip(reason="ORCID referer redirect behaviour has changed")
 def test_logged_in_profile():
     session = input.JOURNAL.session()
     session.login()
@@ -91,6 +94,7 @@ def test_logged_in_profile():
 @pytest.mark.journal
 @pytest.mark.profiles
 @pytest.mark.annotations
+@pytest.mark.skip(reason="ORCID referer redirect behaviour has changed")
 def test_logged_in_through_cdn():
     session = input.JOURNAL_CDN.session()
     session.login()
@@ -101,6 +105,7 @@ def test_logged_in_through_cdn():
 @pytest.mark.journal
 @pytest.mark.profiles
 @pytest.mark.annotations
+@pytest.mark.skip(reason="ORCID referer redirect behaviour has changed")
 def test_public_profile():
     profile_creation_session = input.JOURNAL.session()
     profile_creation_session.login()

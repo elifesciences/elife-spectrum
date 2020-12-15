@@ -18,6 +18,7 @@ def test_list_based_apis_journal_cms():
 def test_list_based_apis_profiles():
     checks.API.profiles()
 
+@pytest.mark.skip(reason="ORCID referer redirect behaviour has changed")
 @pytest.mark.annotations
 def test_list_based_apis_annotations():
     any_profile = 'jcarberry'
