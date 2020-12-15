@@ -2,6 +2,7 @@
 import pytest
 from spectrum import checks, input
 
+# 'Josiah Carberry', a dummy user used by ORCID
 MAGIC_ORCID = '0000-0002-1825-0097'
 
 @pytest.mark.two
