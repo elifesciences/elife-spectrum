@@ -1,0 +1,30 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[requires]
+python_version = "3.6"
+
+[packages]
+backoff = "==1.4.3"
+beautifulsoup4 = "==4.5.1"
+boto = "~=2.34"
+boto3 = "~=1.11"
+econtools = {git = "git://github.com/elifesciences/econ-tools.git", ref = "master"}
+lxml = "~=4.1"
+pytest = "~=5.3"
+pytest-xdist = "~=1.14"
+python-docx = "==0.8.6"
+polling = "==0.3.0"
+pollute = "==1.0.2"
+requests = "~=2.20"
+requests-futures = "~=0.9.7"
+selenium = "~=3.14"
+spectrumprivate = {git = "ssh://git@github.com/elifesciences/elife-spectrum-private.git", ref = "91371987bee96747b9cef6dfb7f63d0b04d4a048"}
+Jinja2 = "~=2.10"
+MechanicalSoup = "~=0.6"
+
+[dev-packages]
+pylint = "~=2.4"
+
