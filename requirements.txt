@@ -4,7 +4,7 @@ boto==2.34.0
 boto3==1.11.13
 botocore==1.14.13
 git+git://github.com/elifesciences/econ-tools.git@master#egg=econtools
-Jinja2==2.10.1
+Jinja2==2.11.3
 lxml==4.6.2
 MechanicalSoup==0.6.0
 pylint==2.4.4
