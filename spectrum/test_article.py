@@ -119,12 +119,12 @@ def test_article_subject_change(generate_article):
     # TODO: for stability, wait until all the publishing workflows have finished. Github xml is enough
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
 
-    subjects_configuration = generator.article_subjects({article.id(): "Immunology"})
+    subjects_configuration = generator.article_subjects({article.id(): "Immunology and Inflammation"})
     input.BOT_CONFIGURATION.upload(subjects_configuration.filename(), 'article_subjects_data/article_subjects.csv')
     articles.feed_silent_correction(article)
-    checks.API.wait_article(id=article.id(), subjects=[{'name':'Immunology', 'id': 'immunology'}])
+    checks.API.wait_article(id=article.id(), subjects=[{'name':'Immunology and Inflammation', 'id': 'immunology-inflammation'}])
     # are there caches that need to expire first?
-    checks.JOURNAL.article_only_subject(id=article.id(), version=article.version(), subject_id='immunology')
+    checks.JOURNAL.article_only_subject(id=article.id(), version=article.version(), subject_id='immunology-inflammation')
 
 @pytest.mark.continuum
 @pytest.mark.bot
