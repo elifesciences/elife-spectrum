@@ -916,6 +916,10 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
             LOGGER.warning("Loading (%s) resource %s again due to %s status code", resource_checking_method, url, response.status_code, extra=extra)
             response = requests.get(url)
 
+        # if response.status_code is 404 and url includes .elifesciences.org/journal-cms/ then check if image loads from CMS directly
+        # example: https://end2end--cdn-iiif.elifesciences.org/journal-cms/podcast_episode%2F2021-06%2Fking_county.jpg/0,267,2816,1578/257,144/0/default.jpg
+        # would be: https://end2end--journal-cms.elifesciences.org/sites/default/files/iiif/podcast_episode/2021-06/king_county.jpg
+
         assert_status_code(response, 200, url)
         RESOURCE_CACHE[url] = response.status_code
 
