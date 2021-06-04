@@ -7,6 +7,7 @@
 
 contains no tests to be run."""
 
+from datetime import datetime
 from os import path
 import random
 import string
@@ -122,12 +123,15 @@ class JournalCmsSession:
         response = self._browser.submit(form, create_page.url, data={'op': 'Save'})
         # requests follows redirects by default
         _assert_html_response(response)
+        _assert_drupal_image_exists(self._host, image)
+
         assert _journal_cms_page_title(response.soup) == title
 
     def create_article_fragment(self, id, image):
         filtered_content_url = "%s/admin/content?status=All&type=article&title=%s" % (self._host, id)
         filtered_content_page = self._browser.get(filtered_content_url)
-        assert filtered_content_page.status_code == 200, "Response status of %s was: %s\nBody: %s" % (filtered_content_url, filtered_content_page.status_code, filtered_content_page.content)
+        assert filtered_content_page.status_code == 200, \
+            "Response status of %s was: %s\nBody: %s" % (filtered_content_url, filtered_content_page.status_code, filtered_content_page.content)
 
         try:
             view_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, text=id).get('href'))
@@ -169,6 +173,8 @@ class JournalCmsSession:
         response = self._browser.submit(form, edit_page.url, data={'op': button_text})
         # requests follows redirects by default
         _assert_html_response(response)
+        _assert_drupal_image_exists(self._host, image)
+
         view_page = self._browser.get(view_url)
         img_selector = ".field--name-field-image img"
         img = view_page.soup.select_one(img_selector)
@@ -198,6 +204,14 @@ class JournalCmsSession:
             if inp == chosen_submit:
                 continue
             del inp['name']
+
+def _assert_drupal_image_exists(host, image):
+    # ensure the uploaded image can be accessed directly
+    # https://end2end--journal-cms.elifesciences.org/sites/default/files/iiif/podcast_episode/2021-06/king_county.jpg
+    year_month = datetime.now().strftime("%Y-%m")
+    direct_image_url = "%s/sites/default/files/iiif/podcast_episode/%s/%s" % (host, year_month, path.basename(image))
+    direct_image_resp = requests.get(direct_image_url)
+    assert direct_image_resp.status_code == 200, "failed to access image %r: %s" % (direct_image_url, direct_image_resp)
 
 def _assert_html_response(response):
     assert response.status_code == 200, "Response from saving the from was expected to be 200 from the listing page, but it was %s\nBody: %s" % (response.status_code, response.text)
