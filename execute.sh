@@ -16,4 +16,10 @@ rm -f build/test.log
 ./pylint.sh
 
 # bulk of the tests
-exec venv/bin/py.test -v --junitxml build/junit.xml -s -n $SPECTRUM_PROCESSES spectrum --assert=plain $*
+exec venv/bin/pytest \
+    --verbose \
+    --junitxml build/junit.xml \
+    --capture=no \
+    --numprocesses=$SPECTRUM_PROCESSES \
+    --assert=plain \
+    spectrum $*
