@@ -618,8 +618,6 @@ class JournalCheck:
 
     def generic(self, path):
         response = self.just_load(path)
-        # ... what is this logic here? 'if not redirected then assert all resources on page load' ?
-        # this seems very specific without an explanation
         match = re.match("^"+self._host, response.url)
         if match:
             self._assert_all_resources_of_page_load(response.text)
@@ -930,7 +928,7 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
         except AssertionError as e:
             failures.append(str(e))
 
-    assert not failures, "the following requests failed: %s" % ("\n".join(failures))
+    assert not failures, "%s requests failed:\n%s" % (len(failures), "\n".join(failures))
 
 def _build_url(path, host):
     if path.startswith("http://") or path.startswith("https://"):
