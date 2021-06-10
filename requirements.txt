@@ -15,5 +15,5 @@ polling==0.3.0
 pollute==1.0.2
 requests==2.25.0
 requests-futures==0.9.9
-selenium==3.14.1
+selenium==3.141.0
 git+ssh://git@github.com/elifesciences/elife-spectrum-private.git@91371987bee96747b9cef6dfb7f63d0b04d4a048#egg=spectrumprivate

@@ -41,7 +41,7 @@ python-docx==0.8.6
 requests==2.25.0
 requests-futures==0.9.9
 s3transfer==0.3.3
-selenium==3.14.1
+selenium==3.141.0
 six==1.15.0
 git+ssh://git@github.com/elifesciences/elife-spectrum-private.git@91371987bee96747b9cef6dfb7f63d0b04d4a048#egg=spectrumprivate
 toml==0.10.2
