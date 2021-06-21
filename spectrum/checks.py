@@ -852,6 +852,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
     """Checks that all <script>, <link>, <video>, <source>, srcset="" load, by issuing HEAD requests that must give 200 OK.
 
     Returns the BeautifulSoup for reuse"""
+
     def _srcset_values(srcset):
         values = []
         without_descriptors = re.sub(" \\d+(\\.\\d+)?[wx],?", " ", srcset)
@@ -860,6 +861,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
                 values.append(candidate_string)
         LOGGER.debug("srcset values: %s", values)
         return values
+
     def _resources_from(soup):
         resources = []
         for img in soup.find_all("img"):
@@ -880,6 +882,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
             if srcset:
                 resources.extend(_srcset_values(srcset))
         return list(set(resources))
+
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
     LOGGER.debug("Found resources %s", pformat(resources), extra=extra)
@@ -908,16 +911,24 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
 
     wait(futures, HTTP_TIMEOUT)
 
+    failures = []
+
     for url, future in zip(urls, futures):
         response = future.result()
         LOGGER.debug("Loading (%s) resource %s", resource_checking_method, url, extra=extra)
 
         if retries.retry_request(response):
-            LOGGER.warning("Loading (%s) resource %s again due to %s status code", resource_checking_method, url, response.status_code, extra=extra)
+            LOGGER.warning("Loading (%s) resource %s again due to %s status code", \
+                           resource_checking_method, url, response.status_code, extra=extra)
             response = requests.get(url)
 
-        assert_status_code(response, 200, url)
-        RESOURCE_CACHE[url] = response.status_code
+        try:
+            assert_status_code(response, 200, url)
+            RESOURCE_CACHE[url] = response.status_code
+        except AssertionError as e:
+            failures.append(str(e))
+
+    assert not failures, "%s requests failed:\n%s" % (len(failures), "\n".join(failures))
 
 def _build_url(path, host):
     if path.startswith("http://") or path.startswith("https://"):

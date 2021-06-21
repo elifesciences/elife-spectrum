@@ -127,7 +127,8 @@ class JournalCmsSession:
     def create_article_fragment(self, id, image):
         filtered_content_url = "%s/admin/content?status=All&type=article&title=%s" % (self._host, id)
         filtered_content_page = self._browser.get(filtered_content_url)
-        assert filtered_content_page.status_code == 200, "Response status of %s was: %s\nBody: %s" % (filtered_content_url, filtered_content_page.status_code, filtered_content_page.content)
+        assert filtered_content_page.status_code == 200, \
+            "Response status of %s was: %s\nBody: %s" % (filtered_content_url, filtered_content_page.status_code, filtered_content_page.content)
 
         try:
             view_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, text=id).get('href'))
@@ -198,6 +199,7 @@ class JournalCmsSession:
             if inp == chosen_submit:
                 continue
             del inp['name']
+
 
 def _assert_html_response(response):
     assert response.status_code == 200, "Response from saving the from was expected to be 200 from the listing page, but it was %s\nBody: %s" % (response.status_code, response.text)
