@@ -7,12 +7,12 @@ LOGGER = logger.logger(__name__)
 
 class TimeoutError(RuntimeError):
     @staticmethod
-    def giving_up_on(what):
+    def giving_up_on(what, after=None):
         timestamp = datetime.today().isoformat()
-        return TimeoutError(
-            "Cannot find '%s'; Giving up at %s" \
-                    % (what, timestamp)
-        )
+        msg = "Cannot find '%s'; Giving up at %s" % (what, timestamp)
+        if after:
+            msg = "Cannot find '%s'; Giving up at %s after %s seconds" % (what, timestamp, after)
+        return TimeoutError(msg)
 
 class UnrecoverableError(RuntimeError):
     def __init__(self, details):
