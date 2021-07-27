@@ -10,7 +10,14 @@ LOGGER = logger.logger(__name__)
 
 
 def retry_request(response):
-    return response.status_code in [502, 504]
+    retry_these = [
+        # lsh@2021-07-27: added as there appears to be a case in the interaction of iiif and journal-cms
+        # where journal-cms doesn't have the image ready.
+        404,
+        502,
+        504
+    ]
+    return response.status_code in retry_these
 
 
 def _retrying_request(details):

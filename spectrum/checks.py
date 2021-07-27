@@ -617,10 +617,17 @@ class JournalCheck:
         return self.generic("/magazine")
 
     def generic(self, path):
+        "creates a URL with the given `path` and `self.host`, fetches it and fetches all (most) links found within it."
         response = self.just_load(path)
+
+        # if the response url originates from the same host as this configured Check object,
+        # also check that all urls in <script>, <link>, <video>, <source>, srcset="" load.
+        # does "^https://end2end--journal.elifesciences.org/foo/bar" start with "^https://end2end--journal.elifesciences.org" ?
         match = re.match("^"+self._host, response.url)
         if match:
             self._assert_all_resources_of_page_load(response.text)
+
+        # check all 'figure' and 'pdf' resource links work
         download_links = self._download_links(response.text)
         LOGGER.info("Found download links: %s", pformat(download_links))
         self._assert_all_load(download_links)
@@ -881,7 +888,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
             srcset = media_source.get("srcset")
             if srcset:
                 resources.extend(_srcset_values(srcset))
-        return list(set(resources))
+        return sorted(list(set(resources)))
 
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
