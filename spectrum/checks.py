@@ -600,10 +600,10 @@ class JournalCheck:
         url = _build_url("/articles/%s" % id, self._host)
         if version:
             url = "%sv%s" % (url, version)
-        resp = self.just_load(self, path)
+        response = self.just_load(url)
         soup = BeautifulSoup(response.text, "html.parser")
         return soup
-        
+
     def article_feature_preprint(self, id, version):
         "ensure a pre-print exists"
         soup = self._article_soup(id, version)
@@ -620,9 +620,9 @@ class JournalCheck:
         # that should look like:
         #   `Preprint posted: <a href="https://doi.org/10.1101/2020.11.21.391326">November 22, 2020 (view preprint)</a>`
         assert first_list_item_text.startswith("Preprint posted:")
-        
+
         # return stuff?
-        
+
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
         LOGGER.info("Loading %s", url)

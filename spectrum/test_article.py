@@ -227,7 +227,7 @@ def test_article_propagates_to_github(generate_article):
     _ingest_and_publish_and_wait_for_published(article)
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
 
-# 
+#
 
 @pytest.mark.journal_cms
 @pytest.mark.continuum
@@ -293,7 +293,7 @@ def test_bioprotocol_has_protocol_data(generate_article):
 
 @pytest.mark.journal
 @pytest.mark.continuum
-def test_article_feature():
+def test_article_feature(generate_article):
     "publish the kitchen sink XML and ensure the final article has all of the expected features."
     # create+publish+wait for article, etc
     template_id = KITCHEN_SINK_ARTICLE_ID
