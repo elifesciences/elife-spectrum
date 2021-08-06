@@ -1,4 +1,6 @@
 #!/bin/bash
+# used to download specific revisions of the kitchen sink XML from the 'xml-mapping' repository.
+# see 'update-kitchen-sinks-from-github.sh'
 set -e
 
 if [ "$#" -lt 1 ]; then
@@ -12,5 +14,5 @@ id="$1"
 commit="${2-master}"
 filename="elife-$id.xml"
 url="https://raw.githubusercontent.com/elifesciences/XML-mapping/$commit/$filename"
-wget -O "$filename" "$url"
+wget "$url" --output-document "$filename"
 echo "$filename"
