@@ -596,7 +596,7 @@ class JournalCheck:
         assert subjects_links == ['/subjects/%s' % subject_id], "Incorrect subjects `%s` linked from article page %s (expected subject id `%s`)" % (subjects_links, url, subject_id)
 
     def _article_soup(self, id, version):
-        "convenience, fetches the article page and turns the response body as a BeautifulSoup soup object"
+        "convenience, fetches the article page and returns the response body as a BeautifulSoup soup object"
         url = _build_url("/articles/%s" % id, self._host)
         if version:
             url = "%sv%s" % (url, version)
