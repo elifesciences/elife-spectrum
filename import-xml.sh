@@ -3,7 +3,7 @@ set -e
 
 if [ "$#" != 2 ]; then
     echo "Usage: ./import-xml.sh ID FILENAME"
-    echo "e.g. ./import-xml.sh 00666 elife-00666-something.xml"
+    echo "e.g. ./import-xml.sh 1234567890 elife-00666-something.xml"
     exit 1
 fi
 
