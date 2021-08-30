@@ -18,11 +18,16 @@ from spectrum.config import COMMON
 LOGGER = logger.logger(__name__)
 
 def generate_article_id(template_id):
+    template_id = int(template_id)
+    # good until `template_id` (msid) reaches 100000
+    offset = 100000 # 10^5, 5 digit msid
+    kitchen_sink_id = 1234567890
+    if template_id == kitchen_sink_id:
+        offset = 10000000000 # 10^10, 10 digit msid
     # 2^63 - 1 = 9223372036854775807 is the maximum id
     maximum_prefix = 92233720368546
     prefix = random.randrange(1, maximum_prefix + 1)
-    # good until template_id reaches 100000
-    return str(prefix * 100000 + int(template_id))
+    return str(prefix * offset + template_id)
 
 def article_zip(template_id, article_id=None, template_variables=None):
     if template_variables is None:
