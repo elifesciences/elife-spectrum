@@ -21,11 +21,12 @@ def generate_article_id(template_id):
     template_id = int(template_id)
     # good until `template_id` (msid) reaches 100000
     offset = 100000 # 10^5, 5 digit msid
+    #     2^63 - 1 = 9223372036854775807 is the maximum id
+    maximum_prefix = 92233720368546
     kitchen_sink_id = 1234567890
     if template_id == kitchen_sink_id:
         offset = 10000000000 # 10^10, 10 digit msid
-    # 2^63 - 1 = 9223372036854775807 is the maximum id
-    maximum_prefix = 92233720368546
+        maximum_prefix = 92233720
     prefix = random.randrange(1, maximum_prefix + 1)
     return str(prefix * offset + template_id)
 
