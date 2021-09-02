@@ -13,6 +13,11 @@ fi
 id="$1"
 commit="${2-master}"
 filename="elife-$id.xml"
-url="https://raw.githubusercontent.com/elifesciences/XML-mapping/$commit/$filename"
+url_path="$filename"
+if [ "$id" = "1234567890" ]; then
+    url_path="elife-$id-v1/elife-$id-v1.xml"
+fi
+# https://raw.githubusercontent.com/elifesciences/XML-mapping/master/elife-1234567890-v1/elife-1234567890-v1.xml
+url="https://raw.githubusercontent.com/elifesciences/XML-mapping/$commit/$url_path"
 wget "$url" --output-document "$filename"
 echo "$filename"

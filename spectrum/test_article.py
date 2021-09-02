@@ -12,7 +12,7 @@ from spectrum import input
 from spectrum import checks
 
 SIMPLEST_ARTICLE_ID = 15893
-KITCHEN_SINK_ARTICLE_ID = 666
+KITCHEN_SINK_ARTICLE_ID = '1234567890'
 
 @pytest.mark.continuum
 @pytest.mark.article

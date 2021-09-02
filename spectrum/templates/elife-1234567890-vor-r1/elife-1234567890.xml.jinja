@@ -13,6 +13,7 @@ review-article - Review articles
 
 UPDATE: xmlns:ali="http://www.niso.org/schemas/ali/1.0/" this name space is added in order to add the new license information (see permissions section)
 -->
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving and Interchange DTD v1.2 20190208//EN" "JATS-archivearticle1.dtd">
 <article xmlns:ali="http://www.niso.org/schemas/ali/1.0/" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" article-type="research-article" dtd-version="1.2">
   <front>
     <!-- journal-meta is standard for all articles published by eLife. Can be boilerplate text as this will not change from article to article.
@@ -1811,7 +1812,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
             <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-fig3-figsupp1.tif"/>
           </fig>
           <!-- this is an example of an asset asked later on, so the DOI is the last DOI to prevent renumbering the others -->
-          <media mimetype="video" mime-subtype="mp4" id="fig3video1" xlink:href="elife-{{ article['id'] }}-fig3-video1.mp4">
+          <media mimetype="video" mime-subtype="mp4" id="fig3video1" xlink:href="elife-1234567890-fig3-video1.mp4">
             <label>Figure 3&#x2014;video 1.</label>
             <caption>
               <title>A description of the eLife editorial process.</title>
@@ -1844,7 +1845,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
                         shows how we represent animated gif files.</p>
         <!-- UPDATE: This no longer required: content-type="glencoe play-in-place height-250 width-310"  mime-subtype="wmv" mimetype="video"
                     UPDATE: changed id to videoX -->
-        <media mimetype="video" mime-subtype="mp4" id="video1" xlink:href="elife-{{ article['id'] }}-video1.mp4">
+        <media mimetype="video" mime-subtype="mp4" id="video1" xlink:href="elife-1234567890-video1.mp4">
           <label>Video 1.</label>
           <caption>
             <title>A description of the eLife editorial process.</title>
@@ -1860,7 +1861,7 @@ not add all rids to the xref as it does not work. Only add the first one -->
             </p>
           </caption>
         </media>
-        <media mimetype="video" mime-subtype="gif" id="video2" xlink:href="elife-{{ article['id'] }}-video2.gif">
+        <media mimetype="video" mime-subtype="gif" id="video2" xlink:href="elife-1234567890-video2.gif">
           <!-- UPDATE: animated gifs must process through the Glencoe video workflow but must retain the mime-subtype="gif" in the XML to ensure the online system recognises this-->
           <label>Animation 1.</label>
           <caption>
@@ -4072,7 +4073,7 @@ Appendices must have DOIs -->
               </caption>
               <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-app1-fig1-figsupp1.tif"/>
             </fig>
-            <media mimetype="video" mime-subtype="mp4" id="app1fig1video1" xlink:href="elife-{{ article['id'] }}-app1-fig1-video1.mp4">
+            <media mimetype="video" mime-subtype="mp4" id="app1fig1video1" xlink:href="elife-1234567890-app1-fig1-video1.mp4">
               <label>Appendix 1&#x2014;figure 1&#x2014;video 1.</label>
               <caption>
                 <title>A video supporting Appendix 1&#x2014;figure 1.</title>
@@ -4434,7 +4435,7 @@ Appendices must have DOIs -->
           <title>Negotaition</title>
           <p>Generating the new rules involved negotation with varous vendors and downsteam hosts to ensure display would work for all instances. See <xref ref-type="video" rid="app2video1">Appendix 2&#x2014;Video 1</xref> 
                             and <xref ref-type="table" rid="app2table1">Apendix 2&#x2014;table 1</xref>.</p>
-          <media mimetype="video" mime-subtype="mp4" id="app2video1" xlink:href="elife-{{ article['id'] }}-app2-video1.mp4">
+          <media mimetype="video" mime-subtype="mp4" id="app2video1" xlink:href="elife-1234567890-app2-video1.mp4">
             <label>Appendix 2&#x2014;video 1.</label>
             <caption>
               <title>A descirption of the eLife editorial process.</title>
@@ -4656,7 +4657,7 @@ UPDATE: punctuation between institution and country removed.
           </tbody>
         </table>
       </table-wrap>
-      <media mimetype="video" mime-subtype="mp4" id="sa2video1" xlink:href="elife-{{ article['id'] }}-sa2-video1.mp4">
+      <media mimetype="video" mime-subtype="mp4" id="sa2video1" xlink:href="elife-1234567890-sa2-video1.mp4">
         <label>Author response video 1.</label>
         <caption>
           <title>Caption and/or a title is required for all author response assets.</title>
@@ -4689,6 +4690,37 @@ UPDATE: punctuation between institution and country removed.
           </list>
         </list-item>
       </list>
+    </body>
+  </sub-article>
+  <sub-article article-type="editor-report" id="sa0">
+    <front-stub>
+      <article-id pub-id-type="doi">10.7554/eLife.{{ article['id'] }}.sa0</article-id>
+      <title-group>
+        <article-title>Editor's evaluation</article-title>
+      </title-group>
+      <contrib-group>
+        <contrib contrib-type="author">
+          <name>
+            <surname>Ma</surname>
+            <given-names>Yuting</given-names>
+          </name>
+          <role specific-use="editor">Reviewing Editor</role>
+          <aff>
+            <institution>Suzhou Institute of Systems Medicine</institution>
+            <country>China</country>
+          </aff>
+        </contrib>
+      </contrib-group>
+      <related-object link-type="hasRelatedMaterial" xlink:href="https://sciety.org/articles/activity/10.1101/2020.11.21.391326"/>
+    </front-stub>
+    <body>
+      <p>Collagen is a major component of extracellular matrix. The authors have identified a high-affinity inhibitory 
+            collagen receptor LAIR-1 and a soluble decoy receptor LAIR-2 (with even higher binding affinity to collagen), 
+            which can be therapeutically targeted to block tumor progression. Dr Meyaard and colleagues have also generated 
+            a dimeric LAIR-2 human IgG1 Fc fusion protein NC410 for therapeutic use. With humanized mouse models engrafted 
+            with functional human immune systems (PBMC), they have explored the anti-cancer efficacy of NC410 and revealed 
+            its impact on modulating immune responses. Furthermore, they extended this study to identify biomarkers of 
+            predictive value for NC410-based anti-cancer therapy.</p>
     </body>
   </sub-article>
 </article>

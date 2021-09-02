@@ -14,4 +14,4 @@ export SPECTRUM_TIMEOUT=60  # seconds. speeds up errors, ~300 is typically best
 #python -m pytest -vvv -m journal_cms
 
 # run the 'test_adding_article_fragment' test in 'spectrum/test_article.py'
-#python -m pytest -vvv spectrum/test_article.py::test_adding_article_fragment 
+#python -m pytest -vvv spectrum/test_article.py::test_adding_article_fragment
