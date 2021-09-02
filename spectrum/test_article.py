@@ -180,7 +180,7 @@ def test_googlebot_sees_citation_metadata(generate_article):
 @pytest.mark.search
 @pytest.mark.lax
 def test_searching_for_a_new_article(generate_article, modify_article):
-    template_id = '00666'
+    template_id = '1234567890'
     invented_word = input.invented_word()
     new_article = modify_article(generate_article(template_id), replacements={'falciparum':invented_word})
     _ingest_and_publish_and_wait_for_published(new_article)
