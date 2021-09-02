@@ -28,7 +28,7 @@ def generate_article_id(template_id):
         offset = 10000000000 # 10^10, 10 digit msid
         maximum_prefix = 92233720
     prefix = random.randrange(1, maximum_prefix + 1)
-    return str(prefix * offset + template_id)
+    return str((prefix * offset) + template_id)
 
 def article_zip(template_id, article_id=None, template_variables=None):
     if template_variables is None:
