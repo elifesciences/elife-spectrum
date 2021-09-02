@@ -294,7 +294,14 @@ def test_bioprotocol_has_protocol_data(generate_article):
 @pytest.mark.journal
 @pytest.mark.continuum
 def test_article_feature(generate_article):
-    "publish the kitchen sink XML and ensure the final article has all of the expected features."
+    """publish the kitchen sink XML and ensure the final article has all of the expected features.
+    individual feature tests are added by:
+
+    1. adding test name as a string to `spectrum.checks.JOURNAL_ARTICLE_FEATURES`
+    2. added the test itself to the class `spectrum.checks.JournalCheck`
+
+    this ensures multiple publications of the same article are not required to test individual features.
+    """
     # create+publish+wait for article, etc
     template_id = KITCHEN_SINK_ARTICLE_ID
     new_article = generate_article(template_id)

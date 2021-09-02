@@ -611,7 +611,7 @@ class JournalCheck:
         # find the `h3` element whose value is ...
         section_header_h3 = soup.find("h3", string="Publication history")
 
-        # from there we can navigate up and across to the pub-history container ...
+        # from there we can navigate up and across to the `pub-history` element ...
         pub_history_div = section_header_h3.findParent().findNextSibling()
 
         # and extract the value of the first `li` ...
@@ -620,8 +620,6 @@ class JournalCheck:
         # that should look like:
         #   `Preprint posted: <a href="https://doi.org/10.1101/2020.11.21.391326">November 22, 2020 (view preprint)</a>`
         assert first_list_item_text.startswith("Preprint posted:")
-
-        # return stuff?
 
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
