@@ -5,7 +5,7 @@ source venv/bin/activate
 export SPECTRUM_PROCESSES=1 # run tests serially
 export SPECTRUM_ENVIRONMENT=continuumtest  # or end2end. required.
 export SPECTRUM_LOG_LEVEL=DEBUG  # more output
-export SPECTRUM_TIMEOUT=60  # speeds up errors, ~300 is typically best
+export SPECTRUM_TIMEOUT=60  # seconds. speeds up errors, ~300 is typically best
 
 # run all tests in spectrum/test_journal_cms.py, ignoring anything on stdout
 #python -m pytest -vvv --capture=no spectrum/test_journal_cms.py

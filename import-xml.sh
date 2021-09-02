@@ -1,4 +1,6 @@
 #!/bin/bash
+# used to format the kitchen sink XML and replace mentions of the manuscript ID with a Jinja template placeholder.
+# see 'update-kitchen-sinks-from-github.sh'
 set -eo pipefail
 
 if [ "$#" != 2 ]; then
@@ -16,5 +18,8 @@ source_filename="$2"
 # 3. *excluding* matches that contain '<media mimetype=\"video\"' 
 # 4. replacing the '$id' value with a jinja expression '{{ article['id'] }}'
 # 5. writing the result to the matching test template
+
+# lsh@2021-09-02: excluding videos in template will also affect the 00777 kitchen sink.
+# this hasn't been an issue *yet* but happy to investigate and fix it if it does.
 
 xmllint -format "$source_filename" | sed -e "/<media mimetype=\"video\"/!s/$id/{{ article['id'] }}/g" > "spectrum/templates/elife-$id-vor-r1/elife-$id.xml.jinja"

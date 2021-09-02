@@ -1,4 +1,6 @@
 #!/bin/bash
+# downloads kitchen sink XML and replaces manuscript IDs with template placeholders.
+# 'import-xml.sh' writes a file that will be used during elife-spectrum testing.
 set -e
 
 commit=${1:-master}
