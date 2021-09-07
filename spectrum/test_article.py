@@ -12,6 +12,7 @@ from spectrum import input
 from spectrum import checks
 
 SIMPLEST_ARTICLE_ID = 15893
+KITCHEN_SINK_ARTICLE_ID = '1234567890'
 
 @pytest.mark.continuum
 @pytest.mark.article
@@ -119,12 +120,12 @@ def test_article_subject_change(generate_article):
     # TODO: for stability, wait until all the publishing workflows have finished. Github xml is enough
     checks.GITHUB_XML.article(id=article.id(), version=article.version(), text_match='cytomegalovirus')
 
-    subjects_configuration = generator.article_subjects({article.id(): "Immunology"})
+    subjects_configuration = generator.article_subjects({article.id(): "Immunology and Inflammation"})
     input.BOT_CONFIGURATION.upload(subjects_configuration.filename(), 'article_subjects_data/article_subjects.csv')
     articles.feed_silent_correction(article)
-    checks.API.wait_article(id=article.id(), subjects=[{'name':'Immunology', 'id': 'immunology'}])
+    checks.API.wait_article(id=article.id(), subjects=[{'name':'Immunology and Inflammation', 'id': 'immunology-inflammation'}])
     # are there caches that need to expire first?
-    checks.JOURNAL.article_only_subject(id=article.id(), version=article.version(), subject_id='immunology')
+    checks.JOURNAL.article_only_subject(id=article.id(), version=article.version(), subject_id='immunology-inflammation')
 
 @pytest.mark.continuum
 @pytest.mark.bot
@@ -180,7 +181,7 @@ def test_googlebot_sees_citation_metadata(generate_article):
 @pytest.mark.search
 @pytest.mark.lax
 def test_searching_for_a_new_article(generate_article, modify_article):
-    template_id = '00666'
+    template_id = KITCHEN_SINK_ARTICLE_ID
     invented_word = input.invented_word()
     new_article = modify_article(generate_article(template_id), replacements={'falciparum':invented_word})
     _ingest_and_publish_and_wait_for_published(new_article)
@@ -225,6 +226,8 @@ def test_article_propagates_to_github(generate_article):
     article = generate_article(SIMPLEST_ARTICLE_ID)
     _ingest_and_publish_and_wait_for_published(article)
     checks.GITHUB_XML.article(id=article.id(), version=article.version())
+
+#
 
 @pytest.mark.journal_cms
 @pytest.mark.continuum
@@ -283,6 +286,32 @@ def test_bioprotocol_has_protocol_data(generate_article):
     _ingest_and_publish_and_wait_for_published(article)
     input.BIOPROTOCOL.create_bioprotocol_data(article.id())
     checks.API.bioprotocol(article.id())
+
+#
+# article features
+#
+
+@pytest.mark.journal
+@pytest.mark.continuum
+def test_article_feature(generate_article):
+    """publish the kitchen sink XML and ensure the final article has all of the expected features.
+    individual feature tests are added by:
+
+    1. adding test name as a string to `spectrum.checks.JOURNAL_ARTICLE_FEATURES`
+    2. added the test itself to the class `spectrum.checks.JournalCheck`
+
+    this ensures multiple publications of the same article are not required to test individual features.
+    """
+    # create+publish+wait for article, etc
+    template_id = KITCHEN_SINK_ARTICLE_ID
+    new_article = generate_article(template_id)
+    _ingest_and_publish_and_wait_for_published(new_article)
+
+    for method_name in checks.JOURNAL_ARTICLE_FEATURES:
+        method = getattr(checks.JOURNAL, method_name)
+        # `checks.JOURNAL.feature_preprint(34213412432, 1)`
+        method(new_article.id(), new_article.version())
+
 
 #
 

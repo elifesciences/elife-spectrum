@@ -4,7 +4,7 @@ def updateSummary;
 elifeUpdatePipeline(
     { commit ->
         updateSummary = sh(script: "./update-kitchen-sinks-from-github.sh", returnStdout: true).trim().tr("\n", ", ")
-        sh "git add spectrum/templates/elife-00666-* spectrum/templates/elife-00777-*"
+        sh "git add spectrum/templates/elife-1234567890-* spectrum/templates/elife-00777-*"
     },
     {
         return "Updated kitchen sinks from Github (${updateSummary})"

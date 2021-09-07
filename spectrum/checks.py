@@ -595,6 +595,32 @@ class JournalCheck:
         subjects_links = self._links(body, self.CLASS_SUBJECT_LINK)
         assert subjects_links == ['/subjects/%s' % subject_id], "Incorrect subjects `%s` linked from article page %s (expected subject id `%s`)" % (subjects_links, url, subject_id)
 
+    def _article_soup(self, id, version):
+        "convenience, fetches the article page and returns the response body as a BeautifulSoup soup object"
+        url = _build_url("/articles/%s" % id, self._host)
+        if version:
+            url = "%sv%s" % (url, version)
+        response = self.just_load(url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        return soup
+
+    def article_feature_preprint(self, id, version):
+        "ensure a pre-print exists"
+        soup = self._article_soup(id, version)
+
+        # find the `h3` element whose value is ...
+        section_header_h3 = soup.find("h3", string="Publication history")
+
+        # from there we can navigate up and across to the `pub-history` element ...
+        pub_history_div = section_header_h3.findParent().findNextSibling()
+
+        # and extract the value of the first `li` ...
+        first_list_item_text = pub_history_div.select("ol > li:nth-of-type(1)")[0].text
+
+        # that should look like:
+        #   `Preprint posted: <a href="https://doi.org/10.1101/2020.11.21.391326">November 22, 2020 (view preprint)</a>`
+        assert first_list_item_text.startswith("Preprint posted:")
+
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
         LOGGER.info("Loading %s", url)
@@ -617,10 +643,17 @@ class JournalCheck:
         return self.generic("/magazine")
 
     def generic(self, path):
+        "creates a URL with the given `path` and `self.host`, fetches it and fetches all (most) links found within it."
         response = self.just_load(path)
+
+        # if the response url originates from the same host as this configured Check object,
+        # also check that all urls in <script>, <link>, <video>, <source>, srcset="" load.
+        # does "^https://end2end--journal.elifesciences.org/foo/bar" start with "^https://end2end--journal.elifesciences.org" ?
         match = re.match("^"+self._host, response.url)
         if match:
             self._assert_all_resources_of_page_load(response.text)
+
+        # check all 'figure' and 'pdf' resource links work
         download_links = self._download_links(response.text)
         LOGGER.info("Found download links: %s", pformat(download_links))
         self._assert_all_load(download_links)
@@ -852,6 +885,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
     """Checks that all <script>, <link>, <video>, <source>, srcset="" load, by issuing HEAD requests that must give 200 OK.
 
     Returns the BeautifulSoup for reuse"""
+
     def _srcset_values(srcset):
         values = []
         without_descriptors = re.sub(" \\d+(\\.\\d+)?[wx],?", " ", srcset)
@@ -860,6 +894,7 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
                 values.append(candidate_string)
         LOGGER.debug("srcset values: %s", values)
         return values
+
     def _resources_from(soup):
         resources = []
         for img in soup.find_all("img"):
@@ -879,7 +914,8 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
             srcset = media_source.get("srcset")
             if srcset:
                 resources.extend(_srcset_values(srcset))
-        return list(set(resources))
+        return sorted(list(set(resources)))
+
     soup = BeautifulSoup(html_content, "html.parser")
     resources = _resources_from(soup)
     LOGGER.debug("Found resources %s", pformat(resources), extra=extra)
@@ -908,16 +944,24 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
 
     wait(futures, HTTP_TIMEOUT)
 
+    failures = []
+
     for url, future in zip(urls, futures):
         response = future.result()
         LOGGER.debug("Loading (%s) resource %s", resource_checking_method, url, extra=extra)
 
         if retries.retry_request(response):
-            LOGGER.warning("Loading (%s) resource %s again due to %s status code", resource_checking_method, url, response.status_code, extra=extra)
+            LOGGER.warning("Loading (%s) resource %s again due to %s status code", \
+                           resource_checking_method, url, response.status_code, extra=extra)
             response = requests.get(url)
 
-        assert_status_code(response, 200, url)
-        RESOURCE_CACHE[url] = response.status_code
+        try:
+            assert_status_code(response, 200, url)
+            RESOURCE_CACHE[url] = response.status_code
+        except AssertionError as e:
+            failures.append(str(e))
+
+    assert not failures, "%s requests failed:\n%s" % (len(failures), "\n".join(failures))
 
 def _build_url(path, host):
     if path.startswith("http://") or path.startswith("https://"):
@@ -1055,6 +1099,9 @@ JOURNAL_LISTING_PATHS = [
     '/inside-elife',
     '/labs',
     '/podcast',
+]
+JOURNAL_ARTICLE_FEATURES = [
+    'article_feature_preprint',
 ]
 JOURNAL_LISTING_OF_LISTING_PATHS = [
     '/archive/2016',

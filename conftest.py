@@ -44,7 +44,7 @@ def pytest_addoption(parser):
 def article_id_filter(request):
     return request.config.getoption('--article-id')
 
-@pytest.yield_fixture
+@pytest.fixture
 #@pytest.fixture in pytest>=2.10
 def generate_article():
     created_articles = []
@@ -55,7 +55,7 @@ def generate_article():
     yield from_template_id
     _clean_all(created_articles)
 
-@pytest.yield_fixture
+@pytest.fixture
 def version_article():
     created_articles = []
     def from_original_article(original_article, new_version):
@@ -65,7 +65,7 @@ def version_article():
     yield from_original_article
     _clean_all(created_articles)
 
-@pytest.yield_fixture
+@pytest.fixture
 def modify_article():
     created_articles = []
     def from_original_article(original_article, new_version=None, replacements=None):
@@ -76,7 +76,7 @@ def modify_article():
     yield from_original_article
     _clean_all(created_articles)
 
-@pytest.yield_fixture
+@pytest.fixture
 def poa_csvs():
     created_files = []
 
@@ -96,7 +96,7 @@ def poa_csvs():
 
     _remove_all(created_files)
 
-@pytest.yield_fixture
+@pytest.fixture
 def poa_zip():
     created_files = []
 
@@ -115,8 +115,7 @@ def poa_zip():
 
     _remove_all(created_files)
 
-@pytest.yield_fixture
-#@pytest.fixture in pytest>=2.10
+@pytest.fixture
 def generate_digest():
     created_digests = []
     def from_template_id(template_id):
@@ -126,8 +125,7 @@ def generate_digest():
     yield from_template_id
     _remove_all(created_digests)
 
-@pytest.yield_fixture
-#@pytest.fixture in pytest>=2.10
+@pytest.fixture
 def get_selenium_driver(request):
     test_function = "%s.%s" % (request.module.__name__, request.function.__name__)
     drivers = []

@@ -14,17 +14,26 @@ services exist. It is here real world user processes and the interactions betwee
 The most important process at eLife is publishing an article and ensuring it appears in all dependent services like the
 journal, the search engine, metrics, reporting, buckets, archival, etc.
 
-User interactions to drive the tests are simulated through the [input.py](./spectrum/input.py) module and the various 
-logic for checking API endpoints and polling and handling pagination are encapsulated in [checks.py](./spectrum.py).
+User interactions to drive the tests are simulated through the [input.py](./spectrum/input.py) module.
+
+The various logic for checking API endpoints, polling and handling pagination are encapsulated in [checks.py](./spectrum.py).
 
 The actual tests themselves live in the modules prefixed with `test_`, like [test_article.py](./spectrum/test_article.py),
 and are executed by `pytest`. See below for options on running tests.
 
 ## Requirements
 
+To run the tests from your local machine in the `continuumtest` environment, you need:
+
 * [git-lfs](https://git-lfs.github.com/) to be installed to download the large `.tif` files.
 * [docker](https://www.docker.com) and [docker-compose](https://docs.docker.com/compose/) to run [Selenium](http://www.seleniumframework.com)
+
+and
+
 * a configuration file '`app.cfg`' found on [elife-libraries](https://github.com/elifesciences/elife-libraries-formula) project instances. [Template here](https://github.com/elifesciences/builder-base-formula/blob/master/elife/config/srv-elife-spectrum-app.cfg).
+
+The `app.cfg` file also contains credentials so you must already have permission to access `builder-private` at least, 
+and understand the responsibilities of keeping any machines these credentials reside on secure.
 
 ## Usage
 

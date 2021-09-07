@@ -9,11 +9,15 @@ cd $DIR
 SPECTRUM_PROCESSES=${SPECTRUM_PROCESSES:-4}
 
 # clean up possible previous builds
-rm -f build/junit.xml
-rm -f build/test.log
+./reset-build.sh
 
 # sanity check
 ./pylint.sh
 
 # bulk of the tests
-exec venv/bin/py.test -v --junitxml build/junit.xml -s -n $SPECTRUM_PROCESSES spectrum --assert=plain $*
+./venv/bin/pytest \
+    --verbose \
+    --junitxml build/junit.xml \
+    --capture=no \
+    --numprocesses=$SPECTRUM_PROCESSES \
+    spectrum $*
