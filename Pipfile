@@ -11,7 +11,7 @@ backoff = "==1.4.3"
 beautifulsoup4 = "==4.5.1"
 boto = "~=2.34"
 boto3 = "~=1.11"
-econtools = {git = "git://github.com/elifesciences/econ-tools.git", ref = "master"}
+econtools = {git = "https://github.com/elifesciences/econ-tools.git", ref = "09e69624cb5697f16c68ab9118bb14b095f87710"}
 lxml = "~=4.1"
 pytest = "~=5.3"
 pytest-xdist = "~=1.14"
@@ -27,4 +27,3 @@ MechanicalSoup = "~=0.6"
 
 [dev-packages]
 pylint = "~=2.4"
-

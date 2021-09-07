@@ -19,7 +19,3 @@ VIRTUAL_ENV="venv" pipenv update --dev
 datestamp=$(date -I)
 echo "# file generated $datestamp - see update-dependencies.sh" > requirements.txt
 VIRTUAL_ENV="venv" pipenv run pip freeze >> requirements.txt
-
-# todo: how to handle this?
-sed -i -e "s|^econtools==.*|$(cat Pipfile | grep egg=econtools)|" requirements.txt
-sed -i -e "s|^spectrumprivate==.*|$(cat Pipfile | grep egg=spectrumprivate)|" requirements.txt
