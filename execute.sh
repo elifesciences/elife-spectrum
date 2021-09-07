@@ -12,7 +12,7 @@ SPECTRUM_PROCESSES=${SPECTRUM_PROCESSES:-4}
 ./reset-build.sh
 
 # sanity check
-./pylint.sh
+./lint.sh
 
 # bulk of the tests
 ./venv/bin/pytest \
