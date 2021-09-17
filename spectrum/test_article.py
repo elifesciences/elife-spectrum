@@ -1,4 +1,5 @@
 "Test that involve publishing articles and checking their visibility and correctness throughout different systems"
+
 from datetime import datetime
 from os import path
 import re
@@ -309,7 +310,7 @@ def test_article_feature(generate_article):
 
     for method_name in checks.JOURNAL_ARTICLE_FEATURES:
         method = getattr(checks.JOURNAL, method_name)
-        # `checks.JOURNAL.feature_preprint(34213412432, 1)`
+        # "checks.JOURNAL.feature_preprint(34213412432, 1)"
         method(new_article.id(), new_article.version())
 
 

@@ -621,6 +621,11 @@ class JournalCheck:
         #   `Preprint posted: <a href="https://doi.org/10.1101/2020.11.21.391326">November 22, 2020 (view preprint)</a>`
         assert first_list_item_text.startswith("Preprint posted:")
 
+    def article_feature_editors_evaluation(self, id, version):
+        "ensure an editor's evaluation exists"
+        soup = self._article_soup(id, version)
+        assert False, "editor's evaluation section not found"
+
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
         LOGGER.info("Loading %s", url)
@@ -1102,6 +1107,7 @@ JOURNAL_LISTING_PATHS = [
 ]
 JOURNAL_ARTICLE_FEATURES = [
     'article_feature_preprint',
+    'article_feature_editors_evaluation',
 ]
 JOURNAL_LISTING_OF_LISTING_PATHS = [
     '/archive/2016',
