@@ -11,9 +11,12 @@ LOGGER = logger.logger(__name__)
 
 def retry_request(response):
     retry_these = [
-        # lsh@2021-07-27: added as there appears to be a case in the interaction of iiif and journal-cms
+        # lsh@2021-07-27: added 404 as there appears to be a case in the interaction of iiif and journal-cms
         # where journal-cms doesn't have the image ready.
         404,
+        # lsh@2021-09-21: added 400 as Observer will return a 400 bad request when a report is requested with
+        # an unknown subject.
+        400,
         502,
         504
     ]
