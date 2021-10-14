@@ -624,6 +624,9 @@ class JournalCheck:
     def article_feature_editors_evaluation(self, id, version):
         "ensure an editor's evaluation exists"
         soup = self._article_soup(id, version)
+
+        print(soup)
+        
         assert False, "editor's evaluation section not found"
 
     def search(self, query, count=1):
