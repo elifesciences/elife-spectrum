@@ -22,7 +22,7 @@ from spectrum.mailcatcher import MailcatcherCheck
 
 
 GLOBAL_TIMEOUT = polling.GLOBAL_TIMEOUT
-HTTP_TIMEOUT = 30
+HTTP_TIMEOUT = 30 # seconds
 LOGGER = logger.logger(__name__)
 
 class BucketFileCheck:
