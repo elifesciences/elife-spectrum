@@ -625,9 +625,14 @@ class JournalCheck:
         "ensure an editor's evaluation exists"
         soup = self._article_soup(id, version)
 
-        print(soup)
+        expected_title = "Editor's evaluation"
+        expected_link = "https://sciety.org/articles/activity/10.1101/2020.11.21.391326"
 
-        assert False, "editor's evaluation section not found"
+        section_header_h2 = soup.find("h2", string=expected_title)
+        editor_evaluation_div = section_header_h2.findParent().findNextSibling()
+        second_list_item_link_href = editor_evaluation_div.select("ul > li:nth-of-type(2) a")[0]['href']
+
+        assert second_list_item_link_href == expected_link
 
     def search(self, query, count=1):
         url = _build_url("/search?for=%s" % query, self._host)
