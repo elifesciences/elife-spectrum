@@ -1,4 +1,5 @@
 "Test that involve publishing articles and checking their visibility and correctness throughout different systems"
+
 from datetime import datetime
 from os import path
 import re
@@ -306,11 +307,14 @@ def test_article_feature(generate_article):
     template_id = KITCHEN_SINK_ARTICLE_ID
     new_article = generate_article(template_id)
     _ingest_and_publish_and_wait_for_published(new_article)
+    article_id, article_version = new_article.id(), new_article.version()
+
+    #article_id, article_version = 42879711234567890, 1
 
     for method_name in checks.JOURNAL_ARTICLE_FEATURES:
         method = getattr(checks.JOURNAL, method_name)
-        # `checks.JOURNAL.feature_preprint(34213412432, 1)`
-        method(new_article.id(), new_article.version())
+        # "checks.JOURNAL.feature_preprint(34213412432, 1)"
+        method(article_id, article_version)
 
 
 #
