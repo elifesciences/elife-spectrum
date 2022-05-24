@@ -149,7 +149,7 @@ def test_article_with_unicode_content(generate_article):
     article = generate_article(template_id=19532)
     _ingest_and_publish(article)
     checks.API.wait_article(id=article.id())
-    journal_page = checks.JOURNAL.article(id=article.id(), has_figures=article.has_figures())
+    journal_page = checks.JOURNAL.article(id=article.id())
     assert "Szymon Łęski" in journal_page
 
 @pytest.mark.journal
@@ -325,8 +325,8 @@ def _wait_for_published(article):
 
     checks.ARCHIVE.of(id=article.id(), version=article.version())
     article_from_api = checks.API.article(id=article.id(), version=article.version())
-    checks.JOURNAL.article(id=article.id(), has_figures=article.has_figures())
-    checks.JOURNAL_CDN.article(id=article.id(), has_figures=article.has_figures())
+    checks.JOURNAL.article(id=article.id())
+    checks.JOURNAL_CDN.article(id=article.id())
     return article_from_api
 
 def _publish(article, run_after):

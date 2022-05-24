@@ -554,7 +554,6 @@ class JournalCheck:
     CSS_PAGER_LINK = '.pager a'
     CSS_ASSET_VIEWER_DOWNLOAD_LINK = '.asset-viewer-inline__download_all_link'
     CSS_DOWNLOAD_LINK = '#downloads a'
-    CLASS_FIGURES_LINK = 'view-selector__link--figures'
     CLASS_SUBJECT_LINK = 'content-header__subject_link'
 
     def __init__(self, host, resource_checking_method='head', query_string=None, headers=None):
@@ -572,18 +571,12 @@ class JournalCheck:
     def with_headers(self, headers):
         return JournalCheck(self._host, self._resource_checking_method, self._query_string, headers)
 
-    def article(self, id, has_figures=False, version=None):
+    def article(self, id, version=None):
         url = _build_url("/articles/%s" % id, self._host)
         if version:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
         body = self.generic(url)
-        figures_page_links = self._links(body, self.CLASS_FIGURES_LINK)
-        if has_figures:
-            assert len(figures_page_links) == 1, "Expected a single figures page link with selector %s, found %s" % (self.CLASS_FIGURES_LINK, figures_page_links)
-            figures_url = _build_url(figures_page_links[0], self._host)
-            LOGGER.info("Loading figures page %s", figures_url, extra={'id':id})
-            self.generic(url)
         return body
 
     def article_only_subject(self, id, subject_id, version=None):
