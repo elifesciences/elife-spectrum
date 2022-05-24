@@ -571,12 +571,16 @@ class JournalCheck:
     def with_headers(self, headers):
         return JournalCheck(self._host, self._resource_checking_method, self._query_string, headers)
 
-    def article(self, id, version=None):
+    def article(self, id, has_figures_page=False, version=None):
         url = _build_url("/articles/%s" % id, self._host)
         if version:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
         body = self.generic(url)
+        if has_figures_page:
+            figures_url = "%s/figures" % (url)
+            LOGGER.info("Loading figures page %s", figures_url, extra={'id':id})
+            self.generic(figures_url)
         return body
 
     def article_only_subject(self, id, subject_id, version=None):

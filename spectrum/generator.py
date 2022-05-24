@@ -206,6 +206,9 @@ class ArticleZip:
     def figure_names(self):
         return self._figure_names
 
+    def has_figures_page(self):
+        return len(self._figure_names) > 0
+
     def has_pdf(self):
         return self._has_pdf
 
