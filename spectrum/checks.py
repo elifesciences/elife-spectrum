@@ -575,22 +575,28 @@ class JournalCheck:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
         body = self.generic(url)
-        # lsh@2022-06-07: figures now have their own page but whose checks are still included
+        # lsh@2022-06-07: figures now have their own page but their checks are still included
         # as part of this `article` method's tests.
         self.article_figures(id, version)
         return body
 
     def article_figures(self, id, version=None):
         """requests the article's figures page.
-        'insight' and 'editorial' article types do not have figure pages and will return None instead."""
+        certain article types do not have a figures page and will return `None` instead."""
         url = _build_url("/articles/%s" % id, self._host) # https://elifesciences.org/articles/75428
         if version:
-            # huh! didn't know the journal did this.
             url = "%sv%s" % (url, version) # https://elifesciences.org/articles/75428v2
         url += "/figures" # https://elifesciences.org/articles/75428v2/figures
 
-        # todo: capture 404 and check if insight/editorial
+        # don't expect a figures page for certain article types
+        response = self.just_load(url)
+        soup = BeautifulSoup(response.text, "lxml-xml")
+        article_type = soup.find("div", {"class": "global-wrapper"}).attrs['data-item-type']
+        if article_type in ['insight', 'editorial', 'correction']:
+            LOGGER.info("Loading figures skipped for article type %r" % article_type)
+            return
 
+        # otherwise, check the figures page and all of it's links
         LOGGER.info("Loading figures %s", url, extra={'id':id})
         body = self.generic(url)
         return body
