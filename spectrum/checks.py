@@ -591,7 +591,7 @@ class JournalCheck:
 
         # todo: capture 404 and check if insight/editorial
 
-        LOGGER.info("Loading figures %s", url, extra={'id':id})
+        LOGGER.info("Loading figures %s" % url, extra={'id':id})
         body = self.generic(url)
         return body
 
