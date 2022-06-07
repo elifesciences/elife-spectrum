@@ -1,8 +1,6 @@
-"""
-Read-only, headless checks against services under test.
+"""Read-only headless checks against services under test.
+Contains anything from HTTP(S) calls to REST JSON APIs to S3 checks over the presence or recent modification of files."""
 
-Contains anything from HTTP(S) calls to REST JSON APIs to S3 checks over the presence or recent modification of files.
-"""
 from concurrent.futures import ThreadPoolExecutor, wait
 from datetime import datetime
 from pprint import pformat
@@ -576,6 +574,24 @@ class JournalCheck:
         if version:
             url = "%sv%s" % (url, version)
         LOGGER.info("Loading %s", url, extra={'id':id})
+        body = self.generic(url)
+        # lsh@2022-06-07: figures now have their own page but whose checks are still included
+        # as part of this `article` method's tests.
+        self.article_figures(id, version)
+        return body
+
+    def article_figures(self, id, version=None):
+        """requests the article's figures page.
+        'insight' and 'editorial' article types do not have figure pages and will return None instead."""
+        url = _build_url("/articles/%s" % id, self._host) # https://elifesciences.org/articles/75428
+        if version:
+            # huh! didn't know the journal did this.
+            url = "%sv%s" % (url, version) # https://elifesciences.org/articles/75428v2
+        url = "%s/figures" # https://elifesciences.org/articles/75428v2/figures
+
+        # todo: capture 404 and check if insight/editorial
+
+        LOGGER.info("Loading figures %s", url, extra={'id':id})
         body = self.generic(url)
         return body
 
