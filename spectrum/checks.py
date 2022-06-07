@@ -587,11 +587,11 @@ class JournalCheck:
         if version:
             # huh! didn't know the journal did this.
             url = "%sv%s" % (url, version) # https://elifesciences.org/articles/75428v2
-        url = "%s/figures" # https://elifesciences.org/articles/75428v2/figures
+        url += "/figures" # https://elifesciences.org/articles/75428v2/figures
 
         # todo: capture 404 and check if insight/editorial
 
-        LOGGER.info("Loading figures %s" % url, extra={'id':id})
+        LOGGER.info("Loading figures %s", url, extra={'id':id})
         body = self.generic(url)
         return body
 
