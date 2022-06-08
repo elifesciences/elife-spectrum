@@ -586,7 +586,7 @@ class JournalCheck:
         url = _build_url("/articles/%s" % id, self._host) # https://elifesciences.org/articles/75428
         if version:
             url = "%sv%s" % (url, version) # https://elifesciences.org/articles/75428v2
-        url += "/figures" # https://elifesciences.org/articles/75428v2/figures
+        figures_url += "/figures" # https://elifesciences.org/articles/75428v2/figures
 
         # don't expect a figures page for certain article types
         response = self.just_load(url)
@@ -598,7 +598,7 @@ class JournalCheck:
 
         # otherwise, check the figures page and all of it's links
         LOGGER.info("Loading figures %s", url, extra={'id':id})
-        body = self.generic(url)
+        body = self.generic(figures_url)
         return body
 
     def article_only_subject(self, id, subject_id, version=None):
