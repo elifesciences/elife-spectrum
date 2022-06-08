@@ -590,8 +590,12 @@ class JournalCheck:
 
         # don't expect a figures page for certain article types
         response = self.just_load(url)
-        soup = BeautifulSoup(response.text, "lxml-xml")
-        article_type = soup.find("div", {"class": "global-wrapper"}).attrs['data-item-type']
+        response_text = response.text
+        LOGGER.info("got text: %s", response_text)
+        soup = BeautifulSoup(response_text, "lxml-xml")
+        article_type = soup.find("div", {"class": "global-wrapper"})
+        LOGGER.info("got type: %s", article_type)
+        article_type = article_type.attrs['data-item-type']
         if article_type in ['insight', 'editorial', 'correction']:
             LOGGER.info("Loading figures skipped for article type %r" % article_type)
             return
