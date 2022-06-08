@@ -586,7 +586,7 @@ class JournalCheck:
         url = _build_url("/articles/%s" % id, self._host) # https://elifesciences.org/articles/75428
         if version:
             url = "%sv%s" % (url, version) # https://elifesciences.org/articles/75428v2
-        figures_url += "/figures" # https://elifesciences.org/articles/75428v2/figures
+        figures_url = url + "/figures" # https://elifesciences.org/articles/75428v2/figures
 
         # don't expect a figures page for certain article types
         response = self.just_load(url)
