@@ -594,7 +594,7 @@ class JournalCheck:
         #LOGGER.info("got text: %s", response_text)
         soup = BeautifulSoup(response_text, "html.parser")
         article_type = soup.find("div", {"class": "global-wrapper"})
-        LOGGER.info("got type: %s", article_type)
+        #LOGGER.info("got type: %s", article_type)
         article_type = article_type.attrs['data-item-type']
         if article_type in ['insight', 'editorial', 'correction']:
             LOGGER.info("Loading figures skipped for article type %r" % article_type)
