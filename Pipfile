@@ -22,7 +22,11 @@ requests = "~=2.20"
 requests-futures = "~=0.9.7"
 selenium = "~=3.14"
 spectrumprivate = {git = "ssh://git@github.com/elifesciences/elife-spectrum-private.git", ref = "91371987bee96747b9cef6dfb7f63d0b04d4a048"}
+# pinned, Jinja2 depends on MarkupSafe (same guy/org), which removed a feature in a minor version.
+# - https://github.com/pallets/jinja/issues/1585
+# - https://github.com/pallets/markupsafe/issues/286
 Jinja2 = "~=2.10"
+MarkupSafe = "==2.0.1"
 MechanicalSoup = "~=0.6"
 
 [dev-packages]
