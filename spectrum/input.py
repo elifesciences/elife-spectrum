@@ -131,8 +131,8 @@ class JournalCmsSession:
             "Response status of %s was: %s\nBody: %s" % (filtered_content_url, filtered_content_page.status_code, filtered_content_page.content)
 
         try:
-            view_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, text=id).get('href'))
-            edit_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-operations').find('li', 'edit').find('a', href=True, text='Edit').get('href'))
+            view_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, string=id).get('href'))
+            edit_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-operations').find('li', 'edit').find('a', href=True, string='Edit').get('href'))
         except (AttributeError, TypeError):
             raise AssertionError('Edit link not found for article %s when loading URL %s' % (id, filtered_content_url))
 
