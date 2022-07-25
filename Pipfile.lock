@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "810522cd3d57dc2bfbd0b4fcfd469e76f7c6fe906fa9f66836f7ef61ae76b8a9"
+            "sha256": "e432329e072a9371abee79854bd67501d539d1d78a74f574b0bb77b6590da0f9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -34,19 +34,19 @@
         },
         "backoff": {
             "hashes": [
-                "sha256:bc8ef5a3b0cc7e90d56dd4d9d385557ada1a6dbdfcdd2b44038beeabae119038"
+                "sha256:61928f8fa48d52e4faa81875eecf308eccfb1016b018bb6bd21e05b5d90a96c5",
+                "sha256:ccb962a2378418c667b3c979b504fdeb7d9e0d29c0579e3b13b86467177728cb"
             ],
             "index": "pypi",
-            "version": "==1.4.3"
+            "version": "==1.11.1"
         },
         "beautifulsoup4": {
             "hashes": [
-                "sha256:35815098d9d0bf5d3a782346a3945b000592d0e93e2538a502d0d6807130d675",
-                "sha256:3c9474036afda9136aac6463def733f81017bf9ef3510d25634f335b0c87f5e1",
-                "sha256:bb3dba571c2f7ddcaf3e70ad8b67878a85ac41889dcba75a30b8f7b0b5960b6d"
+                "sha256:577b9e1c36d2ada780d807c5622e889d43172466658c2eb239e97296965cdddb",
+                "sha256:ac98f868e1cb8eb9932a61be75b4f7018a118a490e7fdb424a74a982430cfcbd"
             ],
             "index": "pypi",
-            "version": "==4.5.1"
+            "version": "==4.11.0"
         },
         "boto": {
             "hashes": [
@@ -57,19 +57,19 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:1822c1524c5be007b966498cd196a040a1bd414c8aca7b270431a10d3ade8294",
-                "sha256:2bc600c88d963bbf98cb1244e34f5b7c889a861121b95041c6a47f917fa46748"
+                "sha256:8844bbcb69ac0afc68225b58abe105852231cf1b562e6c8c9eb6b2b97fd4757a",
+                "sha256:b1855ede59e725b968d6336908ffc864b65985ca441d730625b09c43ccd6413b"
             ],
             "index": "pypi",
-            "version": "==1.24.35"
+            "version": "==1.24.36"
         },
         "botocore": {
             "hashes": [
-                "sha256:9949d61959476b5a34408881bdb98f54b0642238ffb217c5260124ec58fb0c72",
-                "sha256:d2e708dd766b21c8e20a57ce1a90e98d324f871f81215efbc2dddaa42d13c551"
+                "sha256:3119ce186053b9bf6bd0bd0ad19a8cedeb626b205ce6ad26ea0894634f702cd5",
+                "sha256:8109526f55742539d2311d742b40c89e65781ad18966e577dda360cd55c9d047"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==1.27.35"
+            "version": "==1.27.36"
         },
         "certifi": {
             "hashes": [
@@ -539,6 +539,14 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.15.0"
+        },
+        "soupsieve": {
+            "hashes": [
+                "sha256:3b2503d3c7084a42b1ebd08116e5f81aadfaea95863628c80a3b774a11b7c759",
+                "sha256:fc53893b3da2c33de295667a0e19f078c14bf86544af307354de5fcf12a3f30d"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==2.3.2.post1"
         },
         "spectrumprivate": {
             "git": "ssh://git@github.com/elifesciences/elife-spectrum-private.git",

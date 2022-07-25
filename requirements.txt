@@ -1,11 +1,11 @@
-# file generated 2022-07-22 - see update-dependencies.sh
+# file generated 2022-07-25 - see update-dependencies.sh
 astroid==2.3.3
 attrs==20.3.0
-backoff==1.4.3
-beautifulsoup4==4.5.1
+backoff==1.11.1
+beautifulsoup4==4.11.0
 boto==2.49.0
-boto3==1.24.35
-botocore==1.27.35
+boto3==1.24.36
+botocore==1.27.36
 certifi==2022.6.15
 charset-normalizer==2.1.0
 contextlib2==21.6.0
@@ -42,6 +42,7 @@ requests-futures==0.9.9
 s3transfer==0.6.0
 selenium==3.141.0
 six==1.15.0
+soupsieve==2.3.2.post1
 spectrumprivate @ git+ssh://git@github.com/elifesciences/elife-spectrum-private.git@91371987bee96747b9cef6dfb7f63d0b04d4a048
 tomli==2.0.1
 tomlkit==0.11.1

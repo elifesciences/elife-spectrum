@@ -7,8 +7,9 @@ verify_ssl = true
 python_version = "3.8"
 
 [packages]
-backoff = "==1.4.3"
-beautifulsoup4 = "==4.5.1"
+backoff = "~=1.9"
+# doesn't follow semver, removals happen in minor versions
+beautifulsoup4 = "==4.11.0"
 boto3 = "~=1.11"
 econtools = {git = "https://github.com/elifesciences/econ-tools.git", ref = "09e69624cb5697f16c68ab9118bb14b095f87710"}
 lxml = "~=4.1"
