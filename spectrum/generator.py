@@ -18,7 +18,7 @@ from spectrum.config import COMMON
 LOGGER = logger.logger(__name__)
 
 def generate_article_id(msid):
-    "given a regular 6-digit `msid`, generates a msid with a random leading prefix"
+    "given a regular 6-digit `msid`, generates a msid with a random prefix"
     msid = int(msid)
 
     # lsh@2022-08-3: offset increased from 100,000 to 1,000,000 as eLife msid approaches 100k
