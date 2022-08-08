@@ -17,18 +17,24 @@ from spectrum.config import COMMON
 
 LOGGER = logger.logger(__name__)
 
-def generate_article_id(template_id):
-    template_id = int(template_id)
-    # good until `template_id` (msid) reaches 100000
-    offset = 100000 # 10^5, 5 digit msid
+def generate_article_id(msid):
+    "given a regular 6-digit `msid`, generates a msid with a random prefix"
+    msid = int(msid)
+
+    # lsh@2022-08-3: offset increased from 100,000 to 1,000,000 as eLife msid approaches 100k
+    offset = 1000000 # 10^6 for a 6 digit (or less) msid
+
     #     2^63 - 1 = 9223372036854775807 is the maximum id
-    maximum_prefix = 92233720368546
+    maximum_prefix = 9223372036854
+
+    # special handling for the kitchen sink with it's large MSID
     kitchen_sink_id = 1234567890
-    if template_id == kitchen_sink_id:
-        offset = 10000000000 # 10^10, 10 digit msid
+    if msid == kitchen_sink_id:
+        offset = 10000000000 # 10^10 for a 10 digit msid
         maximum_prefix = 92233720
+
     prefix = random.randrange(1, maximum_prefix + 1)
-    return str((prefix * offset) + template_id)
+    return str((prefix * offset) + msid)
 
 def article_zip(template_id, article_id=None, template_variables=None):
     if template_variables is None:
