@@ -230,16 +230,21 @@ def test_article_propagates_to_github(generate_article):
 
 #
 
+
 @pytest.mark.journal_cms
 @pytest.mark.continuum
 @pytest.mark.lax
+@pytest.mark.skip(reason="stateful, it may fail when state is created by other tests. seems to work ok in isolation. see #7719")
 def test_adding_article_fragment(generate_article, modify_article):
     journal_cms_session = input.JOURNAL_CMS.login()
     invented_word = input.invented_word()
     article = modify_article(generate_article(SIMPLEST_ARTICLE_ID), replacements={'cytomegalovirus':invented_word})
     _ingest_and_publish_and_wait_for_published(article)
 
+
+    # problem here
     journal_cms_session.create_article_fragment(id=article.id(), image='./spectrum/fixtures/king_county.jpg')
+
     article = checks.API.wait_article(article.id(), item_check=checks.API.item_check_image())
     image_uri = article['image']['thumbnail']['source']['uri']
     response = requests.head(image_uri)
