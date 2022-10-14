@@ -545,7 +545,8 @@ class ApiCheck:
 
 class JournalCheck:
     CSS_TEASER_LINK = '.teaser__header_text_link'
-    CSS_CAROUSEL_LINK = '.carousel-item__title_link'
+    CSS_HERO_BANNER_LINK = '.hero-banner__title_link'
+    CSS_HIGHLIGHTS_LINK = '.highlight-item__title_link'
     CSS_BLOCK_LINK = '.block-link .block-link__link'
     # only valid for non-JavaScript pages
     CSS_ANNOTATION_LINK = '.annotation-teaser'
@@ -662,9 +663,10 @@ class JournalCheck:
     def homepage(self):
         body = self.generic("/")
         soup = BeautifulSoup(body, "html.parser")
-        carousel_links = [a['href'] for a in soup.select(self.CSS_CAROUSEL_LINK)]
+        hero_banner_link = [a['href'] for a in soup.select(self.CSS_HERO_BANNER_LINK)]
+        highlight_links = [a['href'] for a in soup.select(self.CSS_HIGHLIGHTS_LINK)]
         teaser_links = [a['href'] for a in soup.select(self.CSS_TEASER_LINK)]
-        links = carousel_links + teaser_links
+        links = hero_banner_link + highlight_links + teaser_links
         return links
 
     def magazine(self):
