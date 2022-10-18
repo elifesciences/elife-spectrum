@@ -175,16 +175,15 @@ class JournalCmsSession:
                 assert "king_county" in img.get('src')
                 LOGGER.info("Tag: %s", img, extra={'id': id})
                 return True, None
-            except AssertionError as ae:
-                return False, ae
+            except AssertionError as err:
+                return False, err
 
-        attempts = 3
-        for i in range(0, attempts):
+        for _ in range(0, 3):
             success, err = find_img()
             if success:
                 return
 
-        LOGGER.error("Failed to find image after %s attempts" % attempts)
+        LOGGER.error("Failed to find image after 3 attempts")
 
         raise err
 
