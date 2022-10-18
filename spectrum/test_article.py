@@ -234,7 +234,7 @@ def test_article_propagates_to_github(generate_article):
 @pytest.mark.journal_cms
 @pytest.mark.continuum
 @pytest.mark.lax
-@pytest.mark.skip(reason="stateful, it may fail when state is created by other tests. seems to work ok in isolation. see #7719")
+#@pytest.mark.skip(reason="stateful, it may fail when state is created by other tests. seems to work ok in isolation. see #7719")
 def test_adding_article_fragment(generate_article, modify_article):
     journal_cms_session = input.JOURNAL_CMS.login()
     invented_word = input.invented_word()
