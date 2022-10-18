@@ -136,10 +136,7 @@ class JournalCmsSession:
         except (AttributeError, TypeError):
             raise AssertionError('Edit link not found for article %s when loading URL %s' % (id, filtered_content_url))
 
-        LOGGER.info(
-            "Access edit form",
-            extra={'id': id}
-        )
+        LOGGER.info("Access edit form", extra={'id': id})
 
         edit_page = self._browser.get(edit_url)
 
@@ -147,39 +144,49 @@ class JournalCmsSession:
 
         if edit_page.soup.find('input', {'name': 'field_image_0_remove_button'}):
             self._choose_submit(form, 'field_image_0_remove_button', value='Remove')
-            LOGGER.info(
-                "Removing existing thumbnail",
-                extra={'id': id}
-            )
+            LOGGER.info("Removing existing thumbnail", extra={'id': id})
             response = self._browser.submit(form, edit_page.url)
             form = mechanicalsoup.Form(response.soup.form)
 
+        LOGGER.info("Attaching thumbnail %s", image, extra={'id': id})
         form.attach({'files[field_image_0]': image})
-        LOGGER.info(
-            "Attaching thumbnail %s",
-            image,
-            extra={'id': id}
-        )
 
-        LOGGER.info(
-            "Saving form",
-            extra={'id': id}
-        )
+        LOGGER.info("Saving form", extra={'id': id})
         # Button text will be 'Save and keep published' or 'Save and keep unpublished'
         button_text = edit_page.soup.find('div', {'id': 'edit-actions'}).find('input', 'form-submit').get('value')
         response = self._browser.submit(form, edit_page.url, data={'op': button_text})
-        # requests follows redirects by default
+        # request follows redirects by default
         _assert_html_response(response)
-        view_page = self._browser.get(view_url)
-        img_selector = ".field--name-field-image img"
-        img = view_page.soup.select_one(img_selector)
-        assert img is not None, ("Cannot find %s in %s response\n%s" % (img_selector, view_page.status_code, view_page.content))
-        assert "king_county" in img.get('src')
-        LOGGER.info(
-            "Tag: %s",
-            img,
-            extra={'id': id}
-        )
+
+        # lsh@2022-10-18: I don't know what the problem here is, everything is difficult to debug, but I've spent
+        # a lot of time beating my head against it.
+        # I suspect it's a timing issue, either too quick to check the 'view' URL or
+        # a bad interaction with the event listener and article events.
+        # the 'find_img' code below is just temporary to rule out the too-quick hypothesis.
+        # - https://github.com/elifesciences/issues/issues/7719
+        # - https://github.com/elifesciences/issues/issues/6670
+
+        def find_img():
+            view_page = self._browser.get(view_url)
+            img_selector = ".field--name-field-image img"
+            img = view_page.soup.select_one(img_selector)
+            try:
+                assert img is not None, ("Cannot find %r in %s response\n%s" % (img_selector, view_page.status_code, view_page.content))
+                assert "king_county" in img.get('src')
+                LOGGER.info("Tag: %s", img, extra={'id': id})
+                return True, None
+            except AssertionError as ae:
+                return False, ae
+
+        attempts = 3
+        for i in range(0, attempts):
+            success, err = find_img()
+            if success:
+                return
+
+        LOGGER.error("Failed to find image after %s attempts" % attempts)
+
+        raise err
 
     def _choose_submit(self, wrapped_form, name, value=None):
         """Fixed version of mechanicalsoup.Form.choose_submit()
