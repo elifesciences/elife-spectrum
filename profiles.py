@@ -2,10 +2,8 @@
 $ cat profiles.txt | SPECTRUM_ENVIRONMENT=prod SPECTRUM_LOG_LEVEL=DEBUG python profiles.py"""
 
 from argparse import ArgumentParser
-from spectrum import load, input, checks
-from sys import argv, exit
+from spectrum import checks, load
 import fileinput
-import requests
 
 JOURNAL = checks.JOURNAL.with_resource_checking_method('head').with_query_string("open-sesame")
 

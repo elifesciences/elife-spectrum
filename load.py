@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
-from spectrum import load, checks
-from sys import argv, exit
-import requests
+from spectrum import load
+from sys import exit
 
 if __name__ == '__main__':
     parser = ArgumentParser(description="Load tests Journal")
