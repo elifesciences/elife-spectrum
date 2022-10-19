@@ -11,3 +11,4 @@ build/
 /iiif/*.log
 /*.zip
 /*.xml
+*~

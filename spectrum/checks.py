@@ -620,8 +620,9 @@ class JournalCheck:
         soup = BeautifulSoup(response.text, "html.parser")
         return soup
 
+    # lsh@2022-10-19: no link to /reviewed-preprints (yet)
     def article_feature_preprint(self, id, version):
-        "ensure a pre-print exists"
+        "ensure a pre-print exists in an article's publication history."
         soup = self._article_soup(id, version)
 
         # find the `h3` element whose value is ...
@@ -743,6 +744,17 @@ class JournalCheck:
 
     def digest(self, id):
         url = _build_url("/digests/%s" % id, self._host)
+        LOGGER.info("Loading %s", url, extra={'id':id})
+        return self.generic(url)
+
+    # lsh@2022-10-19: todo, unused
+    def reviewed_preprint(self, id):
+        """checks a specific reviewed-preprint and it's linked content are available.
+        EPP integrates with the journal by transparently proxying requests from:
+          $journal/reviewed-preprints/*
+        to
+          $epp/reviewed-preprints/*"""
+        url = _build_url("/reviewed-preprints/%s" % id, self._host)
         LOGGER.info("Loading %s", url, extra={'id':id})
         return self.generic(url)
 
@@ -902,6 +914,24 @@ class ObserverCheck:
                 return guids[target_guid]
             LOGGER.debug("Item %s not found on page %s: %s", target_guid, page, pformat(guids.keys()), extra={'id':id})
             page = page + 1
+
+class EPPCheck:
+    def __init__(self, host):
+        self._host = host
+
+    def ping(self):
+        "EPP is available"
+        assert HttpCheck(self._host + "/ping").of("pong")
+
+    def status(self):
+        "EPP is happy"
+        url = self._host + "/status"
+        resp = retries.persistently_get(url=url)
+        assert resp.status_code == 200
+        json_resp = resp.json()
+        LOGGER.info("EPP status: %s" % json_resp)
+        assert json_resp['code'] == 200 and json_resp['status'] == 'OK'
+        return json_resp
 
 def _poll(action_fn, error_message, *error_message_args):
     return polling.poll(action_fn, error_message, *error_message_args)
@@ -1129,6 +1159,7 @@ JOURNAL_LISTING_PATHS = [
     '/inside-elife',
     '/labs',
     '/podcast',
+    #'/reviewed-preprints', # lsh@2022-10-19: todo.
 ]
 JOURNAL_ARTICLE_FEATURES = [
     'article_feature_preprint',
@@ -1151,3 +1182,4 @@ PUBMED = HttpCheck(
     str(SETTINGS['bot_host']) + '/pubmed/{xml}'
 )
 BOT_EMAILS = MailcatcherCheck(SETTINGS['bot_mailcatcher'])
+EPP = EPPCheck(SETTINGS['epp_host'])
