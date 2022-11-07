@@ -1739,25 +1739,34 @@ not add all rids to the xref as it does not work. Only add the first one -->
                             Change: figures do not need to be contained within <p> and should not be
                             Change: The following has been removed from the XML as it is not necessary to repeat it, can be derived from the object-id DOI:
                         <p><bold>DOI:</bold><ext-link ext-link-type="doi" xlink:href="10.7554/eLife.{{ article['id'] }}.007">http://dx.doi.org/10.7554/eLife.{{ article['id'] }}.007</ext-link></p> -->
-        <fig id="fig1" position="float">
-          <label>Figure 1.</label>
-          <caption>
-            <title>Single figure: The header of an eLife article example on the HTML page.</title>
-            <p>In the PDf this is represented as a single column.</p>
-          </caption>
-          <!--  NOTE: file type must be included in the file description. -->
-          <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-fig1.tif"/>
-          <!-- Assets within eLife might not always be published under a CC BY license although we endevour to do so. This is an example of how to add a
+        <fig-group>
+          <fig id="fig1" position="float">
+            <label>Figure 1.</label>
+            <caption>
+              <title>Single figure: The header of an eLife article example on the HTML page.</title>
+              <p>In the PDf this is represented as a single column.</p>
+            </caption>
+            <!--  NOTE: file type must be included in the file description. -->
+            <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-fig1.tif"/>
+            <!-- Assets within eLife might not always be published under a CC BY license although we endevour to do so. This is an example of how to add a
                                 separate permission statement so it is clear to the human and machine reader that this asset cannot be reused. -->
-          <permissions>
-            <copyright-statement>&#xA9; 2016, eLife. All rights reserved</copyright-statement>
-            <copyright-year>2016</copyright-year>
-            <copyright-holder>eLife</copyright-holder>
-            <license>
-              <license-p>For the purpose having a example of how to tag a separate license for an item, we have indicated in the XML and display this is a copyrighted figure; however it is not.</license-p>
-            </license>
-          </permissions>
-        </fig>
+            <permissions>
+              <copyright-statement>&#xA9; 2016, eLife. All rights reserved</copyright-statement>
+              <copyright-year>2016</copyright-year>
+              <copyright-holder>eLife</copyright-holder>
+              <license>
+                <license-p>For the purpose having a example of how to tag a separate license for an item, we have indicated in the XML and display this is a copyrighted figure; however it is not.</license-p>
+              </license>
+            </permissions>
+          </fig>
+          <!-- this is an example of an asset asked later on, so the DOI is the last DOI to prevent renumbering the others -->
+          <media mimetype="video" mime-subtype="mp4" id="fig3video1" xlink:href="elife-1234567890-fig1-video1.mp4">
+            <label>Figure 1&#x2014;video 1.</label>
+            <caption>
+              <title>A description of the eLife editorial process.</title>
+            </caption>
+          </media>
+        </fig-group>
         <p><xref ref-type="fig" rid="fig2">Figure 2</xref> is an example of a figure with figure supplements, <xref ref-type="fig" rid="fig2s1">Figure 2&#x2014;figure supplement 1</xref> and 
                         <xref ref-type="fig" rid="fig2s2">Figure 2&#x2014;figure supplement 2</xref>.</p>
         <!-- If a figure has figure supplements it must be contained within fig-group and the supplemental figures must be given a @specific-use attribute of "child-fig"
@@ -1815,13 +1824,6 @@ not add all rids to the xref as it does not work. Only add the first one -->
             </caption>
             <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-fig3-figsupp1.tif"/>
           </fig>
-          <!-- this is an example of an asset asked later on, so the DOI is the last DOI to prevent renumbering the others -->
-          <media mimetype="video" mime-subtype="mp4" id="fig3video1" xlink:href="elife-1234567890-fig3-video1.mp4">
-            <label>Figure 3&#x2014;video 1.</label>
-            <caption>
-              <title>A description of the eLife editorial process.</title>
-            </caption>
-          </media>
         </fig-group>
         <p><xref ref-type="fig" rid="fig4">Figure 4</xref> is an example of a figure with source code (<xref ref-type="supplementary-material" rid="fig4scode1">Figure 4&#x2014;source code 1</xref>).</p>
         <!-- UPDATE: this is changed tagging. -->
@@ -4077,12 +4079,6 @@ Appendices must have DOIs -->
               </caption>
               <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-app1-fig1-figsupp1.tif"/>
             </fig>
-            <media mimetype="video" mime-subtype="mp4" id="app1fig1video1" xlink:href="elife-1234567890-app1-fig1-video1.mp4">
-              <label>Appendix 1&#x2014;figure 1&#x2014;video 1.</label>
-              <caption>
-                <title>A video supporting Appendix 1&#x2014;figure 1.</title>
-              </caption>
-            </media>
           </fig-group>
           <!-- UPDATE: this is how sub sections in appendices should be tagged. Have been wrong up to now -->
           <sec sec-type="appendix" id="s8-1">
@@ -4499,6 +4495,22 @@ Appendices must have DOIs -->
       <app id="appendix-3">
         <title>Appendix 3</title>
         <p>This is an example of an appendix with no sections.</p>
+        <fig-group>
+          <fig id="app3fig1" position="float">
+            <label>Appendix 3&#x2014;figure 1.</label>
+            <caption>
+              <title>Appendix figure title.</title>
+              <p>If there is a caption to accompany the title it would display here (<xref ref-type="bibr" rid="bib25">Koch, 1959</xref>).</p>
+            </caption>
+            <graphic mimetype="image" mime-subtype="tiff" xlink:href="elife-{{ article['id'] }}-app1-fig1.tif"/>
+          </fig>
+          <media mimetype="video" mime-subtype="mp4" id="app3fig1video1" xlink:href="elife-1234567890-app1-fig1-video1.mp4">
+            <label>Appendix 3&#x2014;figure 1&#x2014;video 1.</label>
+            <caption>
+              <title>A video supporting Appendix 1&#x2014;figure 1.</title>
+            </caption>
+          </media>
+        </fig-group>
       </app>
     </app-group>
   </back>
