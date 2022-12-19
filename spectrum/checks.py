@@ -677,11 +677,13 @@ class JournalCheck:
         "creates a URL with the given `path` and `self.host`, fetches it and fetches all (most) links found within it."
         response = self.just_load(path)
 
-        # if the response url originates from the same host as this configured Check object,
-        # also check that all urls in <script>, <link>, <video>, <source>, srcset="" load.
-        # does "^https://end2end--journal.elifesciences.org/foo/bar" start with "^https://end2end--journal.elifesciences.org" ?
-        match = re.match("^"+self._host, response.url)
-        if match:
+        # when the response url originates from the same host as this configured `Check` object,
+        # check that all urls in <script>, <link>, <video>, <source>, srcset="" load.
+        # does "https://end2end--journal.elifesciences.org/foo/bar" match "^https://end2end--journal.elifesciences.org" ?
+        #match = re.match("^"+self._host, response.url)
+        #if match:
+        if response.url.startswith(self._host) and \
+           not response.url.startswith(self._host + "/reviewed-preprints"):
             self._assert_all_resources_of_page_load(response.text)
 
         # check all 'figure' and 'pdf' resource links work
@@ -993,10 +995,6 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
 
         if path.startswith("data:"):
             LOGGER.debug("Skipping `data:` resource '%s'", path)
-            continue
-
-        if path.startswith('/reviewed-preprints'):
-            LOGGER.debug("Skipping `/reviewed-preprints` resource: %s", path)
             continue
 
         url = _build_url(path, host)
