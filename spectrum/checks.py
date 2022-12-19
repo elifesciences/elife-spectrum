@@ -995,6 +995,10 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
             LOGGER.debug("Skipping `data:` resource '%s'", path)
             continue
 
+        if path.startswith('/reviewed-preprints'):
+            LOGGER.debug("Skipping `/reviewed-preprints` resource: %s", path)
+            continue
+
         url = _build_url(path, host)
         if url in RESOURCE_CACHE and resource_checking_method == 'head':
             LOGGER.debug("Cached HEAD %s: %s", url, RESOURCE_CACHE[url], extra=extra)
