@@ -1142,10 +1142,10 @@ JOURNAL_CDN = JournalCheck(
 )
 JOURNAL_GOOGLEBOT = JOURNAL_CDN.with_headers({'User-Agent': config.GOOGLEBOT_USER_AGENT})
 JOURNAL_GENERIC_PATHS = [
-    '/about',
-    '/about/peer-review',
-    '/about/research-culture',
-    '/about/technology',
+    # '/about', # nlisgo@2023-01-31: failing because of reverse proxy to pubpub
+    # '/about/peer-review',
+    # '/about/research-culture',
+    # '/about/technology',
     '/alerts',
     '/contact',
     '/for-the-press',
