@@ -241,7 +241,7 @@ class DashboardArticleCheck:
             article = response.json()
             version_runs = article['versions'][version_key]['runs']
             run_key = str(run)
-            if not run_key in version_runs:
+            if run_key not in version_runs:
                 return False
             run_details = version_runs[run_key]
             events = run_details['events']
@@ -765,8 +765,8 @@ class JournalCheck:
 
         Will return [] if there are no actual links with this class on the page"""
         soup = BeautifulSoup(body, "html.parser")
-        links = soup.find_all("a", class_=class_name)
-        return [l['href'] for l in links]
+        links_list = soup.find_all("a", class_=class_name)
+        return [link['href'] for link in links_list]
 
     def _assert_all_resources_of_page_load(self, body, **extra):
         return _assert_all_resources_of_page_load(body, self._host, resource_checking_method=self._resource_checking_method, **extra)
