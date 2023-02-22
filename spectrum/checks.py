@@ -142,7 +142,7 @@ class DashboardArticleCheck:
     def _is_present(self, id, version, status, run=None, run_after=None, run_contains_events=None):
         url = self._article_api(id)
         try:
-            response = requests.get(url, auth=(self._user, self._password), verify=False)
+            response = requests.get(url, auth=(self._user, self._password))
             if response.status_code != 200:
                 return False, "Response code: %s" % response.status_code
             if response.status_code >= 500:
@@ -235,7 +235,7 @@ class DashboardArticleCheck:
         url = self._article_api(id)
         version_key = str(version)
         try:
-            response = requests.get(url, auth=(self._user, self._password), verify=False)
+            response = requests.get(url, auth=(self._user, self._password))
             if response.status_code >= 500:
                 raise UnrecoverableError(response)
             article = response.json()
