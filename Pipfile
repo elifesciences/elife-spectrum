@@ -11,7 +11,7 @@ backoff = "~=1.9"
 # not using semver, removals happening in minor versions
 beautifulsoup4 = "==4.11.0"
 boto3 = "~=1.11"
-econtools = {git = "https://github.com/elifesciences/econ-tools.git", ref = "267719728af863ebe947de98b50e77e9f5f00de9"}
+econtools = {git = "https://github.com/elifesciences/econ-tools.git", ref = "22e55ff49b274db8760e1b100cf333aeb7a13fd3"}
 lxml = "~=4.1"
 pytest = "~=7.2"
 pytest-xdist = "~=3.0"
