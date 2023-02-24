@@ -2,6 +2,10 @@
 import pytest
 from spectrum import checks
 
+# what is 'mark.two'?
+# "Marking tests as related to 'continuum' or 'two' point 0 version"
+# - https://github.com/elifesciences/elife-spectrum/commit/23641bc232c7710d00011eab710c4ce6011bead5
+# if he means 'elife 2.0', then `mark.two` and `mark.continuum` are the same thing.
 @pytest.mark.two
 @pytest.mark.journal_cms
 def test_list_based_apis_journal_cms():

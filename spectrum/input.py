@@ -46,7 +46,7 @@ class Dashboard:
         template = "%s/api/queue_article_publication"
         url = template % self._host
         body = {'articles': [{'id': id, 'version': version, 'run': run}]}
-        response = requests.post(url, auth=(self._user, self._password), json=body, verify=False)
+        response = requests.post(url, auth=(self._user, self._password), json=body)
         assert response.status_code == 200, ("Response status was %s: %s" % (response.status_code, response.text))
         LOGGER.info(
             "Pressed Publish for %s version %s run %s on dashboard",
@@ -323,7 +323,7 @@ class BioProtocol:
         # http://end2end--bp.elife.internal/bioprotocol/article/123456789
         template = "%s/bioprotocol/article/%s"
         url = template % (self.int_host, article_id)
-        response = requests.post(url, auth=(self.user, self.password), json=payload, verify=False)
+        response = requests.post(url, auth=(self.user, self.password), json=payload)
         assert response.status_code == 200, ("Response status was %s: %s" % (response.status_code, response.text))
 
 def invented_word(length=30, characters=None):

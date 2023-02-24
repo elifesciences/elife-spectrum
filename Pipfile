@@ -8,19 +8,22 @@ python_version = "3.8"
 
 [packages]
 backoff = "~=1.9"
-# doesn't follow semver, removals happen in minor versions
+# not using semver, removals happening in minor versions
 beautifulsoup4 = "==4.11.0"
 boto3 = "~=1.11"
 econtools = {git = "https://github.com/elifesciences/econ-tools.git", ref = "267719728af863ebe947de98b50e77e9f5f00de9"}
 lxml = "~=4.1"
 pytest = "~=7.2"
 pytest-xdist = "~=3.0"
-python-docx = "==0.8.6"
+# not using semver, removals happening in patch versions
+python-docx = "==0.8.11"
 polling = "==0.3.0"
 pollute = "==1.0.2"
 requests = "~=2.20"
 requests-futures = "~=0.9.7"
-selenium = "~=3.14"
+# probably not using semver as releases are coordinated over a number of languages.
+# python changelog: https://github.com/SeleniumHQ/selenium/blob/trunk/py/CHANGES
+selenium = "==4.*"
 spectrumprivate = {git = "ssh://git@github.com/elifesciences/elife-spectrum-private.git", ref = "91371987bee96747b9cef6dfb7f63d0b04d4a048"}
 # pinned, Jinja2 depends on MarkupSafe (same guy/org), which removed a feature in a minor version.
 # - https://github.com/pallets/jinja/issues/1585
