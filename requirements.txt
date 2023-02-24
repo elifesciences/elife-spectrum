@@ -1,22 +1,22 @@
-# file generated 2023-02-22 - see update-dependencies.sh
+# file generated 2023-02-24 - see update-dependencies.sh
 astroid==2.3.3
 async-generator==1.10
-attrs==22.1.0
+attrs==22.2.0
 backoff==1.11.1
 beautifulsoup4==4.11.0
-boto3==1.25.3
-botocore==1.28.3
+boto3==1.26.78
+botocore==1.29.78
 certifi==2022.12.7
 charset-normalizer==3.0.1
 contextlib2==21.6.0
 coverage==5.5
 dill==0.3.6
-econtools @ git+https://github.com/elifesciences/econ-tools.git@267719728af863ebe947de98b50e77e9f5f00de9
-exceptiongroup==1.0.0
+econtools @ git+https://github.com/elifesciences/econ-tools.git@22e55ff49b274db8760e1b100cf333aeb7a13fd3
+exceptiongroup==1.1.0
 execnet==1.9.0
 h11==0.14.0
 idna==3.4
-iniconfig==1.1.1
+iniconfig==2.0.0
 isort==4.3.21
 Jinja2==2.11.3
 jmespath==1.0.1
@@ -26,15 +26,14 @@ MarkupSafe==2.0.1
 mccabe==0.6.1
 MechanicalSoup==0.12.0
 outcome==1.2.0
-packaging==21.3
+packaging==23.0
 platformdirs==3.0.0
 pluggy==1.0.0
 polling==0.3.0
 pollute==1.0.2
 pylint==2.4.4
-pyparsing==3.0.9
 PySocks==1.7.1
-pytest==7.2.0
+pytest==7.2.1
 pytest-xdist==3.2.0
 python-dateutil==2.8.2
 python-docx==0.8.11
@@ -52,6 +51,6 @@ tomlkit==0.11.6
 trio==0.22.0
 trio-websocket==0.9.2
 typing_extensions==4.5.0
-urllib3==1.26.12
+urllib3==1.26.14
 wrapt==1.11.2
 wsproto==1.2.0
