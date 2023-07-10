@@ -16,7 +16,8 @@ def test_content_type_propagates_to_other_services():
     invented_word = input.invented_word()
     title = 'Spectrum podcast episode: %s' % invented_word
 
-    journal_cms_session.create_podcast_episode(title=title, image='./spectrum/fixtures/king_county.jpg', uri='https://cdn.elifesciences.org/podcast-episode.mp3', chapter_title='Chapter 1')
+    with open('./spectrum/fixtures/king_county.jpg', 'r') as handle:
+        journal_cms_session.create_podcast_episode(title=title, image=handle, uri='https://cdn.elifesciences.org/podcast-episode.mp3', chapter_title='Chapter 1')
     result = checks.API.wait_search(invented_word)
     assert result['total'] == 1, "There should only be one result containing this word"
     assert result['items'][0]['title'] == title, "The title of the podcast episode found through search is incorrect"
