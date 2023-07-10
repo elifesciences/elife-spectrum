@@ -243,7 +243,8 @@ def test_adding_article_fragment(generate_article, modify_article):
 
 
     # problem here
-    journal_cms_session.create_article_fragment(id=article.id(), image='./spectrum/fixtures/king_county.jpg')
+    with open('./spectrum/fixtures/king_county.jpg', 'rb') as handle:
+        journal_cms_session.create_article_fragment(id=article.id(), image=handle)
 
     article = checks.API.wait_article(article.id(), item_check=checks.API.item_check_image())
     image_uri = article['image']['thumbnail']['source']['uri']
