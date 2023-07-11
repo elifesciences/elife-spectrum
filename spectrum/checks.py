@@ -626,7 +626,7 @@ class JournalCheck:
         soup = self._article_soup(id, version)
 
         # find the `h3` element whose value is ...
-        section_header_h3 = soup.find("h3", string="Publication history")
+        section_header_h3 = soup.select_one("h3:contains('Publication history'), h3:contains('Version history')")
 
         # from there we can navigate up and across to the `pub-history` element ...
         pub_history_div = section_header_h3.findParent().findNextSibling()
