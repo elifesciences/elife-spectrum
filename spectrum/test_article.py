@@ -15,6 +15,31 @@ from spectrum import checks
 SIMPLEST_ARTICLE_ID = 15893
 KITCHEN_SINK_ARTICLE_ID = '1234567890'
 
+def _wait_for_published(article):
+    checks.DASHBOARD.published(id=article.id(), version=article.version())
+    checks.LAX.published(id=article.id(), version=article.version())
+
+    checks.ARCHIVE.of(id=article.id(), version=article.version())
+    article_from_api = checks.API.article(id=article.id(), version=article.version())
+    checks.JOURNAL.article(id=article.id())
+    checks.JOURNAL_CDN.article(id=article.id())
+    return article_from_api
+
+def _publish(article, run_after):
+    run = articles.wait_for_publishable(article, run_after)
+    articles.publish(article, run)
+
+def _ingest_and_publish(article):
+    ingestion_start = datetime.now()
+    articles.ingest(article)
+    _publish(article, run_after=ingestion_start)
+
+def _ingest_and_publish_and_wait_for_published(article):
+    _ingest_and_publish(article)
+    return _wait_for_published(article)
+
+# ---
+
 @pytest.mark.continuum
 @pytest.mark.article
 @pytest.mark.journal
@@ -321,29 +346,3 @@ def test_article_feature(generate_article):
         method = getattr(checks.JOURNAL, method_name)
         # "checks.JOURNAL.feature_preprint(34213412432, 1)"
         method(article_id, article_version)
-
-
-#
-
-def _wait_for_published(article):
-    checks.DASHBOARD.published(id=article.id(), version=article.version())
-    checks.LAX.published(id=article.id(), version=article.version())
-
-    checks.ARCHIVE.of(id=article.id(), version=article.version())
-    article_from_api = checks.API.article(id=article.id(), version=article.version())
-    checks.JOURNAL.article(id=article.id())
-    checks.JOURNAL_CDN.article(id=article.id())
-    return article_from_api
-
-def _publish(article, run_after):
-    run = articles.wait_for_publishable(article, run_after)
-    articles.publish(article, run)
-
-def _ingest_and_publish_and_wait_for_published(article):
-    _ingest_and_publish(article)
-    return _wait_for_published(article)
-
-def _ingest_and_publish(article):
-    ingestion_start = datetime.now()
-    articles.ingest(article)
-    _publish(article, run_after=ingestion_start)

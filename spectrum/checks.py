@@ -1,14 +1,14 @@
 """Read-only headless checks against services under test.
 Contains anything from HTTP(S) calls to REST JSON APIs to S3 checks over the presence or recent modification of files."""
 
-from concurrent.futures import ThreadPoolExecutor, wait
+from concurrent.futures import wait
 from datetime import datetime
 from pprint import pformat
 import io
 import re
 import ssl
 import zipfile
-
+from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import ConnectionError
@@ -987,7 +987,34 @@ def _assert_all_resources_of_page_load(html_content, host, resource_checking_met
 def _assert_all_load(resources, host, resource_checking_method='head', **extra):
     urls = []
     futures = []
-    session = FuturesSession(executor=ThreadPoolExecutor(max_workers=2))
+
+    # lsh@2023-07-26: iiif is occasionally resetting the network connection on initial/early requests.
+    # don't know why, but the retry logic only handles successful requests (even if they were non-200),
+    # and not network connection issues.
+    # see: https://github.com/elifesciences/issues/issues/8422
+
+    requests_session = requests.Session()
+    # "max_retries" - The maximum number of retries each connection should attempt.
+    #                 Note, this applies only to failed DNS lookups, socket connections and connection timeouts,
+    #                 never to requests where data has made it to the server.
+    #                 If you need granular control over the conditions under which we retry a request,
+    #                 import urllib3’s Retry class and pass that instead.
+    #
+    # - https://urllib3.readthedocs.io/en/stable/user-guide.html#retrying-requests
+    # - https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry
+    requests_session.mount('https://', requests.adapters.HTTPAdapter(max_retries=Retry(**{
+        'total': retries.MAX_RETRIES,
+        'connect': retries.MAX_RETRIES,
+        'read': retries.MAX_RETRIES,
+        # A set of integer HTTP status codes that we should force a retry on.
+        'status_forcelist': [], # disabled, allow `retries.retry_request` to handle these.
+        # {backoff factor} * (2 ** {number of previous retries})
+        # 0.3 => 0.3, 0.6, 1.2 seconds
+        'backoff_factor': 0.3,
+        # not available until urllib3 >=2.0
+        #'backoff_max': 120.0, # seconds, default
+    })))
+    session = FuturesSession(max_workers=2, session=requests_session)
     for path in resources:
         if path is None:
             LOGGER.warning("empty path in resources: %s", resources)
