@@ -1,4 +1,4 @@
-# file generated 2023-07-26 - see update-dependencies.sh
+# file generated 2023-07-28 - see update-dependencies.sh
 astroid==2.3.3
 attrs==22.2.0
 backoff==1.11.1
@@ -37,7 +37,7 @@ pytest-xdist==3.3.1
 python-dateutil==2.8.2
 python-docx==0.8.11
 requests==2.31.0
-requests-futures==0.9.9
+requests-futures==1.0.1
 s3transfer==0.6.0
 selenium==4.9.1
 six==1.16.0
@@ -46,7 +46,7 @@ sortedcontainers==2.4.0
 soupsieve==2.4.1
 spectrumprivate @ git+ssh://git@github.com/elifesciences/elife-spectrum-private.git@91371987bee96747b9cef6dfb7f63d0b04d4a048
 tomli==2.0.1
-tomlkit==0.11.8
+tomlkit==0.12.1
 trio==0.22.2
 trio-websocket==0.10.3
 typing_extensions==4.7.1
