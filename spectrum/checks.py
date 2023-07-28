@@ -988,20 +988,12 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
     urls = []
     futures = []
 
-    # lsh@2023-07-26: iiif is occasionally resetting the network connection on initial/early requests.
-    # don't know why, but the retry logic only handles successful requests (even if they were non-200),
-    # and not network connection issues.
-    # see: https://github.com/elifesciences/issues/issues/8422
-
-    requests_session = requests.Session()
-    # "max_retries" - The maximum number of retries each connection should attempt.
-    #                 Note, this applies only to failed DNS lookups, socket connections and connection timeouts,
-    #                 never to requests where data has made it to the server.
-    #                 If you need granular control over the conditions under which we retry a request,
-    #                 import urllib3’s Retry class and pass that instead.
-    #
+    # lsh@2023-07-26: iiif occasionally resets a network connection on initial/early requests. unsure why.
+    # `retries.retry_request` only handles status code failures and not network connection issues.
+    # - https://github.com/elifesciences/issues/issues/8422
     # - https://urllib3.readthedocs.io/en/stable/user-guide.html#retrying-requests
     # - https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry
+    requests_session = requests.Session()
     requests_session.mount('https://', requests.adapters.HTTPAdapter(max_retries=Retry(**{
         'total': retries.MAX_RETRIES,
         'connect': retries.MAX_RETRIES,
@@ -1011,8 +1003,6 @@ def _assert_all_load(resources, host, resource_checking_method='head', **extra):
         # {backoff factor} * (2 ** {number of previous retries})
         # 0.3 => 0.3, 0.6, 1.2 seconds
         'backoff_factor': 0.3,
-        # not available until urllib3 >=2.0
-        #'backoff_max': 120.0, # seconds, default
     })))
     session = FuturesSession(max_workers=2, session=requests_session)
     for path in resources:
