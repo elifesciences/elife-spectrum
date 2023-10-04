@@ -11,7 +11,7 @@ backoff = "~=1.9"
 # not using semver, removals happening in minor versions
 beautifulsoup4 = "==4.11.0"
 boto3 = "~=1.11"
-econtools = {git = "https://github.com/elifesciences/econ-tools.git", ref = "22e55ff49b274db8760e1b100cf333aeb7a13fd3"}
+econtools = {git = "https://github.com/elifesciences/econ-tools.git", ref = "a185ccfac219f4466badd52e65e8dca42688c502"}
 # pinned, Jinja2 depends on MarkupSafe (same guy/org), which removed a feature in a minor version.
 # - https://github.com/pallets/jinja/issues/1585
 # - https://github.com/pallets/markupsafe/issues/286
@@ -32,7 +32,7 @@ requests-futures = "~=1.0"
 # python changelog: https://github.com/SeleniumHQ/selenium/blob/trunk/py/CHANGES
 selenium = "==4.9.*"
 spectrumprivate = {git = "ssh://git@github.com/elifesciences/elife-spectrum-private.git", ref = "91371987bee96747b9cef6dfb7f63d0b04d4a048"}
-urllib3 = "~=1.26"
+urllib3 = ">=1.26.17"
 
 [dev-packages]
 pylint = "~=2.4"
