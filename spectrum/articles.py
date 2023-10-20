@@ -9,7 +9,7 @@ def wait_for_publishable(article, run_after):
     article_on_dashboard = checks.DASHBOARD.ready_to_publish(id=article.id(), version=article.version(), run_after=run_after)
     current_version = article_on_dashboard['versions'][str(article.version())]
     runs = current_version['runs']
-    last_run_number = max([int(i) for i in runs.keys()])
+    last_run_number = max(int(i) for i in runs.keys())
     run = runs[str(last_run_number)]['run-id']
     for each in article.figure_names():
         checks.IMAGES_PUBLISHED_CDN_BUCKET.of(id=article.id(), figure_name=each, version=article.version())

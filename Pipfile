@@ -11,7 +11,7 @@ backoff = "~=1.9"
 # not using semver, removals happening in minor versions
 beautifulsoup4 = "==4.11.0"
 boto3 = "~=1.11"
-econtools = {git = "https://github.com/elifesciences/econ-tools.git", ref = "a185ccfac219f4466badd52e65e8dca42688c502"}
+econtools = {git = "https://github.com/elifesciences/econ-tools.git", ref = "55a12d8eeaf91b35779494f89eb8e72e4b9d62ec"}
 # pinned, Jinja2 depends on MarkupSafe (same guy/org), which removed a feature in a minor version.
 # - https://github.com/pallets/jinja/issues/1585
 # - https://github.com/pallets/markupsafe/issues/286
@@ -25,7 +25,6 @@ pytest-xdist = "~=3.0"
 # not using semver, removals happening in patch versions
 python-docx = "==0.8.11"
 polling = "==0.3.0"
-pollute = "==1.0.2"
 requests = "~=2.20"
 requests-futures = "~=1.0"
 # not using semver. removals happen in minor versions, releases are coordinated over a number of languages.

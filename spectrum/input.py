@@ -7,17 +7,28 @@
 
 contains no tests to be run."""
 
-from os import path
+import os
 import random
 import string
+import contextlib
 import requests
 from econtools import econ_workflow
-from pollute import modified_environ
 import mechanicalsoup
 from spectrum import aws, logger
 from spectrum.config import SETTINGS
 
+
 LOGGER = logger.logger(__name__)
+
+@contextlib.contextmanager
+def modified_environ(env_updates):
+    old_env = dict(os.environ)
+    os.environ.update(env_updates)
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(old_env)
 
 class InputBucket:
     def __init__(self, s3, bucket_name):
@@ -26,7 +37,7 @@ class InputBucket:
 
     def upload(self, filename, destination_filename=None, id=None):
         if not destination_filename:
-            destination_filename = path.basename(filename)
+            destination_filename = os.path.basename(filename)
         self._s3.meta.client.upload_file(filename, self._bucket_name, destination_filename)
         LOGGER.info("Uploaded %s to %s/%s", filename, self._bucket_name, destination_filename, extra={'id': id})
 
@@ -65,7 +76,12 @@ class BotWorkflowStarter:
 
     def pubmed(self):
         LOGGER.info("Starting workflow PubmedArticleDeposit")
-        with modified_environ(added={'AWS_ACCESS_KEY_ID': self._aws_access_key_id, 'AWS_SECRET_ACCESS_KEY': self._aws_secret_access_key, 'AWS_DEFAULT_REGION': self._region_name}):
+        env_updates = {
+            'AWS_ACCESS_KEY_ID': self._aws_access_key_id,
+            'AWS_SECRET_ACCESS_KEY': self._aws_secret_access_key,
+            'AWS_DEFAULT_REGION': self._region_name
+        }
+        with modified_environ(env_updates):
             econ_workflow.start_workflow(
                 self._queue_name,
                 workflow_name='PubmedArticleDeposit'
@@ -73,7 +89,12 @@ class BotWorkflowStarter:
 
     def package_poa(self, filename):
         LOGGER.info("Starting workflow PackagePOA(document=%s)", filename)
-        with modified_environ(added={'AWS_ACCESS_KEY_ID': self._aws_access_key_id, 'AWS_SECRET_ACCESS_KEY': self._aws_secret_access_key, 'AWS_DEFAULT_REGION': self._region_name}):
+        env_updates = {
+            'AWS_ACCESS_KEY_ID': self._aws_access_key_id,
+            'AWS_SECRET_ACCESS_KEY': self._aws_secret_access_key,
+            'AWS_DEFAULT_REGION': self._region_name
+        }
+        with modified_environ(env_updates):
             econ_workflow.start_workflow(
                 self._queue_name,
                 workflow_name='PackagePOA',
@@ -133,8 +154,8 @@ class JournalCmsSession:
         try:
             view_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, string=id).get('href'))
             edit_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-operations').find('li', 'edit').find('a', href=True, string='Edit').get('href'))
-        except (AttributeError, TypeError):
-            raise AssertionError('Edit link not found for article %s when loading URL %s' % (id, filtered_content_url))
+        except (AttributeError, TypeError) as exc:
+            raise AssertionError('Edit link not found for article %s when loading URL %s' % (id, filtered_content_url)) from exc
 
         LOGGER.info("Access edit form", extra={'id': id})
 

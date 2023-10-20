@@ -87,8 +87,7 @@ class BucketFileCheck:
                             extra={'id': id}
                         )
                         return (match.groups(), {'key': file.key})
-                    else:
-                        return True
+                    return True
         except ssl.SSLError as e:
             _log_connection_error(e)
         return False
@@ -152,8 +151,7 @@ class DashboardArticleCheck:
             outcome, dump = self._extract_run_contents(article, version_contents, status, run, run_after, run_contains_events)
             if not outcome:
                 return outcome, dump
-            else:
-                run_contents = dump
+            run_contents = dump
             LOGGER.info(
                 "Found %s version %s in status %s on dashboard with run %s (required: events: %s)",
                 url,
@@ -205,7 +203,7 @@ class DashboardArticleCheck:
         else:
             matching_runs = version_contents['runs'].values()
         if len(matching_runs) > 1:
-            raise RuntimeError("Too many runs matching run-id %s: %s", run, pformat(matching_runs))
+            raise RuntimeError("Too many runs matching run-id %s: %s" % (run, pformat(matching_runs)))
         if len(matching_runs) == 0:
             return False
         return list(matching_runs)[0]
@@ -213,7 +211,7 @@ class DashboardArticleCheck:
     def _check_for_run_after(self, version_contents, run_after):
         matching_runs = [r for _, r in version_contents['runs'].items() if datetime.fromtimestamp(r['first-event-timestamp']).strftime('%s') >= run_after.strftime('%s')]
         if len(matching_runs) > 1:
-            raise RuntimeError("Too many runs after run_after %s: %s", run_after, matching_runs)
+            raise RuntimeError("Too many runs after run_after %s: %s" % (run_after, matching_runs))
         if len(matching_runs) == 0:
             return False
         return list(matching_runs)[0]
@@ -366,8 +364,7 @@ class ApiCheck:
             if item_check:
                 if not item_check(body):
                     return False
-                else:
-                    item_check_presence = " and satisfying check %s" % item_check
+                item_check_presence = " and satisfying check %s" % item_check
             LOGGER.info("%s present%s", latest_url, item_check_presence)
             return body
         return _poll(
@@ -419,8 +416,7 @@ class ApiCheck:
             if item_check:
                 if not item_check(body):
                     return False
-                else:
-                    item_check_presence = " and satisfying check %s" % item_check
+                item_check_presence = " and satisfying check %s" % item_check
             constraints_presence = ''
             if constraints:
                 for field, value in constraints.items():
@@ -464,8 +460,7 @@ class ApiCheck:
             if item_check:
                 if not item_check(body['items'][0]):
                     return False
-                else:
-                    item_check_presence = " and satisfying check %s" % item_check
+                item_check_presence = " and satisfying check %s" % item_check
             LOGGER.info("%s: returning %d results%s",
                         search_url,
                         len(body['items']),
@@ -528,8 +523,8 @@ class ApiCheck:
             "Response from %s had status %d, body %s" % (url, response.status_code, response.text)
         try:
             return response.json()
-        except ValueError:
-            raise ValueError("Response from %s is not JSON: %s" % (url, response.text))
+        except ValueError as exc:
+            raise ValueError("Response from %s is not JSON: %s" % (url, response.text)) from exc
 
     def _ensure_list_has_at_least_1_element(self, body):
         assert body['total'] >= 1, \
@@ -594,8 +589,8 @@ class JournalCheck:
         soup = BeautifulSoup(response.text, "html.parser")
         article_type = soup.find("div", {"class": "global-wrapper"}).attrs['data-item-type']
         if article_type in ['insight', 'editorial', 'correction', 'registered-report']:
-            LOGGER.info("Loading figures skipped for article type %r" % article_type)
-            return
+            LOGGER.info("Loading figures skipped for article type %r", article_type)
+            return None
 
         # otherwise, check the figures page and all of it's links
         LOGGER.info("Loading figures %s", url, extra={'id':id})
@@ -804,7 +799,7 @@ class GithubCheck:
         self._repo_url = repo_url
 
     def article(self, id, version=1, text_match=None):
-        url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
+        url = self._repo_url.format(path= '/articles/elife-%s-v%s.xml' % (id, version))
         error_message_suffix = (" and matching %s" % text_match) if text_match else ""
         _poll(
             lambda: _is_content_present(url, text_match=text_match, **{'id':id}),
@@ -872,8 +867,7 @@ def _is_content_present(url, text_match=None, **extra):
                 if text_match in response.text:
                     LOGGER.info("Body of %s matches %s", url, text_match, extra=extra)
                     return True
-                else:
-                    LOGGER.debug("Body of %s does not match %s", url, text_match, extra=extra)
+                LOGGER.debug("Body of %s does not match %s", url, text_match, extra=extra)
             else:
                 LOGGER.info("GET on %s with status 200", url, extra=extra)
                 return True
@@ -931,7 +925,7 @@ class EPPCheck:
         resp = retries.persistently_get(url=url)
         assert resp.status_code == 200
         json_resp = resp.json()
-        LOGGER.info("EPP status: %s" % json_resp)
+        LOGGER.info("EPP status: %s", json_resp)
         assert json_resp['code'] == 200 and json_resp['status'] == 'OK'
         return json_resp
 
