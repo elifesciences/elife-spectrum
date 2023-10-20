@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable=missing-docstring,redefined-builtin,too-few-public-methods,too-many-arguments,fixme,line-too-long,not-context-manager,len-as-condition,chained-comparison,trailing-newlines,no-else-return,inconsistent-return-statements,consider-using-sys-exit,raising-format-tuple,literal-comparison,logging-not-lazy,no-member,consider-using-f-string,missing-timeout,unspecified-encoding
+disable=missing-docstring,redefined-builtin,too-few-public-methods,too-many-arguments,fixme,line-too-long,chained-comparison,literal-comparison,consider-using-f-string,missing-timeout,unspecified-encoding
 
 good-names=id,s3,of,e,_,i
 function-rgx=[a-z_][a-z0-9_]{2,60}$

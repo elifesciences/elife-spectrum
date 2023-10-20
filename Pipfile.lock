@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e6e369351621fc9ef21c6cde5998e1db6700d69216df74debbbef3e95949e963"
+            "sha256": "40564979817aacf6582bb14c0a5c3becad8439fcf0eb2e7d0d3e2917fa4cd0de"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -159,14 +159,6 @@
             ],
             "markers": "python_full_version >= '3.7.0'",
             "version": "==3.3.0"
-        },
-        "contextlib2": {
-            "hashes": [
-                "sha256:3fbdb64466afd23abaf6c977627b75b6139a5a3e8ce38405c5b413aed7a0471f",
-                "sha256:ab1e2bfe1d01d968e1b7e8d9023bc51ef3509bba217bb730cee3827e1ee82869"
-            ],
-            "markers": "python_version >= '3.6'",
-            "version": "==21.6.0"
         },
         "econtools": {
             "git": "https://github.com/elifesciences/econ-tools.git",
@@ -440,14 +432,6 @@
             ],
             "index": "pypi",
             "version": "==0.3.0"
-        },
-        "pollute": {
-            "hashes": [
-                "sha256:187e39b55ee5ce2bec80a0414bab20194abf2620ef5b17625bb43b33b9f02ceb",
-                "sha256:49e71e92d435bddbee53b30b416be4bf7916ee4b9bedaa94b2c4fbf156daaa57"
-            ],
-            "index": "pypi",
-            "version": "==1.0.2"
         },
         "pysocks": {
             "hashes": [

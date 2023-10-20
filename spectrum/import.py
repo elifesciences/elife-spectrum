@@ -43,5 +43,5 @@ def search_and_replace(filename, search, replace):
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print("Usage: %s ZIP_FILENAME\n" % sys.argv[0])
-        exit(1)
+        sys.exit(1)
     from_zip(sys.argv[1])

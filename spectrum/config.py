@@ -23,5 +23,3 @@ if __name__ == '__main__':
         print(section)
         for option in CONFIG.options(section):
             print("   %s: %s" % (option, CONFIG.get(section, option)))
-
-

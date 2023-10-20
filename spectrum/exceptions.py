@@ -23,8 +23,7 @@ class UnrecoverableError(RuntimeError):
         if isinstance(self._details, requests.Response):
             return "RESPONSE CODE: %d\nRESPONSE BODY:\n%s\n" \
                     % (self._details.status_code, self._details.text)
-        else:
-            return "DETAILS: %s" % pformat(self._details)
+        return "DETAILS: %s" % pformat(self._details)
 
 def assert_status_code(response, expected_status_code, url):
     try:

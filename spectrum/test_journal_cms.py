@@ -28,4 +28,3 @@ def test_content_type_propagates_to_other_services():
     response = requests.head(image_url)
     checks.LOGGER.info("Found %s: %s", image_url, response.status_code)
     assert response.status_code == 200, "Image %s is not loading" % image_url
-

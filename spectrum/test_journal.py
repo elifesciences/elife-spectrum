@@ -131,4 +131,4 @@ def _find_profile_id_by_orcid(orcid):
         if profile_snippet['orcid'] == orcid:
             return profile_snippet['id']
     assert id is not None, "We didn't find the profile for the test user %s in %s" % (orcid, profiles)
-
+    return None

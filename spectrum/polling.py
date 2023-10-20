@@ -33,8 +33,8 @@ def poll(action_fn, error_message, *error_message_args):
         if isinstance(possible_result, tuple) and len(possible_result) == 2:
             details['last_seen'] = possible_result[1]
             return possible_result[0]
-        else:
-            return possible_result
+        return possible_result
+
     timeout = GLOBAL_TIMEOUT
     try:
         return polling.poll(

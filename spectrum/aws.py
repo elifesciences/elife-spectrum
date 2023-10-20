@@ -54,11 +54,10 @@ def clean():
         clean_bucket(bucket_name)
 
 def clean_bucket(bucket_name, prefix=None):
-    LOGGER.debug(
-        "Cleaning bucket %s" + (" by prefix %s" % prefix if prefix else ""),
-        bucket_name,
-        extra={'id': id}
-    )
+    msg = "Cleaning bucket %s" % bucket_name
+    if prefix:
+        msg = msg + " by prefix %s" % prefix
+    LOGGER.debug(msg, extra={'id': id})
     bucket = S3.Bucket(bucket_name)
     bucket.load()
     all_objects = bucket.objects.all()

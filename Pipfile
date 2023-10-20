@@ -25,7 +25,6 @@ pytest-xdist = "~=3.0"
 # not using semver, removals happening in patch versions
 python-docx = "==0.8.11"
 polling = "==0.3.0"
-pollute = "==1.0.2"
 requests = "~=2.20"
 requests-futures = "~=1.0"
 # not using semver. removals happen in minor versions, releases are coordinated over a number of languages.
