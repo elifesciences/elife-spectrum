@@ -528,8 +528,8 @@ class ApiCheck:
             "Response from %s had status %d, body %s" % (url, response.status_code, response.text)
         try:
             return response.json()
-        except ValueError:
-            raise ValueError("Response from %s is not JSON: %s" % (url, response.text))
+        except ValueError as exc:
+            raise ValueError("Response from %s is not JSON: %s" % (url, response.text)) from exc
 
     def _ensure_list_has_at_least_1_element(self, body):
         assert body['total'] >= 1, \
@@ -804,7 +804,7 @@ class GithubCheck:
         self._repo_url = repo_url
 
     def article(self, id, version=1, text_match=None):
-        url = self._repo_url.format(path=('/articles/elife-%s-v%s.xml' % (id, version)))
+        url = self._repo_url.format(path= '/articles/elife-%s-v%s.xml' % (id, version))
         error_message_suffix = (" and matching %s" % text_match) if text_match else ""
         _poll(
             lambda: _is_content_present(url, text_match=text_match, **{'id':id}),

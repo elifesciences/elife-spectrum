@@ -42,7 +42,7 @@ def poll(action_fn, error_message, *error_message_args):
             timeout=timeout,
             step=5
         )
-    except polling.TimeoutException:
+    except polling.TimeoutException as exc:
         if callable(error_message):
             error_message_template = error_message()
         else:
@@ -54,4 +54,4 @@ def poll(action_fn, error_message, *error_message_args):
                 host = urlparse(details['last_seen'].request.url).netloc
                 built_error_message = built_error_message + ("\nHost: %s" % host)
                 built_error_message = built_error_message + ("\nIp: %s" % debug.get_host_ip(host))
-        raise TimeoutError.giving_up_on(built_error_message, timeout)
+        raise TimeoutError.giving_up_on(built_error_message, timeout) from exc

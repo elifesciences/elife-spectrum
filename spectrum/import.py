@@ -6,13 +6,13 @@ import sys
 import zipfile
 
 def from_zip(filename):
-    zip = zipfile.ZipFile(filename, "r")
-    (article_full_name, _) = os.path.splitext(os.path.basename(filename))
-    target_directory = os.path.realpath('./spectrum/templates/%s' % article_full_name)
-    if not os.path.exists(target_directory):
-        os.mkdir(target_directory)
-    for each in zip.namelist():
-        zip.extract(each, target_directory)
+    with zipfile.ZipFile(filename, "r") as zip:
+        (article_full_name, _) = os.path.splitext(os.path.basename(filename))
+        target_directory = os.path.realpath('./spectrum/templates/%s' % article_full_name)
+        if not os.path.exists(target_directory):
+            os.mkdir(target_directory)
+        for each in zip.namelist():
+            zip.extract(each, target_directory)
     xml_files = glob.glob('%s/elife-[0-9][0-9][0-9][0-9][0-9].xml' % target_directory)
     assert len(xml_files) > 0, 'No XML files correctly named found in the article package: %s' % target_directory
     assert len(xml_files) == 1, 'Too many XML files are named like an article in the package: %s' % xml_files

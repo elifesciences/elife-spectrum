@@ -133,8 +133,8 @@ class JournalCmsSession:
         try:
             view_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-title').find('a', href=True, string=id).get('href'))
             edit_url = "%s%s" % (self._host, filtered_content_page.soup.find('td', 'views-field-operations').find('li', 'edit').find('a', href=True, string='Edit').get('href'))
-        except (AttributeError, TypeError):
-            raise AssertionError('Edit link not found for article %s when loading URL %s' % (id, filtered_content_url))
+        except (AttributeError, TypeError) as exc:
+            raise AssertionError('Edit link not found for article %s when loading URL %s' % (id, filtered_content_url)) from exc
 
         LOGGER.info("Access edit form", extra={'id': id})
 
