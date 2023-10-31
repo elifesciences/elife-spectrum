@@ -504,7 +504,7 @@ class ApiCheck:
         "Returns as soon as there is one result"
         recommendations_url = "%s/recommendations/article/%s" % (self._host, id)
         def _is_ready():
-            response = requests.get(recommendations_url, headers=self._base_headers({'Accept': 'application/vnd.elife.recommendations+json; version=1'}))
+            response = requests.get(recommendations_url, headers=self._base_headers({'Accept': 'application/vnd.elife.recommendations+json; version=2'}))
             body = self._ensure_sane_response(response, recommendations_url)
             if len(body['items']) == 0:
                 return False
