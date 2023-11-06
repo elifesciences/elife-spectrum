@@ -676,12 +676,6 @@ class JournalCheck:
         # check that all urls in <script>, <link>, <video>, <source>, srcset="" load.
 
         # does "https://end2end--journal.elifesciences.org/foo/bar" match "^https://end2end--journal.elifesciences.org" ?
-        #match = re.match("^"+self._host, response.url)
-        #if match:
-        if response.url.startswith(self._host) and \
-           not response.url.startswith(self._host + "/reviewed-preprints"):
-            self._assert_all_resources_of_page_load(response.text)
-
         prefix_blacklist = [
             self._host + "/reviewed-preprints", # EPP
             self._host + "/about",     # PubPub
