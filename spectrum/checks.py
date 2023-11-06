@@ -674,11 +674,21 @@ class JournalCheck:
 
         # when the response url originates from the same host as this configured `Check` object,
         # check that all urls in <script>, <link>, <video>, <source>, srcset="" load.
+
         # does "https://end2end--journal.elifesciences.org/foo/bar" match "^https://end2end--journal.elifesciences.org" ?
         #match = re.match("^"+self._host, response.url)
         #if match:
         if response.url.startswith(self._host) and \
            not response.url.startswith(self._host + "/reviewed-preprints"):
+            self._assert_all_resources_of_page_load(response.text)
+
+        prefix_blacklist = [
+            self._host + "/reviewed-preprints", # EPP
+            self._host + "/about",     # PubPub
+            self._host + "/resources", # PubPub
+        ]
+        blacklisted_prefix = "|".join(["^" + prefix for prefix in prefix_blacklist]) # "^foo|^bar|^baz"
+        if response.url.startswith(self._host) and not re.match(blacklisted_prefix, response.url):
             self._assert_all_resources_of_page_load(response.text)
 
         # check all 'figure' and 'pdf' resource links work
@@ -1153,14 +1163,14 @@ JOURNAL_CDN = JournalCheck(
 )
 JOURNAL_GOOGLEBOT = JOURNAL_CDN.with_headers({'User-Agent': config.GOOGLEBOT_USER_AGENT})
 JOURNAL_GENERIC_PATHS = [
-    # '/about', # nlisgo@2023-01-31: failing because of reverse proxy to pubpub
+    # '/about', # nlisgo@2023-01-31: disabled because of reverse proxy to pubpub.
     # '/about/peer-review',
     # '/about/research-culture',
     # '/about/technology',
     '/alerts',
     '/contact',
     '/for-the-press',
-    '/resources',
+    #'/resources', # lsh@2023-11-06: disabled because of reverse proxy to pubpub. #8516
     '/terms',
     '/who-we-work-with',
 ]
