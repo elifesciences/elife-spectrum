@@ -22,7 +22,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # lsh@2024-02-07: added custom global user agent as UserAgents containing 'python-requests' have been added to firewall.
 # set a global default user agent by monkey patching default user agent function.
-requests.utils.default_user_agent = lambda name: ELIFE_SPECTRUM_USER_AGENT
+def _default_user_agent(name=None): # pylint: disable=W0613
+    return ELIFE_SPECTRUM_USER_AGENT
+requests.utils.default_user_agent = _default_user_agent
 
 if __name__ == '__main__':
     for section in CONFIG.sections():
