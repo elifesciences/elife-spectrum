@@ -674,9 +674,10 @@ class JournalCheck:
         # don't check paths with these prefixes:
         prefix_blacklist = [
             "/reviewed-preprints", # EPP
-            "/about",     # PubPub
-            "/resources", # PubPub
-            "/media-policy", # PubPub
+            "/about",       # PubPub
+            "/resources",   # PubPub
+            "/media-policy",# PubPub
+            "/community",   # Pubpub
         ]
         blacklisted_prefix = "|".join(["^" + prefix for prefix in prefix_blacklist]) # "^/reviewed-preprints|^/about|^/resources"
         if re.match(blacklisted_prefix, path):
