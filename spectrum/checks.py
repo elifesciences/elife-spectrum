@@ -625,7 +625,7 @@ class JournalCheck:
 
         if section_header_h3 is None:
             raise AssertionError(f"Could not find 'Publication history' or 'Version history' section in article {id} version {version}.")
-        # from there we can navigate up and across to the `pub-history` element ...      
+        # from there we can navigate up and across to the `pub-history` element ...
         pub_history_div = section_header_h3.findParent().findNextSibling()
 
         if pub_history_div is None:
