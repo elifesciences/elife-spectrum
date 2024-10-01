@@ -616,22 +616,28 @@ class JournalCheck:
         return soup
 
     # lsh@2022-10-19: no link to /reviewed-preprints (yet)
+    # ali-tm-amin@2024-10-01: eidted to handle errors and debugs.
     def article_feature_preprint(self, id, version):
-        "ensure a pre-print exists in an article's publication history."
+        "Ensure a pre-print exists in an article's publication history."
         soup = self._article_soup(id, version)
-
         # find the `h3` element whose value is ...
         section_header_h3 = soup.select_one("h3:-soup-contains('Publication history'), h3:-soup-contains('Version history')")
 
-        # from there we can navigate up and across to the `pub-history` element ...
+        if section_header_h3 is None:
+            raise AssertionError(f"Could not find 'Publication history' or 'Version history' section in article {id} version {version}.")
+        # from there we can navigate up and across to the `pub-history` element ...      
         pub_history_div = section_header_h3.findParent().findNextSibling()
 
-        # and extract the value of the first `li` ...
-        first_list_item_text = pub_history_div.select("ol > li:nth-of-type(1)")[0].text
-
+        if pub_history_div is None:
+            raise AssertionError(f"Could not find 'pub-history' element for article {id} version {version}.")
+        first_list_item = pub_history_div.select("ol > li:nth-of-type(1)")
+        if not first_list_item:
+            raise AssertionError(f"No list items found in 'pub-history' for article {id} version {version}.")
+        first_list_item_text = first_list_item[0].text
         # that should look like:
         #   `Preprint posted: <a href="https://doi.org/10.1101/2020.11.21.391326">November 22, 2020 (view preprint)</a>`
-        assert first_list_item_text.startswith("Preprint posted:")
+        # Check that the first list item starts with the expected text
+        assert first_list_item_text.startswith("Preprint posted:"), f"Expected 'Preprint posted:', but got {first_list_item_text}"
 
     def article_feature_editors_evaluation(self, id, version):
         "ensure an editor's evaluation exists"
